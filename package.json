@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.6.4",
     "@chakra-ui/react": "^2.0.2",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
@@ -14,6 +15,7 @@
     "@types/react": "18",
     "@types/react-dom": "18",
     "framer-motion": "^6.2.9",
+    "graphql": "^16.5.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-icons": "^3.0.0",
