@@ -44,7 +44,7 @@ export const Login = () => {
       // user is logged in
       navigate("/");
     }
-  }, [data]);
+  }, [data, error, loading, navigate]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     login({ variables: { username, password } });
