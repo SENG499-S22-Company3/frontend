@@ -10,37 +10,44 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import shallow from "zustand/shallow";
+import { gql, useMutation } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
+
+// these schemas will probably change later, all just example data
+const LOGIN = gql`
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      username
+      email
+      roles
+    }
+  }
+`;
 
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [login, { data, loading, error }] = useMutation(LOGIN);
 
-  const [loggedIn, login] = useLoginStore(
-    (state) => [state.loggedIn, state.login],
-    shallow
-  );
-
+  const loginState = useLoginStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loggedIn) {
+    if (loginState.loggedIn) {
       navigate("/");
     }
-  }, [loggedIn, navigate]);
+  }, [loginState.loggedIn, navigate]);
+
+  useEffect(() => {
+    if (data && !error && !loading) {
+      // TODO: this route will change to whatever the default page is once the
+      // user is logged in
+      navigate("/");
+    }
+  }, [data]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    setLoading(true);
-    login(username, password)
-      .then(() => navigate("/"))
-      .catch((err) => {
-        setError(err.toString());
-        setLoading(false);
-      });
-
+    login({ variables: { username, password } });
     e.preventDefault();
   };
 
@@ -92,7 +99,7 @@ export const Login = () => {
             </FormControl>
             <FormControl isInvalid={error !== undefined}>
               {error !== undefined && (
-                <FormErrorMessage mt={5}>{error}</FormErrorMessage>
+                <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
               )}
             </FormControl>
           </form>
