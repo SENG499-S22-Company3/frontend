@@ -2,6 +2,7 @@ import create from "zustand";
 
 type User = {
   username: string;
+  name: string;
   email: string;
   roles: string[];
 };
