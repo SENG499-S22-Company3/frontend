@@ -17,8 +17,9 @@ const NavLink = (props: { to: string; desc: string }) => (
   </Link>
 );
 
-export const NavHeader = (props: {}) => {
+export const NavHeader = () => {
   const loginState = useLoginStore();
+
   return (
     <Flex
       w="100vw"
@@ -29,7 +30,7 @@ export const NavHeader = (props: {}) => {
       px={3}
     >
       <Flex>
-        {/* Eventually this will be replaced with a logo or something nicer */}
+        {/* TODO: Eventually this will be replaced with a logo or something nicer */}
         <Text mr={4}>
           <b>SchedulaterLogoHere</b>
         </Text>
@@ -42,6 +43,7 @@ export const NavHeader = (props: {}) => {
         )}
         <NavLink to="/schedule" desc="View Schedules" />
         <NavLink to="/profileManagement" desc="Profile Management" />
+        {/* TODO: Still need to create a page and route for actually doing the survey */}
         <NavLink to="/survey" desc="Preferences Survey" />
         <NavLink to="/surveyresults" desc="Survey Results" />
       </Flex>
