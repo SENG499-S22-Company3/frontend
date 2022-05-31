@@ -1,12 +1,13 @@
 import create from "zustand";
 
-type User = {
+export type User = {
   username: string;
+  name: string;
   email: string;
   roles: string[];
 };
 
-type LoginStore = {
+export type LoginStore = {
   loggedIn: boolean;
   user: User | undefined;
   setUser: (user: User) => void;

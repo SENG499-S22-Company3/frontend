@@ -20,6 +20,7 @@ const LOGIN = gql`
       username
       email
       roles
+      name
     }
   }
 `;
