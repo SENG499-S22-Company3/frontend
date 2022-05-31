@@ -1,12 +1,73 @@
-import { Flex, Text, Link } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
-import React from "react";
+import {
+  Flex,
+  Text,
+  Link,
+  Box,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Spinner,
+  useToast,
+} from "@chakra-ui/react";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import { useLoginStore, LoginStore } from "../stores/login";
+import { gql, useMutation } from "@apollo/client";
+
+const LOGOUT = gql`
+  mutation Logout {
+    logout {
+      success
+    }
+  }
+`;
 
 const LoginStatus = (props: { loginState: LoginStore }) => {
   const { loginState } = props;
+  const [logout, { data, loading, error }] = useMutation(LOGOUT);
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (data && data.Logout.success) {
+      toast({
+        title: "Successfully logged out",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate("/");
+    }
+  }, [data, toast, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: `Error: failed to logout: ${error.message}`,
+        status: "error",
+        isClosable: true,
+      });
+    }
+  }, [error, toast, navigate]);
+
+  if (loading) {
+    return <Spinner size="lg" />;
+  }
+
   if (loginState.loggedIn && loginState.user !== undefined) {
-    return <Flex>Hello {loginState.user.name}</Flex>;
+    return (
+      <Box ml="auto">
+        <Menu>
+          <MenuButton as={Link}>
+            <b>Hello, {loginState.user.name}!</b>
+          </MenuButton>
+          <MenuList>
+            <MenuItem onClick={() => logout()}>Sign out</MenuItem>
+          </MenuList>
+        </Menu>
+      </Box>
+    );
   }
   return <NavLink to="/login" desc="Login" />;
 };
