@@ -75,7 +75,7 @@ export const ProfessorSurvey = () => {
       justifyContent="center"
       flexDirection="column"
     >
-      <Container mb={32}>
+      <Container mb={32} maxW="container.lg">
         <Heading mb={6}>Professor Preferences Survey</Heading>
         <Flex
           bg="#212938"
