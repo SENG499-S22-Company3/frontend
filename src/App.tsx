@@ -10,6 +10,8 @@ import { ProfileManagement } from "./pages/ProfileManagement";
 import { Dashboard } from "./pages/Dashboard";
 import { NotFound } from "./pages/NotFound";
 import { ProfessorSurvey } from "./pages/ProfessorSurvey";
+import { NavHeader } from "./components/Nav";
+
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -22,6 +24,7 @@ const theme = extendTheme({
 
 export const App = () => (
   <ChakraProvider theme={theme}>
+    <NavHeader />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} /> 
