@@ -35,7 +35,7 @@ const SUBMIT = gql`
   }
 `;
 
-export const ProfessorSurvey = () => {
+export const Survey = () => {
   const [smallText, setSmallText] = useState("");
   const [largeText, setLargeText] = useState("");
   const [radioValue, setRadioValue] = useState("");

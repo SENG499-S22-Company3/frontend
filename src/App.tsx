@@ -9,7 +9,7 @@ import { SurveyResults } from "./pages/SurveyResults";
 import { ProfileManagement } from "./pages/ProfileManagement";
 import { Dashboard } from "./pages/Dashboard";
 import { NotFound } from "./pages/NotFound";
-import { ProfessorSurvey } from "./pages/ProfessorSurvey";
+import { Survey } from "./pages/Survey";
 import { NavHeader } from "./components/Nav";
 
 
@@ -33,7 +33,7 @@ export const App = () => (
       <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profileManagement" element={<ProfileManagement />} />
-      <Route path="/professorSurvey" element={<ProfessorSurvey />} />
+      <Route path="/survey" element={<Survey />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </ChakraProvider>
