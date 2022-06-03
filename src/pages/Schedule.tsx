@@ -109,7 +109,6 @@ export const Schedule = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
          <TableContainer
-          maxH="55vh"
           overflowY="auto"
          >
             <Table 
