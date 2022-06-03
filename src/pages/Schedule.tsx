@@ -1,31 +1,15 @@
 import {
-  Box,
   Button,
   Container,
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  Radio,
-  RadioGroup,
   Select,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
-  Stack,
-  Textarea,
-  Tooltip,
+  Heading,
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -36,7 +20,7 @@ import { useLoginStore } from "../stores/login";
 
 // These schemas will probably change later, all just example data
 const SUBMIT = gql`
-  mutation Login($username: STring!, $password: STring!) {
+  mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       username
       email
@@ -87,7 +71,7 @@ export const Schedule = () => {
         colorScheme="purple"
         textColor="#ffffff"
         variant="solid"
-        float={`right`}
+        float="right"
       >
         Generate New Schedule
       </Button>
@@ -109,12 +93,12 @@ export const Schedule = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
          <TableContainer
-          overflowY="auto"
+            overflowY="auto"
          >
             <Table 
-            size='sm'
-            variant="striped"
-            colorScheme="gray"
+              size='sm'
+              variant="striped"
+              colorScheme="gray"
             >
               <Thead>
               
