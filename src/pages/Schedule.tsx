@@ -79,7 +79,6 @@ export const Schedule = () => {
             backgroundColor="purple.300"
             colorScheme="purple"
             variant="solid"
-            float="right"
           >
             Generate New Schedule
           </Button>
