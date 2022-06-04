@@ -28,13 +28,13 @@ export const App = () => (
     <NavHeader />
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/generate" element={<Generate />} />
-      <Route path="/schedule" element={<Schedule />} />
-      <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/generate" element={<Generate />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/profileManagement" element={<ProfileManagement />} />
+      <Route path="/schedule" element={<Schedule />} />
       <Route path="/survey" element={<Survey />} />
+      <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </ChakraProvider>

@@ -7,6 +7,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +30,7 @@ export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [login, { data, loading, error }] = useMutation(LOGIN);
+  const bg = useColorModeValue("gray.50", "gray.700");
 
   const loginState = useLoginStore();
   const navigate = useNavigate();
@@ -64,7 +66,7 @@ export const Login = () => {
       <Container mb={32}>
         <Heading mb={6}>Sign in to Schedulater</Heading>
         <Flex
-          bg="gray.700"
+          bg={bg}
           p={10}
           borderRadius={10}
           flexDir="column"

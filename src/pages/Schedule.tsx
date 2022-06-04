@@ -84,7 +84,6 @@ export const Schedule = () => {
           <option value="calendar">Calendar View</option>
         </Select>
         <Flex
-          bg="gray.700"
           p={10}
           borderRadius={10}
           flexDir="column"
