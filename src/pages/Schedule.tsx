@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
 import { TableView } from "../components/TableView";
-import { ScheduleView } from "../components/ScheduleView";
+import { CalendarView } from "../components/CalendarView";
 
 // These schemas will probably change later, all just example data
 const SUBMIT = gql`
@@ -19,7 +19,7 @@ const SUBMIT = gql`
 `;
 
 export const Schedule = () => {
-  const [selectValue, setSelectValue] = useState("");
+  const [viewState, setViewState] = useState("table");
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
 
   const loginState = useLoginStore();
@@ -66,9 +66,9 @@ export const Schedule = () => {
         <Select
           id="select"
           w="160px"
-          value={selectValue}
+          value={viewState}
           mb={5}
-          onChange={(e) => setSelectValue(e.target.value)}
+          onChange={(e) => setViewState(e.target.value)}
         >
           <option value="table">Table View</option>
           <option value="calendar">Calendar View</option>
@@ -80,8 +80,10 @@ export const Schedule = () => {
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-          <TableView />
-          <ScheduleView />
+          <>
+            {viewState === "table" && <TableView />}
+            {viewState === "calendar" && <CalendarView />}
+          </>
         </Flex>
       </Container>
     </Flex>
