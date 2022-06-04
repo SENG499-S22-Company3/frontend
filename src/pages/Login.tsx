@@ -64,7 +64,7 @@ export const Login = () => {
       <Container mb={32}>
         <Heading mb={6}>Sign in to Schedulater</Heading>
         <Flex
-          bg="#212938"
+          bg="gray.700"
           p={10}
           borderRadius={10}
           flexDir="column"

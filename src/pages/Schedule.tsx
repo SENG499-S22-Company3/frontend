@@ -62,19 +62,17 @@ export const Schedule = () => {
       <Container mb={32} maxW="container.xlg">
         <Heading mb={6}>View Schedule</Heading>
         <Button
-        mt={5}
-        w="300px"
-        as={Link}
-        to="/schedule"
-        
-        backgroundColor="#8e44ad"
-        colorScheme="purple"
-        textColor="#ffffff"
-        variant="solid"
-        float="right"
-      >
-        Generate New Schedule
-      </Button>
+          mt={5}
+          w="300px"
+          as={Link}
+          to="/schedule"
+          backgroundColor="purple.300"
+          colorScheme="purple"
+          variant="solid"
+          float="right"
+        >
+          Generate New Schedule
+        </Button>
         <Select
           id="select"
           w="160px"
@@ -86,217 +84,209 @@ export const Schedule = () => {
           <option value="calendar">Calendar View</option>
         </Select>
         <Flex
-          bg="#212938"
+          bg="gray.700"
           p={10}
           borderRadius={10}
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-         <TableContainer
-            overflowY="auto"
-         >
-            <Table 
-              size='sm'
-              variant="striped"
-              colorScheme="gray"
-            >
+          <TableContainer overflowY="auto">
+            <Table size="sm" variant="striped" colorScheme="gray">
               <Thead>
-              
                 <Tr>
-                  <Th >Course</Th>
+                  <Th>Course</Th>
                   <Th>Schedule Time</Th>
                   <Th>Term</Th>
-                  <Th >Prof/InsTructor</Th>
+                  <Th>Prof/InsTructor</Th>
                   <Th>CRN</Th>
                   <Th>Start/End Date</Th>
                   <Th>Students</Th>
                 </Tr>
               </Thead>
               <Tbody>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
-              <Tr >
-                <Td>SENG 499</Td>
-                <Td>Wed: 1500-1620</Td>
-                <Td>Summer</Td>
-                <Td>Daniela Damian</Td>
-                <Td>30792</Td>
-                <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-                <Td>82</Td>
-              </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
+                <Tr>
+                  <Td>SENG 499</Td>
+                  <Td>Wed: 1500-1620</Td>
+                  <Td>Summer</Td>
+                  <Td>Daniela Damian</Td>
+                  <Td>30792</Td>
+                  <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
+                  <Td>82</Td>
+                </Tr>
               </Tbody>
-              
-            </Table> 
-          </TableContainer> 
+            </Table>
+          </TableContainer>
         </Flex>
       </Container>
     </Flex>

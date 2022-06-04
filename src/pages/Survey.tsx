@@ -78,7 +78,7 @@ export const Survey = () => {
       <Container mb={32} maxW="container.lg">
         <Heading mb={6}>Professor Preferences Survey</Heading>
         <Flex
-          bg="#212938"
+          bg="gray.700"
           p={10}
           borderRadius={10}
           flexDir="column"

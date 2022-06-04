@@ -85,7 +85,7 @@ export const NavHeader = () => {
     <Flex
       w="100vw"
       h="50px"
-      bg="#232b3b"
+      bg="gray.700"
       alignItems="center"
       justifyContent="space-between"
       px={3}
