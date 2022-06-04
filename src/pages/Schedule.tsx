@@ -61,28 +61,29 @@ export const Schedule = () => {
     >
       <Container mb={32} maxW="container.xlg">
         <Heading mb={6}>View Schedule</Heading>
-        <Button
-          mt={5}
-          w="300px"
-          as={Link}
-          to="/schedule"
-          backgroundColor="purple.300"
-          colorScheme="purple"
-          variant="solid"
-          float="right"
-        >
-          Generate New Schedule
-        </Button>
-        <Select
-          id="select"
-          w="160px"
-          value={selectValue}
-          mb={5}
-          onChange={(e) => setSelectValue(e.target.value)}
-        >
-          <option value="table">Table View</option>
-          <option value="calendar">Calendar View</option>
-        </Select>
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="160px"
+            value={selectValue}
+            onChange={(e) => setSelectValue(e.target.value)}
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+
+          <Button
+            w="300px"
+            as={Link}
+            to="/schedule"
+            backgroundColor="purple.300"
+            colorScheme="purple"
+            variant="solid"
+            float="right"
+          >
+            Generate New Schedule
+          </Button>
+        </Flex>
         <Flex
           p={10}
           borderRadius={10}
