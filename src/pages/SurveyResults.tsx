@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
+import { SurveyDetailedResults } from "../components/SurveyDetailedResults";
 
 export const SurveyResults = () => {
   //Test data to remove later
@@ -118,7 +119,7 @@ export const SurveyResults = () => {
       justifyContent="center"
       flexDirection="column"
     >
-      <Container maxW="container.xxl">
+      <Container maxW="container.xl">
         <Heading mb={6}>Professor Preferences Survey Results</Heading>
         <Flex
           bg="#212938"
@@ -127,20 +128,14 @@ export const SurveyResults = () => {
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-          <Table variant="striped" size="sm">
+          <Table variant="striped" size="md">
             <Thead>
               <Tr>
                 <Th>Professor</Th>
                 <Th>Teaching Preferences</Th>
                 <Th>Non-Teaching Term 1</Th>
                 <Th>Non-Teaching Term 2</Th>
-                <Th>Has Relief?</Th>
-                <Th>Relief Explanation</Th>
-                <Th>Has Study Leave?</Th>
-                <Th>Study Leave Explanation</Th>
-                <Th>Has Topics/Grad Course?</Th>
-                <Th>Topics/Grad Course Name</Th>
-                <Th>Topics/Grad Course Description</Th>
+                <Th>More Details</Th>
                 <Td>Reopen Survey</Td>
               </Tr>
             </Thead>
@@ -157,13 +152,9 @@ export const SurveyResults = () => {
                   </Td>
                   <Td>{item.nonTeachingTerm1}</Td>
                   <Td>{item.nonTeachingTerm2}</Td>
-                  <Td>{item.relief}</Td>
-                  <Td>{item.reliefExplanation}</Td>
-                  <Td>{item.studyLeave}</Td>
-                  <Td>{item.studyExplanation}</Td>
-                  <Td>{item.topics}</Td>
-                  <Td>{item.topicsCourse}</Td>
-                  <Td>{item.topicDescription}</Td>
+                  <Td>
+                    <SurveyDetailedResults {...item} />
+                  </Td>
                   <Td>
                     <IconButton
                       colorScheme="green"
