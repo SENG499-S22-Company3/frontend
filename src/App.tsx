@@ -9,7 +9,9 @@ import { SurveyResults } from "./pages/SurveyResults";
 import { ProfileManagement } from "./pages/ProfileManagement";
 import { Dashboard } from "./pages/Dashboard";
 import { NotFound } from "./pages/NotFound";
+import { Survey } from "./pages/Survey";
 import { NavHeader } from "./components/Nav";
+
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -25,12 +27,13 @@ export const App = () => (
     <NavHeader />
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login />} /> 
       <Route path="/generate" element={<Generate />} />
       <Route path="/schedule" element={<Schedule />} />
       <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profileManagement" element={<ProfileManagement />} />
+      <Route path="/survey" element={<Survey />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </ChakraProvider>
