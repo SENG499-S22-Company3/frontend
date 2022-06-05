@@ -76,10 +76,10 @@ const splitCourseDays = (assignment: Assignment) => {
   const { monday, tuesday, wednesday, thursday, friday } = assignment;
   const daysArray = [monday, tuesday, wednesday, thursday, friday];
 
-  let splitAppointments: Assignment[] = [];
-  daysArray.forEach((day, index) => {
-    if (!day) return;
-
+  const splitAppointments = daysArray.map((day, index) => {
+    if(!day){
+      return null;
+    }
     //2022-05-31T is a monday, and we just need the base to be a monday
     const begin = "2022-05-31T" + assignment.beginTime;
     const end = "2022-05-31T" + assignment.endTime;
@@ -95,9 +95,10 @@ const splitCourseDays = (assignment: Assignment) => {
       startDate: startDate,
       endDate: endDate,
     };
-    splitAppointments.push(appointment);
+    return appointment;
   });
-  return splitAppointments;
+  const validAppointments = splitAppointments.filter((appointment) => appointment !== null) as Assignment[];
+  return validAppointments;
 };
 
 export const CalendarView = () => {
@@ -136,7 +137,7 @@ export const CalendarView = () => {
         appointmentRender={Appointment}
         customizeDateNavigatorText={(info) => getWeekDay(info.startDate)}
         dateCellTemplate={dateCell}
-        timeZone="America/Los_Angeles"
+        timeZone="America/Vancouver"
         currentDate={currentDate}
         views={["day", "workWeek"]}
         defaultCurrentView={viewState}

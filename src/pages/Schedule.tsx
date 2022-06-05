@@ -18,8 +18,13 @@ const SUBMIT = gql`
   }
 `;
 
+enum ViewTypes {
+  table = "table",
+  calendar = "calendar",
+}
+
 export const Schedule = () => {
-  const [viewState, setViewState] = useState("table");
+  const [viewState, setViewState] = useState(ViewTypes.table);
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
 
   const loginState = useLoginStore();
@@ -68,7 +73,11 @@ export const Schedule = () => {
           w="160px"
           value={viewState}
           mb={5}
-          onChange={(e) => setViewState(e.target.value)}
+          onChange={(e) =>
+            e.target.value === "table"
+              ? setViewState(ViewTypes.table)
+              : setViewState(ViewTypes.calendar)
+          }
         >
           <option value="table">Table View</option>
           <option value="calendar">Calendar View</option>
@@ -81,8 +90,8 @@ export const Schedule = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
           <>
-            {viewState === "table" && <TableView />}
-            {viewState === "calendar" && <CalendarView />}
+            {viewState === ViewTypes.table && <TableView />}
+            {viewState === ViewTypes.calendar && <CalendarView />}
           </>
         </Flex>
       </Container>
