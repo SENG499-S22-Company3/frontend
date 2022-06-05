@@ -2,38 +2,59 @@ import React, { useState } from "react";
 import { Scheduler, Editing } from "devextreme-react/scheduler";
 import "devextreme/dist/css/dx.dark.css";
 import { Appointment } from "./Appointment";
+import { Assignment } from "../../stores/schedule";
 
-var appointment = [
+var assignments: Assignment[] = [
   {
     course: "SENG 265",
-    startDate: new Date("2022-06-03T16:00:00.000Z"),
+    startDate: new Date("2022-06-03T16:00:00.000Z"), //for now this isn't used for anything
     endDate: new Date("2022-06-03T16:50:00.000Z"),
+    beginTime: "16:00:00.000Z", //this isn't the time format we are gonna use, but for now its the best for mock data
+    endTime: "16:50:00.000Z",
     professor: "Mike Zastre",
-    days: ["T", "W", "F"],
+    tuesday: true,
+    wednesday: true,
+    friday: true,
   },
   {
     course: "CSC 320",
-    startDate: new Date("2022-06-03T20:00:00.000Z"),
+    startDate: new Date("2022-06-03T19:00:00.000Z"),
     endDate: new Date("2022-06-03T21:20:00.000Z"),
+    beginTime: "19:00:00.000Z",
+    endTime: "21:20:00.000Z",
     professor: "Valerie King",
+    friday: true,
   },
   {
     course: "CSC 360",
     startDate: new Date("2022-05-30T16:00:00.000Z"),
     endDate: new Date("2022-05-30T17:20:00.000Z"),
+    beginTime: "16:00:00.000Z",
+    endTime: "17:20:00.000Z",
     professor: "David Corless",
+    monday: true,
+    thursday: true,
   },
   {
     course: "ECE 260",
     startDate: new Date("2022-05-31T21:00:00.000Z"),
     endDate: new Date("2022-05-31T21:50:00.000Z"),
+    beginTime: "21:00:00.000Z",
+    endTime: "21:50:00.000Z",
     professor: "Michael Adams",
+    tuesday: true,
+    wednesday: true,
+    friday: true,
   },
   {
     course: "SENG 350",
     startDate: new Date("2022-05-30T17:30:00.000Z"),
     endDate: new Date("2022-05-30T18:50:00.000Z"),
+    beginTime: "17:30:00.000Z",
+    endTime: "18:50:00.000Z",
     professor: "Jens Weber",
+    monday: true,
+    thursday: true,
   },
 ];
 
@@ -46,23 +67,58 @@ const dateCell = ({ text }: { text: String }) => {
 //make day navigator only the weekday
 const getWeekDay = (day: Date) => {
   const dayOfWeek = day.toLocaleString("default", { weekday: "long" });
-  console.log(dayOfWeek)
   return dayOfWeek;
 };
 
+//course assignments that are flagged to be on multiple days should be set for those days
+const splitCourseDays = (assignment: Assignment) => {
+  const { monday, tuesday, wednesday, thursday, friday } = assignment;
+  const daysArray = [monday, tuesday, wednesday, thursday, friday];
+
+  let splitAppointments: Assignment[] = [];
+  daysArray.forEach((day, index) => {
+    if (!day) return;
+
+    //2022-05-31T is a monday, and we just need the base to be a monday
+    const begin = "2022-05-31T" + assignment.beginTime;
+    const end = "2022-05-31T" + assignment.endTime;
+    const startDate = new Date(begin);
+    const endDate = new Date(end);
+
+    //change the date based on what day of the week it's supposed to be
+    startDate.setDate(startDate.getDate() + index - 1);
+    endDate.setDate(endDate.getDate() + index - 1);
+
+    const appointment = {
+      ...assignment,
+      startDate: startDate,
+      endDate: endDate,
+    };
+    splitAppointments.push(appointment);
+  });
+  return splitAppointments;
+};
+
 export const CalendarView = () => {
-  //todo: on click of day, set current day
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
   const [viewState, setViewState] = useState("workWeek");
-  const [selectedDay, setSelectedDay] = useState("Monday");
+  const weekDay = getWeekDay(currentDate);
+  
+  const appointments = assignments
+    .map((assignment: Assignment) => splitCourseDays(assignment))
+    .flat();
 
   //custom stylings to override the DevExtreme stylings
   const css = `
     .dx-scheduler-navigator-previous {  
-      visibility: ${viewState === "workWeek" || selectedDay === "Monday" ? "hidden" : "visible"}
+      visibility: ${
+        viewState === "workWeek" || weekDay === "Monday" ? "hidden" : "visible"
+      }
     }  
     .dx-scheduler-navigator-next {  
-      visibility: ${viewState === "workWeek" || selectedDay === "Friday" ? "hidden" : "visible"} 
+      visibility: ${
+        viewState === "workWeek" || weekDay === "Friday" ? "hidden" : "visible"
+      } 
     }  
     .dx-scheduler-navigator {
       visibility: ${viewState === "workWeek" ? "hidden" : "visible"}
@@ -75,12 +131,12 @@ export const CalendarView = () => {
       {/* the library's TypeScript configuration is broken, not allowing Scheduler to have children */}
       {/*@ts-ignore*/}
       <Scheduler
+        dataSource={appointments}
         appointmentRender={Appointment}
         customizeDateNavigatorText={(info) => getWeekDay(info.startDate)}
         dateCellTemplate={dateCell}
         timeZone="America/Los_Angeles"
         currentDate={currentDate}
-        dataSource={appointment}
         views={["day", "workWeek"]}
         defaultCurrentView={viewState}
         showAllDayPanel={false}
@@ -88,9 +144,16 @@ export const CalendarView = () => {
         endDayHour={22}
         textExpr="course"
         onCurrentViewChange={setViewState}
-        onCurrentDateChange={(newDay) => setSelectedDay(getWeekDay(newDay))}
+        onCurrentDateChange={setCurrentDate}
+        onCellClick={(cell) => setCurrentDate(cell.cellData.startDate)}
       >
-        <Editing allowAdding={false} allowDragging={false} allowDeleting={false} allowResizing={false} />
+        <Editing
+          allowAdding={false}
+          allowDragging={false}
+          allowDeleting={false}
+          allowResizing={false}
+          allowUpdating={false}
+        />
       </Scheduler>
     </>
   );
