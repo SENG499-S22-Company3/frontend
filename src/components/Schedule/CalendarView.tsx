@@ -4,6 +4,7 @@ import "devextreme/dist/css/dx.dark.css";
 import { Appointment } from "./Appointment";
 import { Assignment } from "../../stores/schedule";
 
+//dummy data
 var assignments: Assignment[] = [
   {
     course: "SENG 265",
@@ -64,7 +65,7 @@ const dateCell = ({ text }: { text: String }) => {
   return dayOfWeek;
 };
 
-//make day navigator only the weekday
+//convert date object to week day string
 const getWeekDay = (day: Date) => {
   const dayOfWeek = day.toLocaleString("default", { weekday: "long" });
   return dayOfWeek;
@@ -103,9 +104,9 @@ export const CalendarView = () => {
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
   const [viewState, setViewState] = useState("workWeek");
   const weekDay = getWeekDay(currentDate);
-  
+
   const appointments = assignments
-    .map((assignment: Assignment) => splitCourseDays(assignment))
+    .map((assignment) => splitCourseDays(assignment))
     .flat();
 
   //custom stylings to override the DevExtreme stylings

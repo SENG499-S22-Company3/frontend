@@ -1,5 +1,6 @@
 import React from "react";
 import { formatDate } from "devextreme/localization";
+import { Text } from "@chakra-ui/react";
 
 interface appointmentModel {
   appointmentData: courseModel;
@@ -17,15 +18,13 @@ export const Appointment = (model: appointmentModel) => {
   const courseData: courseModel = model.appointmentData;
   return (
     <div>
-      <div>{courseData.course}</div>
-      <div>
-        <strong>{courseData.professor}</strong>
-      </div>
-      <div>
+      <Text fontWeight="bold">{courseData.course}</Text>
+      <Text>{courseData.professor}</Text>
+      <Text>
         {formatDate(courseData.startDate, "shortTime")}
         {" - "}
         {formatDate(courseData.endDate, "shortTime")}
-      </div>
+      </Text>
     </div>
   );
 };

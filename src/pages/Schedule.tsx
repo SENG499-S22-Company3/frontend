@@ -48,10 +48,10 @@ export const Schedule = () => {
       justifyContent="center"
       flexDirection="column"
     >
-      <Container mb={32} maxW="container.xlg">
+      <Container mb={32} maxW="container.xl">
         <Heading mb={6}>View Schedule</Heading>
         <Button
-          mt={5}
+          mb={5}
           w="300px"
           as={Link}
           to="/schedule"
