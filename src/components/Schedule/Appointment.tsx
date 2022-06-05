@@ -2,8 +2,8 @@ import React from "react";
 import { formatDate } from "devextreme/localization";
 
 interface appointmentModel {
-    appointmentData: courseModel;
-    targetedAppointmentData: courseModel;
+  appointmentData: courseModel;
+  targetedAppointmentData: courseModel;
 }
 
 interface courseModel {
