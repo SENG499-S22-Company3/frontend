@@ -60,7 +60,6 @@ export const Schedule = () => {
             id="select"
             w="160px"
             value={viewState}
-            mb={5}
             onChange={(e) =>
               e.target.value === "table"
                 ? setViewState(ViewTypes.table)
