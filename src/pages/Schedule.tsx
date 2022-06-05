@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
-import { TableView } from "../components/TableView";
-import { CalendarView } from "../components/CalendarView";
+import { TableView } from "../components/Schedule/TableView";
+import { CalendarView } from "../components/Schedule/CalendarView";
 
 // These schemas will probably change later, all just example data
 const SUBMIT = gql`
