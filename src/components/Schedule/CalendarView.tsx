@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Scheduler, Editing } from "devextreme-react/scheduler";
-import "devextreme/dist/css/dx.dark.css";
 import { Appointment } from "./Appointment";
 import { Assignment } from "../../stores/schedule";
+import "devextreme/dist/css/dx.dark.css";
 
 //dummy data
 var assignments: Assignment[] = [
