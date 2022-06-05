@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 export const Generate = () => {
   return (
     <Flex
@@ -24,4 +24,3 @@ export const Generate = () => {
     </Flex>
   );
 };
-

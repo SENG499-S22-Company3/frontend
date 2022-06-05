@@ -17,6 +17,8 @@
     "@types/node": "^12.0.0",
     "@types/react": "18",
     "@types/react-dom": "18",
+    "devextreme": "21.2.7",
+    "devextreme-react": "21.2.7",
     "framer-motion": "^6.2.9",
     "graphql": "^16.5.0",
     "react": "^18.1.0",
