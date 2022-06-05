@@ -1,4 +1,5 @@
 import { ChakraProvider, extendTheme, ThemeConfig } from "@chakra-ui/react";
+import { colors } from "./theme/colors";
 import * as React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/Home";
@@ -12,13 +13,13 @@ import { NotFound } from "./pages/NotFound";
 import { Survey } from "./pages/Survey";
 import { NavHeader } from "./components/Nav";
 
-
 const config: ThemeConfig = {
   initialColorMode: "dark",
   useSystemColorMode: false,
 };
 
 const theme = extendTheme({
+  colors,
   config,
 });
 
@@ -27,13 +28,13 @@ export const App = () => (
     <NavHeader />
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} /> 
-      <Route path="/generate" element={<Generate />} />
-      <Route path="/schedule" element={<Schedule />} />
-      <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/generate" element={<Generate />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/profileManagement" element={<ProfileManagement />} />
+      <Route path="/schedule" element={<Schedule />} />
       <Route path="/survey" element={<Survey />} />
+      <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </ChakraProvider>

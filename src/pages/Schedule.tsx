@@ -55,35 +55,34 @@ export const Schedule = () => {
     >
       <Container mb={32} maxW="container.xl">
         <Heading mb={6}>View Schedule</Heading>
-        <Button
-          mb={5}
-          w="300px"
-          as={Link}
-          to="/schedule"
-          backgroundColor="#8e44ad"
-          colorScheme="purple"
-          textColor="#ffffff"
-          variant="solid"
-          float="right"
-        >
-          Generate New Schedule
-        </Button>
-        <Select
-          id="select"
-          w="160px"
-          value={viewState}
-          mb={5}
-          onChange={(e) =>
-            e.target.value === "table"
-              ? setViewState(ViewTypes.table)
-              : setViewState(ViewTypes.calendar)
-          }
-        >
-          <option value="table">Table View</option>
-          <option value="calendar">Calendar View</option>
-        </Select>
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="160px"
+            value={viewState}
+            mb={5}
+            onChange={(e) =>
+              e.target.value === "table"
+                ? setViewState(ViewTypes.table)
+                : setViewState(ViewTypes.calendar)
+            }
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+
+          <Button
+            w="300px"
+            as={Link}
+            to="/schedule"
+            backgroundColor="purple.300"
+            colorScheme="purple"
+            variant="solid"
+          >
+            Generate New Schedule
+          </Button>
+        </Flex>
         <Flex
-          bg="#212938"
           p={10}
           borderRadius={10}
           flexDir="column"
