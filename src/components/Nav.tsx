@@ -9,11 +9,14 @@ import {
   MenuItem,
   Spinner,
   useToast,
+  LinkProps,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import { useLoginStore, LoginStore } from "../stores/login";
 import { gql, useMutation } from "@apollo/client";
+import { ColorModeSwitcher } from "../ColorModeSwitcher";
 
 const LOGOUT = gql`
   mutation Logout {
@@ -69,46 +72,53 @@ const LoginStatus = (props: { loginState: LoginStore }) => {
       </Box>
     );
   }
-  return <NavLink to="/login" desc="Login" />;
+
+  return <NavLink to="/login" desc="Login" mr={0} />;
 };
 
-const NavLink = (props: { to: string; desc: string }) => (
-  <Link as={ReactRouterLink} to={props.to} mr={4}>
+const NavLink = (props: { to: string; desc: string } & LinkProps) => (
+  <Link as={ReactRouterLink} mr={4} {...props}>
     <b>{props.desc}</b>
   </Link>
 );
 
 export const NavHeader = () => {
   const loginState = useLoginStore();
+  const bg = useColorModeValue("gray.100", "gray.700");
 
   return (
     <Flex
       w="100vw"
       h="50px"
-      bg="#232b3b"
+      bg={bg}
       alignItems="center"
       justifyContent="space-between"
       px={3}
     >
-      <Flex>
+      <Flex alignItems="center">
         {/* TODO: Eventually this will be replaced with a logo or something nicer */}
         <Text mr={4}>
           <b>SchedulaterLogoHere</b>
         </Text>
         <NavLink to="/" desc="Home" />
-        {loginState.user && loginState.user.roles.includes("admin") && (
-          <>
-            <NavLink to="/dashboard" desc="Admin Dashboard" />
-            <NavLink to="/generate" desc="Generate Schedules" />
-          </>
-        )}
-        <NavLink to="/schedule" desc="View Schedules" />
+        {/* admin condition is temporarily commented out for testing */}
+        {
+          /* loginState.user && loginState.user.roles.includes("admin") */ true && (
+            <>
+              <NavLink to="/dashboard" desc="Admin Dashboard" />
+              <NavLink to="/generate" desc="Generate Schedules" />
+            </>
+          )
+        }
         <NavLink to="/profileManagement" desc="Profile Management" />
-        {/* TODO: Still need to create a page and route for actually doing the survey */}
+        <NavLink to="/schedule" desc="View Schedules" />
         <NavLink to="/survey" desc="Preferences Survey" />
         <NavLink to="/surveyresults" desc="Survey Results" />
       </Flex>
-      <LoginStatus loginState={loginState} />
+      <Flex alignItems="center">
+        <LoginStatus loginState={loginState} />
+        <ColorModeSwitcher />
+      </Flex>
     </Flex>
   );
 };

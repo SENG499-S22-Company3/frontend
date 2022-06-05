@@ -16,9 +16,7 @@ export const Generate = () => {
         w="300px"
         as={Link}
         to="/schedule"
-        backgroundColor="#8e44ad"
         colorScheme="purple"
-        textColor="#ffffff"
         variant="solid"
       >
         Generate Schedule
@@ -26,3 +24,4 @@ export const Generate = () => {
     </Flex>
   );
 };
+

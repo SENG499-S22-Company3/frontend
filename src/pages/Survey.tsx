@@ -18,6 +18,7 @@ import {
   Stack,
   Textarea,
   Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +44,7 @@ export const Survey = () => {
   const [sliderValue, setSliderValue] = useState(100);
   const [showTooltip, setShowTooltip] = React.useState(false);
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
+  const bg = useColorModeValue("gray.50", "gray.700");
 
   const loginState = useLoginStore();
   const navigate = useNavigate();
@@ -78,7 +80,7 @@ export const Survey = () => {
       <Container mb={32} maxW="container.lg">
         <Heading mb={6}>Professor Preferences Survey</Heading>
         <Flex
-          bg="#212938"
+          bg={bg}
           p={10}
           borderRadius={10}
           flexDir="column"
