@@ -26,7 +26,7 @@ interface UserInfo {
   role: string;
 }
 
-export const EditProfile = (details: UserInfo) => {
+export const EditUser = (details: UserInfo) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [name, setName] = useState(details.name);
   const [email, setEmail] = useState(details.email);
@@ -34,9 +34,7 @@ export const EditProfile = (details: UserInfo) => {
   const [role, setRole] = useState(details.role);
 
   const onSave = () => {
-    console.log(name);
-    console.log(email);
-    console.log(department);
+    //Save info here
     onClose();
   };
 
@@ -44,7 +42,7 @@ export const EditProfile = (details: UserInfo) => {
     <>
       <IconButton
         colorScheme="green"
-        aria-label="Reopen Survey"
+        aria-label="Edit User"
         icon={<EditIcon />}
         onClick={onOpen}
       />

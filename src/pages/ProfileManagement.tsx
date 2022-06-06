@@ -1,3 +1,4 @@
+import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Container,
   Flex,
@@ -8,8 +9,12 @@ import {
   Tr,
   Th,
   Td,
+  IconButton,
+  Button,
 } from "@chakra-ui/react";
-import { EditProfile } from "../components/EditProfile";
+import { CreateUser } from "../components/UserManagement/CreateUser";
+import { DeleteUser } from "../components/UserManagement/DeleteUser";
+import { EditUser } from "../components/UserManagement/EditUser";
 
 export const ProfileManagement = () => {
   //Test data to remove later
@@ -51,6 +56,7 @@ export const ProfileManagement = () => {
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
+          <CreateUser/>
           <Table variant="striped" size="md">
             <Thead>
               <Tr>
@@ -58,7 +64,7 @@ export const ProfileManagement = () => {
                 <Th>Email</Th>
                 <Th>Department</Th>
                 <Th>User Role</Th>
-                <Td>Edit</Td>
+                <Td>Edit/Delete</Td>
               </Tr>
             </Thead>
             <Tbody>
@@ -69,7 +75,8 @@ export const ProfileManagement = () => {
                   <Td>{item.department}</Td>
                   <Td>{item.role}</Td>
                   <Td>
-                    <EditProfile {...item} />
+                    <EditUser {...item}/>
+                    <DeleteUser {...item}/>
                   </Td>
                 </Tr>
               ))}
