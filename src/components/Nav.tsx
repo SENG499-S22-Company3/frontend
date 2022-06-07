@@ -2,6 +2,7 @@ import {
   Flex,
   Text,
   Link,
+  Image,
   Box,
   Menu,
   MenuButton,
@@ -97,10 +98,25 @@ export const NavHeader = () => {
     >
       <Flex alignItems="center">
         {/* TODO: Eventually this will be replaced with a logo or something nicer */}
-        <Text mr={4}>
-          <b>SchedulaterLogoHere</b>
-        </Text>
-        <NavLink to="/" desc="Home" />
+        <Box
+          bg="green.300"
+          h="50px"
+          w="50px"
+          borderRadius="50%"
+        >
+          <Image 
+            src="/logo.png" 
+            alt="schedulator logo" 
+            height="50px"
+            width="50px"
+            minWidth="50px"
+            padding="5px" 
+          >
+          </Image>
+        </Box>
+          
+        
+        <NavLink to="/" desc="Home" paddingLeft="20px" />
         {/* admin condition is temporarily commented out for testing */}
         {
           /* loginState.user && loginState.user.roles.includes("admin") */ true && (
