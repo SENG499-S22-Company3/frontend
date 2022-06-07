@@ -99,7 +99,7 @@ export const NavHeader = () => {
       <Flex alignItems="center">
         {/* TODO: Eventually this will be replaced with a logo or something nicer */}
         <Box
-          bg="green.300"
+          bg="green.200"
           h="50px"
           w="50px"
           borderRadius="50%"
