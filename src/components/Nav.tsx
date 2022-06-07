@@ -97,7 +97,7 @@ export const NavHeader = () => {
       px={3}
     >
       <Flex alignItems="center">
-        {/* TODO: Eventually this will be replaced with a logo or something nicer */}
+        {/*logo box*/}
         <Box
           bg="green.200"
           h="50px"
@@ -114,9 +114,14 @@ export const NavHeader = () => {
           >
           </Image>
         </Box>
-          
+
+        {/* added some padding between logo and home*/}
+        <Box
+          width="15px"
+        >
+        </Box>  
         
-        <NavLink to="/" desc="Home" paddingLeft="20px" />
+        <NavLink to="/" desc="Home"/>
         {/* admin condition is temporarily commented out for testing */}
         {
           /* loginState.user && loginState.user.roles.includes("admin") */ true && (
