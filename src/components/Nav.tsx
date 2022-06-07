@@ -98,28 +98,25 @@ export const NavHeader = () => {
     >
       <Flex alignItems="center">
         {/*logo box*/}
+
         <Box
+          mr="15px"        
           bg="green.200"
-          h="50px"
-          w="50px"
+          h="40px"
+          w="40px"
           borderRadius="50%"
         >
           <Image 
             src="/logo.png" 
             alt="schedulator logo" 
-            height="50px"
-            width="50px"
-            minWidth="50px"
+            height="40px"
+            width="40px"
+            minWidth="40px"
             padding="5px" 
           >
           </Image>
         </Box>
 
-        {/* added some padding between logo and home*/}
-        <Box
-          width="15px"
-        >
-        </Box>  
         
         <NavLink to="/" desc="Home"/>
         {/* admin condition is temporarily commented out for testing */}
