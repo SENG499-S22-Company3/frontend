@@ -4,39 +4,39 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 
 export const Dashboard = () => {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 	
-  	return (
-	  	<Flex
-	    	w="100%"
-	      	minH="calc(100vh - 5.5rem)"
-	      	pt={30}
-	      	alignItems="center"
-	      	justifyContent="center"
-	      	flexDirection="column"
-	      	mb={32}
-	    >
-      	<Flex mb={32}>
-      		<HStack spacing="24px" alignItems="center" justifyContent="center">
-		  		<Card
-		  			description="View the results of the surveys that professors have submitted"
-		  			navigateTo="/surveyresults"
-				/>
-				<Card
-		  			description="View class schedules"
-		  			navigateTo="/schedule"
-				/>
-				<Card
-		  			description="Generate a schedule"
-		  			navigateTo="/generate"
-				/>
-				<Card
-		  			description="Manage profiles of different professors"
-		  			navigateTo="/profileManagement"
-				/>
-			</HStack>
-		</Flex>
+  return (
+    <Flex
+	  w="100%"
+	  minH="calc(100vh - 5.5rem)"
+	  pt={30}
+	  alignItems="center"
+	  justifyContent="center"
+	  flexDirection="column"
+	  mb={32}
+	>
+      <Flex mb={32}>
+        <HStack spacing="24px" alignItems="center" justifyContent="center">
+		  <Card
+		    description="View the results of the surveys that professors have submitted"
+		  	navigateTo="/surveyresults"
+			/>
+		  <Card
+		  	description="View class schedules"
+		  	navigateTo="/schedule"
+		  />
+		  <Card
+		    description="Generate a schedule"
+		  	navigateTo="/generate"
+		  />
+		  <Card
+		  	description="Manage profiles of different professors"
+		  	navigateTo="/profileManagement"
+		  />
+		</HStack>
+	  </Flex>
     </Flex>
-  	);
+  );
 };
 
