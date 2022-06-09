@@ -1,4 +1,4 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Modal,
   ModalOverlay,
@@ -8,16 +8,8 @@ import {
   ModalCloseButton,
   useDisclosure,
   Button,
-  Flex,
   IconButton,
-  FormControl,
-  FormLabel,
-  Input,
-  RadioGroup,
-  Stack,
-  Radio,
 } from "@chakra-ui/react";
-import { useState } from "react";
 
 interface UserInfo {
   name: string;
@@ -28,10 +20,6 @@ interface UserInfo {
 
 export const DeleteUser = (details: UserInfo) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [name, setName] = useState(details.name);
-  const [email, setEmail] = useState(details.email);
-  const [department, setDepartment] = useState(details.department);
-  const [role, setRole] = useState(details.role);
 
   const onConfirm = () => {
     //Delete User here

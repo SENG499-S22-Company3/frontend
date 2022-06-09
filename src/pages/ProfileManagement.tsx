@@ -1,4 +1,3 @@
-import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Container,
   Flex,
@@ -9,8 +8,6 @@ import {
   Tr,
   Th,
   Td,
-  IconButton,
-  Button,
 } from "@chakra-ui/react";
 import { CreateUser } from "../components/UserManagement/CreateUser";
 import { DeleteUser } from "../components/UserManagement/DeleteUser";
