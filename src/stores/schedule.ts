@@ -1,43 +1,43 @@
-//The below types are derived from Algorithm 1's specifications
-//For now, course, professor and the dates are using easier types to work with, just to assist with mock data.
-//In the future remove those though
+//this is the type that devExtreme expects
+export type Appointment = {
+  startDate: Date; //both day and time
+  endDate: Date; //both day and time
+  courseTitle: string;
+  courseNumber: string;
+  subject: string;
+  sequenceNumber: string;
+  prof: string;
+  classSize: number; //from algo2
+};
 
+//The below types are derived from Algorithm 1's specifications
 export type Assignment = {
-  course: Course | string;
-  professor: Professor | string;
-  startDate: string | Date; // Follow "yyyy-mm-dd"
-  endDate: string | Date; // Follow "yyyy-mm-dd"
+  startDate: string; // Follow "yyyy-mm-dd"
+  endDate: string; // Follow "yyyy-mm-dd"
   beginTime: string; // Use 24hr "0000" - "2359"
   endTime: string; // Use 24hr "0000" - "2359"
-  monday?: boolean;
-  tuesday?: boolean;
-  wednesday?: boolean;
-  thursday?: boolean;
-  friday?: boolean;
+  hoursWeek: number;
+  sunday: boolean;
+  monday: boolean;
+  tuesday: boolean;
+  wednesday: boolean;
+  thursday: boolean;
+  friday: boolean;
+  saturday: boolean;
 };
 
 export type Course = {
-  courseNumber: number;
+  courseNumber: string;
   subject: string;
-  sequenceNumber: string;
+  sequenceNumber: string; //eg. A01
   courseTitle: string;
-  requiredEquipment: string[];
-  requiresPEng: boolean;
+  prof: string;
+  meetingTime: Assignment;
 };
 
-export type Professor = {
-  preferences: Preference[];
-  coursesCanTeach: Course[];
-  displayName: string;
-  teachingStatus: string;
-  requiredEquipment: string;
-  hasPEng: boolean;
-  fallTermCourses: number;
-  springTermCourses: number;
-  summerTermCourses: number;
-};
-
-export type Preference = {
-  course: Course;
-  preferenceNum: number;
+//from algorithm one we will be getting a Schedule object
+export type ScheduleAssignment = {
+  fallTermCourses: Course[];
+  springTermCourses: Course[];
+  summerTermCourses: Course[];
 };
