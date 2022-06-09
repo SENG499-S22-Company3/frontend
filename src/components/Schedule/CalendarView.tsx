@@ -74,11 +74,10 @@ const splitCourseDays = (course: Course) => {
 //convert Course object data from backend to the structure DevExtreme expects
 const buildAppointments = (courses: Course[]) => {
   const appointments = courses
-    .map((course) => {
+    .flatMap((course) => {
       const assignedCourses = splitCourseDays(course);
       return assignedCourses;
-    })
-    .flat();
+    });
   return appointments;
 };
 
