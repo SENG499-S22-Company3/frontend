@@ -6,6 +6,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
+import mockData from '../mockData.json';
 
 // These schemas will probably change later, all just example data
 const SUBMIT = gql`
@@ -89,7 +90,7 @@ export const Schedule = () => {
         >
           <>
             {viewState === ViewTypes.table && <TableView />}
-            {viewState === ViewTypes.calendar && <CalendarView />}
+            {viewState === ViewTypes.calendar && <CalendarView data={mockData}/>}
           </>
         </Flex>
       </Container>
