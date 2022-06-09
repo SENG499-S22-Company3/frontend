@@ -22,30 +22,34 @@ const splitCourseDays = (course: Course) => {
     course.meetingTime;
   const daysArray = [monday, tuesday, wednesday, thursday, friday];
 
+  //2022-05-31T is a monday, and we just need the base to be a monday
+  //HH:MM:SS.000-7:00 for time format, it comes in HHMM format.
+  const beginHoursMinutes = [
+    beginTime.slice(0, beginTime.length / 2),
+    beginTime.slice(-beginTime.length / 2),
+  ];
+  const endHourMinutes = [
+    endTime.slice(0, endTime.length / 2),
+    endTime.slice(-endTime.length / 2),
+  ];
+
+  const begin =
+    "2022-05-31T" +
+    beginHoursMinutes[0] +
+    ":" +
+    beginHoursMinutes[1] +
+    ":00.000-07:00";
+  const end =
+    "2022-05-31T" +
+    endHourMinutes[0] +
+    ":" +
+    endHourMinutes[1] +
+    ":00.000-07:00";
+
   const splitAppointments = daysArray.map((day, index) => {
     if (!day) {
       return null;
     }
-    //2022-05-31T is a monday, and we just need the base to be a monday
-    //HH:MM:SS.000Z for time format, it comes in HHMM format.
-    //2022-06-03T16:00:00.000-07:00
-    const beginHoursMinutes = [
-      beginTime.slice(0, beginTime.length / 2),
-      beginTime.slice(-beginTime.length / 2),
-    ];
-    const endHourMinutes = [
-      endTime.slice(0, endTime.length / 2),
-      endTime.slice(-endTime.length / 2),
-    ];
-
-    const begin =
-      "2022-05-31T" +
-      beginHoursMinutes[0] +
-      ":" +
-      beginHoursMinutes[1] +
-      ":00.000-07:00";
-    const end =
-      "2022-05-31T" + endHourMinutes[0] + ":" + endHourMinutes[1] + ":00.000-07:00";
 
     const startDate = new Date(begin);
     const endDate = new Date(end);
@@ -92,7 +96,7 @@ export const CalendarView = (props: CalendarProps) => {
   //for now just mock one semesters data
   const fallTermData = data.fallTermCourses;
   const appointments = buildAppointments(fallTermData);
-  
+
   //custom stylings to override the DevExtreme stylings
   const css = `
     .dx-scheduler-navigator-previous {  
