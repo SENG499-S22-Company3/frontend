@@ -1,63 +1,8 @@
 import React, { useState } from "react";
 import { Scheduler, Editing } from "devextreme-react/scheduler";
-import { Appointment } from "./Appointment";
-import { Assignment } from "../../stores/schedule";
+import { AppointmentCard } from "./AppointmentCard";
+import { Appointment, Course, ScheduleAssignment } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
-
-//dummy data
-var assignments: Assignment[] = [
-  {
-    course: "SENG 265",
-    startDate: new Date("2022-06-03T16:00:00.000Z"), //for now this isn't used for anything
-    endDate: new Date("2022-06-03T16:50:00.000Z"),
-    beginTime: "16:00:00.000Z", //this isn't the time format we are gonna use, but for now its the best for mock data
-    endTime: "16:50:00.000Z",
-    professor: "Mike Zastre",
-    tuesday: true,
-    wednesday: true,
-    friday: true,
-  },
-  {
-    course: "CSC 320",
-    startDate: new Date("2022-06-03T19:00:00.000Z"),
-    endDate: new Date("2022-06-03T21:20:00.000Z"),
-    beginTime: "19:00:00.000Z",
-    endTime: "21:20:00.000Z",
-    professor: "Valerie King",
-    friday: true,
-  },
-  {
-    course: "CSC 360",
-    startDate: new Date("2022-05-30T16:00:00.000Z"),
-    endDate: new Date("2022-05-30T17:20:00.000Z"),
-    beginTime: "16:00:00.000Z",
-    endTime: "17:20:00.000Z",
-    professor: "David Corless",
-    monday: true,
-    thursday: true,
-  },
-  {
-    course: "ECE 260",
-    startDate: new Date("2022-05-31T21:00:00.000Z"),
-    endDate: new Date("2022-05-31T21:50:00.000Z"),
-    beginTime: "21:00:00.000Z",
-    endTime: "21:50:00.000Z",
-    professor: "Michael Adams",
-    tuesday: true,
-    wednesday: true,
-    friday: true,
-  },
-  {
-    course: "SENG 350",
-    startDate: new Date("2022-05-30T17:30:00.000Z"),
-    endDate: new Date("2022-05-30T18:50:00.000Z"),
-    beginTime: "17:30:00.000Z",
-    endTime: "18:50:00.000Z",
-    professor: "Jens Weber",
-    monday: true,
-    thursday: true,
-  },
-];
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -72,17 +17,40 @@ const getWeekDay = (day: Date) => {
 };
 
 //course assignments that are flagged to be on multiple days should be set for those days
-const splitCourseDays = (assignment: Assignment) => {
-  const { monday, tuesday, wednesday, thursday, friday } = assignment;
+const splitCourseDays = (course: Course) => {
+  const { monday, tuesday, wednesday, thursday, friday, beginTime, endTime } =
+    course.meetingTime;
   const daysArray = [monday, tuesday, wednesday, thursday, friday];
 
+  //2022-05-31T is a monday, and we just need the base to be a monday
+  //HH:MM:SS.000-7:00 for time format, it comes in HHMM format.
+  const beginHoursMinutes = [
+    beginTime.slice(0, beginTime.length / 2),
+    beginTime.slice(-beginTime.length / 2),
+  ];
+  const endHourMinutes = [
+    endTime.slice(0, endTime.length / 2),
+    endTime.slice(-endTime.length / 2),
+  ];
+
+  const begin =
+    "2022-05-31T" +
+    beginHoursMinutes[0] +
+    ":" +
+    beginHoursMinutes[1] +
+    ":00.000-07:00";
+  const end =
+    "2022-05-31T" +
+    endHourMinutes[0] +
+    ":" +
+    endHourMinutes[1] +
+    ":00.000-07:00";
+
   const splitAppointments = daysArray.map((day, index) => {
-    if(!day){
+    if (!day) {
       return null;
     }
-    //2022-05-31T is a monday, and we just need the base to be a monday
-    const begin = "2022-05-31T" + assignment.beginTime;
-    const end = "2022-05-31T" + assignment.endTime;
+
     const startDate = new Date(begin);
     const endDate = new Date(end);
 
@@ -90,25 +58,43 @@ const splitCourseDays = (assignment: Assignment) => {
     startDate.setDate(startDate.getDate() + index - 1);
     endDate.setDate(endDate.getDate() + index - 1);
 
-    const appointment = {
-      ...assignment,
+    const { meetingTime, ...appointment } = {
+      ...course,
       startDate: startDate,
       endDate: endDate,
     };
     return appointment;
   });
-  const validAppointments = splitAppointments.filter((appointment) => appointment !== null) as Assignment[];
+  const validAppointments = splitAppointments.filter(
+    (appointment) => appointment !== null
+  ) as Appointment[];
   return validAppointments;
 };
 
-export const CalendarView = () => {
+//convert Course object data from backend to the structure DevExtreme expects
+const buildAppointments = (courses: Course[]) => {
+  const appointments = courses
+    .flatMap((course) => {
+      const assignedCourses = splitCourseDays(course);
+      return assignedCourses;
+    });
+  return appointments;
+};
+
+interface CalendarProps {
+  data: ScheduleAssignment;
+}
+
+export const CalendarView = (props: CalendarProps) => {
+  const { data } = props;
+
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
   const [viewState, setViewState] = useState("workWeek");
   const weekDay = getWeekDay(currentDate);
 
-  const appointments = assignments
-    .map((assignment) => splitCourseDays(assignment))
-    .flat();
+  //for now just mock one semesters data
+  const fallTermData = data.fallTermCourses;
+  const appointments = buildAppointments(fallTermData);
 
   //custom stylings to override the DevExtreme stylings
   const css = `
@@ -134,7 +120,7 @@ export const CalendarView = () => {
       {/*@ts-ignore*/}
       <Scheduler
         dataSource={appointments}
-        appointmentRender={Appointment}
+        appointmentRender={AppointmentCard}
         customizeDateNavigatorText={(info) => getWeekDay(info.startDate)}
         dateCellTemplate={dateCell}
         timeZone="America/Vancouver"
@@ -144,7 +130,7 @@ export const CalendarView = () => {
         showAllDayPanel={false}
         startDayHour={8}
         endDayHour={22}
-        textExpr="course"
+        textExpr="courseTitle"
         onCurrentViewChange={setViewState}
         onCurrentDateChange={setCurrentDate}
         onCellClick={(cell) => setCurrentDate(cell.cellData.startDate)}
