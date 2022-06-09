@@ -109,8 +109,6 @@ export const NavHeader = () => {
           <Image 
             src="/logo.png" 
             alt="schedulator logo" 
-            height="40px"
-            width="40px"
             minWidth="40px"
             padding="5px" 
           >
