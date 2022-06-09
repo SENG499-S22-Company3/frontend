@@ -10,14 +10,13 @@ export type Appointment = {
   classSize: number; //from algo2
 };
 
-
 //The below types are derived from Algorithm 1's specifications
 export type Assignment = {
   startDate: string; // Follow "yyyy-mm-dd"
   endDate: string; // Follow "yyyy-mm-dd"
   beginTime: string; // Use 24hr "0000" - "2359"
   endTime: string; // Use 24hr "0000" - "2359"
-  hoursWeek: number; 
+  hoursWeek: number;
   sunday: boolean;
   monday: boolean;
   tuesday: boolean;
@@ -26,7 +25,6 @@ export type Assignment = {
   friday: boolean;
   saturday: boolean;
 };
-
 
 export type Course = {
   courseNumber: string;
@@ -42,4 +40,4 @@ export type ScheduleAssignment = {
   fallTermCourses: Course[];
   springTermCourses: Course[];
   summerTermCourses: Course[];
-}
+};
