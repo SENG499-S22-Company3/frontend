@@ -1,4 +1,3 @@
-import { EditIcon } from "@chakra-ui/icons";
 import {
   Modal,
   ModalOverlay,
@@ -9,7 +8,6 @@ import {
   useDisclosure,
   Button,
   Flex,
-  IconButton,
   FormControl,
   FormLabel,
   Input,
