@@ -19,18 +19,22 @@ export const Dashboard = () => {
       <Flex mb={32}>
         <HStack spacing="24px" alignItems="center" justifyContent="center">
 		  <Card
+		    title="Survey Results"
 		    description="View the results of the surveys that professors have submitted"
 		  	navigateTo="/surveyresults"
 			/>
 		  <Card
+		    title="Schedule"
 		  	description="View class schedules"
 		  	navigateTo="/schedule"
 		  />
 		  <Card
+		    title="Generate"
 		    description="Generate a schedule"
 		  	navigateTo="/generate"
 		  />
 		  <Card
+		    title="Profile Management"
 		  	description="Manage profiles of different professors"
 		  	navigateTo="/profileManagement"
 		  />
