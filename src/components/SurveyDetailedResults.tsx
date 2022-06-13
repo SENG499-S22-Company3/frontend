@@ -15,6 +15,7 @@ import {
   Thead,
   Tbody,
   Flex,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 interface ProfessorDetails {
@@ -33,9 +34,13 @@ interface ProfessorDetails {
 
 export const SurveyDetailedResults = (details: ProfessorDetails) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const bg = useColorModeValue("gray.50", "gray.700");
+
   return (
     <>
-      <Button onClick={onOpen} colorScheme='green'>More Details</Button>
+      <Button onClick={onOpen} colorScheme="green">
+        More Details
+      </Button>
       <Modal isOpen={isOpen} size="4xl" onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -43,7 +48,7 @@ export const SurveyDetailedResults = (details: ProfessorDetails) => {
           <ModalCloseButton colorScheme="green" />
           <ModalBody>
             <Flex
-              bg="#212938"
+              bg={bg}
               p={10}
               borderRadius={10}
               flexDir="column"

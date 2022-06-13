@@ -11,6 +11,7 @@ import {
   ListItem,
   List,
   IconButton,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
@@ -110,6 +111,8 @@ export const SurveyResults = () => {
     console.log(item);
   };
 
+  const bg = useColorModeValue("gray.50", "gray.700");
+
   return (
     <Flex
       w="100%"
@@ -122,7 +125,7 @@ export const SurveyResults = () => {
       <Container maxW="container.xl">
         <Heading mb={6}>Professor Preferences Survey Results</Heading>
         <Flex
-          bg="#212938"
+          bg={bg}
           p={10}
           borderRadius={10}
           flexDir="column"
