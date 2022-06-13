@@ -14,6 +14,7 @@ import {
   RadioGroup,
   Stack,
   Radio,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -23,6 +24,8 @@ export const CreateUser = () => {
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
   const [role, setRole] = useState("");
+
+  const bg = useColorModeValue("gray.50", "gray.800");
 
   const createUser = () => {
     //Create User here
@@ -46,7 +49,7 @@ export const CreateUser = () => {
               flexDir="column"
               style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
               mb={5}
-              backgroundColor="gray.800"
+              backgroundColor={bg}
             >
               <FormControl isRequired>
                 <FormLabel htmlFor="name">Name</FormLabel>

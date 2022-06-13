@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Stack,
   Radio,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -32,6 +33,8 @@ export const EditUser = (details: UserInfo) => {
   const [email, setEmail] = useState(details.email);
   const [department, setDepartment] = useState(details.department);
   const [role, setRole] = useState(details.role);
+
+  const bg = useColorModeValue("gray.50", "gray.800");
 
   const onSave = () => {
     //Save info here
@@ -58,7 +61,7 @@ export const EditUser = (details: UserInfo) => {
               flexDir="column"
               style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
               mb={5}
-              backgroundColor="gray.800"
+              backgroundColor={bg}
             >
               <FormControl isRequired>
                 <FormLabel htmlFor="name">Name</FormLabel>
