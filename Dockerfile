@@ -21,7 +21,5 @@ COPY --from=frontendBuilder \
     /workspace/build \
     /usr/share/nginx/html/app
 
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80/tcp
-CMD ["nginx", "-g", "daemon off;"]
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf.template
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
