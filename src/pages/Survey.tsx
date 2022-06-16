@@ -1,29 +1,23 @@
 import {
-  Box,
   Button,
+  Checkbox,
   Container,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
-  Input,
   Radio,
   RadioGroup,
-  Select,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
   Stack,
   Textarea,
-  Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
+import { SurveyCourseList } from "../components/SurveyCourseList";
 
 // these schemas will probably change later, all just example data
 const SUBMIT = gql`
@@ -36,18 +30,37 @@ const SUBMIT = gql`
   }
 `;
 
+interface CourseInterface {
+  subject: string;
+  code: string;
+  term: string;
+  rating: Number;
+}
+
 export const Survey = () => {
-  const [smallText, setSmallText] = useState("");
-  const [largeText, setLargeText] = useState("");
-  const [radioValue, setRadioValue] = useState("");
-  const [selectValue, setSelectValue] = useState("");
-  const [sliderValue, setSliderValue] = useState(100);
-  const [showTooltip, setShowTooltip] = React.useState(false);
+  const sliderValues = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200];
+  const [nonTeachingTerm1, setNonTeachingTerm1] = useState("");
+  const [nonTeachingTerm2, setNonTeachingTerm2] = useState("");
+  const [hasRelief, setHasRelief] = useState(false);
+  const [reliefExplaination, setReliefExplaination] = useState("");
+  const [hasTopic, setHasTopic] = useState(false);
+  const [topicDescription, setTopicDescription] = useState("");
+  const [courseRatings, setCourseRatings] = useState<Array<CourseInterface>>(
+    []
+  );
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
 
   const loginState = useLoginStore();
   const navigate = useNavigate();
+
+  const toggleRelief = () => {
+    setHasRelief(!hasRelief);
+  };
+
+  const toggleTopic = () => {
+    setHasTopic(!hasTopic);
+  };
 
   useEffect(() => {
     if (loginState.loggedIn) {
@@ -64,9 +77,41 @@ export const Survey = () => {
   }, [data, error, loading, navigate]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    submit({ variables: { smallText, radioValue, sliderValue } });
+    submit({ variables: {} });
     e.preventDefault();
   };
+
+  //Check the course rating object, add if rating doesn't exist, update if rating exists
+  const handleCourseChange = (course: CourseInterface, value: Number) => {
+    let found = false;
+
+    const newRatings = courseRatings.map((oldRating) => {
+      if (
+        oldRating.subject === course.subject &&
+        oldRating.code === course.code
+      ) {
+        found = true;
+        return { ...oldRating, rating: value };
+      }
+      return oldRating;
+    });
+
+    if (!found) {
+      setCourseRatings([
+        ...courseRatings,
+        {
+          ...course,
+          rating: value,
+        },
+      ]);
+    } else {
+      setCourseRatings(newRatings);
+    }
+  };
+
+  useEffect(() => {
+    console.log(courseRatings);
+  }, [courseRatings]);
 
   return (
     <Flex
@@ -88,74 +133,70 @@ export const Survey = () => {
         >
           <form onSubmit={onSubmit}>
             <FormControl isRequired>
-              <FormLabel htmlFor="small_text">Small text box sample</FormLabel>
-              <Input
-                id="small_text"
-                type="text"
-                value={smallText}
-                onChange={(e) => setSmallText(e.target.value)}
-                mb={5}
-              />
-              <FormLabel htmlFor="radio">Radio buttons sample</FormLabel>
+              <SurveyCourseList handleCourseChange={handleCourseChange} />
+              <FormLabel htmlFor="nonTeachingTerm1">
+                Non-Teaching Term 1
+              </FormLabel>
               <RadioGroup
-                id="radio"
-                onChange={setRadioValue}
-                value={radioValue}
+                id="nonTeachingTerm1"
+                name="nonTeachingTerm1"
+                onChange={setNonTeachingTerm1}
+                value={nonTeachingTerm1}
                 mb={5}
               >
                 <Stack direction="row">
-                  <Radio value="Willing">Willing</Radio>
-                  <Radio value="Able">Able</Radio>
-                  <Radio value="Not Able">Not able</Radio>
+                  <Radio value="None">None</Radio>
+                  <Radio value="Fall">Fall</Radio>
+                  <Radio value="Spring">Spring</Radio>
+                  <Radio value="Summer">Summer</Radio>
                 </Stack>
               </RadioGroup>
-              <FormLabel htmlFor="slider">Slider sample</FormLabel>
-              <Slider
-                id="slider"
-                colorScheme="green"
-                defaultValue={100}
-                min={0}
-                max={200}
-                step={1}
+              <FormLabel htmlFor="nonTeachingTerm1">
+                Non-Teaching Term 2
+              </FormLabel>
+              <RadioGroup
+                id="nonTeachingTerm2"
+                name="nonTeachingTerm2"
+                onChange={setNonTeachingTerm2}
+                value={nonTeachingTerm2}
                 mb={5}
-                onChange={(v) => setSliderValue(v)}
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
               >
-                <SliderTrack>
-                  <Box position="relative" right={10} />
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <Tooltip
-                  hasArrow
-                  bg="teal.500"
-                  color="white"
-                  placement="top"
-                  isOpen={showTooltip}
-                  label={sliderValue}
-                >
-                  <SliderThumb boxSize={6} />
-                </Tooltip>
-              </Slider>
-              <FormLabel htmlFor="large_text">Large text sample</FormLabel>
+                <Stack direction="row">
+                  <Radio value="None">None</Radio>
+                  <Radio value="Fall">Fall</Radio>
+                  <Radio value="Spring">Spring</Radio>
+                  <Radio value="Summer">Summer</Radio>
+                </Stack>
+              </RadioGroup>
+
+              <FormLabel htmlFor="hasRelief">Relief</FormLabel>
+              <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
+                Has Relief?
+              </Checkbox>
               <Textarea
+                isDisabled={!hasRelief}
                 id="large_text"
-                value={largeText}
-                onChange={(e) => setLargeText(e.target.value)}
+                value={reliefExplaination}
+                placeholder="Relief Explaination"
+                onChange={(e) => setReliefExplaination(e.target.value)}
                 size="sm"
                 mb={5}
               />
-              <FormLabel htmlFor="select">Select sample</FormLabel>
-              <Select
-                id="select"
-                value={selectValue}
+
+              <FormLabel htmlFor="hasRelief">Topics Course?</FormLabel>
+              <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
+                Has Topic?
+              </Checkbox>
+              <Textarea
+                isDisabled={!hasTopic}
+                id="topicDescription"
+                value={topicDescription}
+                placeholder="Topics Course Description"
+                onChange={(e) => setTopicDescription(e.target.value)}
+                size="sm"
                 mb={5}
-                onChange={(e) => setSelectValue(e.target.value)}
-              >
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-              </Select>
+              />
+
               <Button
                 isLoading={loading}
                 type="submit"
