@@ -26,19 +26,14 @@ export const SearchBar = (props: SearchBarProps) => {
     }
 
     //checks if every word of the search exists as an attribute for the course
-    const input = searchInput.toLowerCase().split(" ");
+    const inputWords = searchInput.toLowerCase().split(" ");
     const filteredAppointments = termData.filter(
       ({ meetingTime, ...appointment }) => {
         let appointmentValues = "";
         Object.values(appointment).forEach(
           (value) => (appointmentValues += value.toLowerCase())
         );
-        for (const word of input) {
-          if (!appointmentValues.includes(word)) {
-            return false;
-          }
-        }
-        return true;
+        return inputWords.every((word) => appointmentValues.includes(word));
       }
     );
     setFiltered(searchInput);
