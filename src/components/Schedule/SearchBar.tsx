@@ -22,7 +22,8 @@ export const SearchBar = (props: SearchBarProps) => {
   const filterCourses = (clear?: boolean) => {
     if (searchInput === "" || clear) {
       setFiltered("");
-      return setScheduleData(termData);
+      setScheduleData(termData);
+      return;
     }
 
     //checks if every word of the search exists as an attribute for the course
