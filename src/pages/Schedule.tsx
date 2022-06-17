@@ -7,6 +7,8 @@ import { useLoginStore } from "../stores/login";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
 import mockData from "../mockData.json";
+import { Course } from "../stores/schedule";
+import { SearchBar } from "../components/Schedule/SearchBar";
 
 // These schemas will probably change later, all just example data
 const SUBMIT = gql`
@@ -26,6 +28,9 @@ enum ViewTypes {
 
 export const Schedule = () => {
   const [viewState, setViewState] = useState(ViewTypes.table);
+  const [scheduleData, setScheduleData] = useState<Course[]>(
+    mockData.fallTermCourses
+  );
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
 
   const loginState = useLoginStore();
@@ -59,7 +64,7 @@ export const Schedule = () => {
         <Flex alignItems="center" justifyContent="space-between" mb={5}>
           <Select
             id="select"
-            w="160px"
+            w="16rem"
             value={viewState}
             onChange={(e) =>
               e.target.value === "table"
@@ -70,7 +75,10 @@ export const Schedule = () => {
             <option value="table">Table View</option>
             <option value="calendar">Calendar View</option>
           </Select>
-
+          <SearchBar
+            termData={mockData.fallTermCourses}
+            setScheduleData={setScheduleData}
+          />
           <Button
             w="300px"
             as={Link}
@@ -91,7 +99,7 @@ export const Schedule = () => {
           <>
             {viewState === ViewTypes.table && <TableView />}
             {viewState === ViewTypes.calendar && (
-              <CalendarView data={mockData} />
+              <CalendarView data={scheduleData} />
             )}
           </>
         </Flex>
