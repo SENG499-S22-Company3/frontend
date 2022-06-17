@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Flex, Select, Heading } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Select,
+  Heading,
+  Input,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
@@ -7,6 +14,7 @@ import { useLoginStore } from "../stores/login";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
 import mockData from "../mockData.json";
+import { Course } from "../stores/schedule";
 
 // These schemas will probably change later, all just example data
 const SUBMIT = gql`
@@ -26,10 +34,36 @@ enum ViewTypes {
 
 export const Schedule = () => {
   const [viewState, setViewState] = useState(ViewTypes.table);
+  const [scheduleState, setScheduleState] = useState<Course[]>(
+    mockData.fallTermCourses
+  );
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
 
   const loginState = useLoginStore();
   const navigate = useNavigate();
+
+  const filterCourses = (inputValue: String) => {
+    if (inputValue === "") {
+      return;
+    }
+
+    const input = inputValue.toLowerCase().split(" ");
+    const filteredAppointments = mockData.fallTermCourses.filter(
+      ({ meetingTime, ...appointment }) => {
+        let appointmentValues = "";
+        for (const value of Object.values(appointment)) {
+          appointmentValues += value.toLowerCase();
+        }
+        for (const word of input) {
+          if (!appointmentValues.includes(word)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    );
+    setScheduleState(filteredAppointments);
+  };
 
   useEffect(() => {
     if (loginState.loggedIn) {
@@ -59,7 +93,7 @@ export const Schedule = () => {
         <Flex alignItems="center" justifyContent="space-between" mb={5}>
           <Select
             id="select"
-            w="160px"
+            w="16rem"
             value={viewState}
             onChange={(e) =>
               e.target.value === "table"
@@ -70,7 +104,11 @@ export const Schedule = () => {
             <option value="table">Table View</option>
             <option value="calendar">Calendar View</option>
           </Select>
-
+          <Input
+            placeholder="Search"
+            marginX="2rem"
+            onChange={(e) => filterCourses(e.target.value)}
+          />
           <Button
             w="300px"
             as={Link}
@@ -91,7 +129,7 @@ export const Schedule = () => {
           <>
             {viewState === ViewTypes.table && <TableView />}
             {viewState === ViewTypes.calendar && (
-              <CalendarView data={mockData} />
+              <CalendarView data={scheduleState} />
             )}
           </>
         </Flex>

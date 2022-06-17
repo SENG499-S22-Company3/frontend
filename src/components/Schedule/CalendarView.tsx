@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Scheduler, Editing } from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
-import { Appointment, Course, ScheduleAssignment } from "../../stores/schedule";
+import { Appointment, Course } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
 
 //make column headers only the weekday
@@ -73,16 +73,15 @@ const splitCourseDays = (course: Course) => {
 
 //convert Course object data from backend to the structure DevExtreme expects
 const buildAppointments = (courses: Course[]) => {
-  const appointments = courses
-    .flatMap((course) => {
-      const assignedCourses = splitCourseDays(course);
-      return assignedCourses;
-    });
+  const appointments = courses.flatMap((course) => {
+    const assignedCourses = splitCourseDays(course);
+    return assignedCourses;
+  });
   return appointments;
 };
 
 interface CalendarProps {
-  data: ScheduleAssignment;
+  data: Course[];
 }
 
 export const CalendarView = (props: CalendarProps) => {
@@ -90,11 +89,11 @@ export const CalendarView = (props: CalendarProps) => {
 
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
   const [viewState, setViewState] = useState("workWeek");
+
   const weekDay = getWeekDay(currentDate);
 
   //for now just mock one semesters data
-  const fallTermData = data.fallTermCourses;
-  const appointments = buildAppointments(fallTermData);
+  const appointments = buildAppointments(data);
 
   //custom stylings to override the DevExtreme stylings
   const css = `
