@@ -33,15 +33,17 @@ interface PreferenceInterface {
   willing: string;
 }
 
+interface PreferenceListInterface {
+  [key: string]: PreferenceInterface;
+}
+
 interface ChildProps {
   handleCourseChange(course: CourseInterface, value: number): void;
 }
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES, {});
-  const [preferences, setPreferences] = useState<Array<PreferenceInterface>>(
-    []
-  );
+  const [preferences, setPreferences] = useState<PreferenceListInterface>({});
 
   useEffect(() => {
     if (typeof error != "undefined") {
@@ -69,129 +71,103 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     }
   };
 
-  const handleAbleChange = (course: PreferenceInterface, value: string) => {
-    let found = false;
-
-    const newPreferences = preferences.map((oldPreference) => {
-      if (
-        oldPreference.subject === course.subject &&
-        oldPreference.code === course.code
-      ) {
-        found = true;
-        props.handleCourseChange(
-          {
-            subject: oldPreference.subject,
-            code: oldPreference.code,
-            term: oldPreference.term,
-            rating: 0,
-          },
-          calculateRating(value, oldPreference.willing)
-        );
-        return { ...oldPreference, able: value };
+  const handleChange = (
+    course: PreferenceInterface,
+    changeType: string,
+    value: string
+  ) => {
+    let newPreferences = preferences;
+    let unique_id = course.subject.concat(course.code);
+    if (changeType === "Able") {
+      if (unique_id in newPreferences) {
+        newPreferences[unique_id] = {
+          ...newPreferences[unique_id],
+          able: value,
+        };
       } else {
-        return oldPreference;
-      }
-    });
-    if (!found) {
-      setPreferences([
-        ...preferences,
-        {
-          ...course,
+        newPreferences[unique_id] = {
+          subject: course.subject,
+          code: course.code,
+          term: course.term,
           able: value,
           willing: "",
-        },
-      ]);
-    } else {
-      setPreferences(newPreferences);
-    }
-  };
-
-  const handleWillingChange = (course: PreferenceInterface, value: string) => {
-    let found = false;
-
-    const newPreferences = preferences.map((oldPreference) => {
-      if (
-        oldPreference.subject === course.subject &&
-        oldPreference.code === course.code
-      ) {
-        found = true;
-        props.handleCourseChange(
-          {
-            subject: oldPreference.subject,
-            code: oldPreference.code,
-            term: oldPreference.term,
-            rating: 0,
-          },
-          calculateRating(oldPreference.able, value)
-        );
-        return { ...oldPreference, willing: value };
-      } else {
-        return oldPreference;
+        };
       }
-    });
-    if (!found) {
-      setPreferences([
-        ...preferences,
-        {
-          ...course,
+    } else {
+      if (unique_id in newPreferences) {
+        newPreferences[unique_id] = {
+          ...newPreferences[unique_id],
+          willing: value,
+        };
+      } else {
+        newPreferences[unique_id] = {
+          subject: course.subject,
+          code: course.code,
+          term: course.term,
           able: "",
           willing: value,
-        },
-      ]);
-    } else {
-      setPreferences(newPreferences);
+        };
+      }
     }
+    setPreferences(newPreferences);
+    props.handleCourseChange(
+      {
+        subject: course.subject,
+        code: course.code,
+        term: course.term,
+        rating: 0,
+      },
+      calculateRating(
+        newPreferences[unique_id].able,
+        newPreferences[unique_id].willing
+      )
+    );
   };
 
-  return (
-    <>
-      {loading ? (
-        <>Loading</>
-      ) : (
-        data.survey.courses.map(
-          (course: PreferenceInterface, index: number) => (
-            <Flex key={"course-" + index} w="full" mb={2}>
-              <Grid templateColumns="repeat(3,1fr)" gap={3}>
-                <GridItem colSpan={3}>
-                  <Heading size="sm">
-                    {course.subject} {course.code}
-                  </Heading>
-                </GridItem>
-                <GridItem>
-                  <FormLabel htmlFor="canTeach">Can Teach?</FormLabel>
-                  <RadioGroup
-                    id="canTeach"
-                    onChange={(v) => handleAbleChange(course, v)}
-                  >
-                    <Stack direction="row">
-                      <Radio value="Able">Able</Radio>
-                      <Radio value="With Effort">With Effort</Radio>
-                    </Stack>
-                  </RadioGroup>
-                </GridItem>
-                <GridItem>
-                  <FormLabel htmlFor="willingTeach">
-                    Willing to Teach?
-                  </FormLabel>
-                  <RadioGroup
-                    id="willingTeach"
-                    onChange={(v) => handleWillingChange(course, v)}
-                  >
-                    <Stack direction="row">
-                      <Radio value="Unwilling">Unwilling</Radio>
-                      <Radio value="Willing">Willing</Radio>
-                      <Radio value="Very Willing">Very Willing</Radio>
-                    </Stack>
-                  </RadioGroup>
-                </GridItem>
-                <GridItem colSpan={3}>
-                  <Divider mt={2} mb={2} />
-                </GridItem>
-              </Grid>
-            </Flex>
-          )
-        )
-      )}
-    </>
-  );
+  if (loading) {
+    return <>Loading</>;
+  } else if (!data) {
+    return <>Failed to course fetch data</>;
+  } else
+    return data.survey.courses.map(
+      (course: PreferenceInterface, index: number) => (
+        <Flex key={"course-" + index} w="full" mb={2}>
+          <Grid templateColumns="repeat(3,1fr)" gap={3}>
+            <GridItem colSpan={3}>
+              <Heading size="sm">
+                {course.subject} {course.code}
+              </Heading>
+            </GridItem>
+            <GridItem>
+              <FormLabel htmlFor="canTeach">Can Teach?</FormLabel>
+              <RadioGroup
+                id="canTeach"
+                onChange={(v) => handleChange(course, "Able", v)}
+              >
+                <Stack direction="row">
+                  <Radio value="Able">Able</Radio>
+                  <Radio value="With Effort">With Effort</Radio>
+                </Stack>
+              </RadioGroup>
+            </GridItem>
+            <GridItem>
+              <FormLabel htmlFor="willingTeach">Willing to Teach?</FormLabel>
+              <RadioGroup
+                id="willingTeach"
+                onChange={(v) => handleChange(course, "Willingness", v)}
+              >
+                <Stack direction="row">
+                  <Radio value="Unwilling">Unwilling</Radio>
+                  <Radio value="Willing">Willing</Radio>
+                  <Radio value="Very Willing">Very Willing</Radio>
+                </Stack>
+              </RadioGroup>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Divider mt={2} mb={2} />
+            </GridItem>
+          </Grid>
+        </Flex>
+      )
+    );
 };

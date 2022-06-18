@@ -38,6 +38,10 @@ export interface CourseInterface {
   rating: number;
 }
 
+interface CourseListInterface {
+  [key: string]: CourseInterface;
+}
+
 export const Survey = () => {
   const [nonTeachingTerm1, setNonTeachingTerm1] = useState("");
   const [nonTeachingTerm2, setNonTeachingTerm2] = useState("");
@@ -45,9 +49,8 @@ export const Survey = () => {
   const [reliefExplaination, setReliefExplaination] = useState("");
   const [hasTopic, setHasTopic] = useState(false);
   const [topicDescription, setTopicDescription] = useState("");
-  const [courseRatings, setCourseRatings] = useState<Array<CourseInterface>>(
-    []
-  );
+  const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
+
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
 
@@ -77,41 +80,19 @@ export const Survey = () => {
   }, [data, error, loading, navigate]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    submit({ variables: {} });
+    submit({ variables: { courseRatings } });
     e.preventDefault();
   };
 
-  //Check the course rating object, add if rating doesn't exist, update if rating exists
   const handleCourseChange = (course: CourseInterface, value: number) => {
-    let found = false;
-
-    const newRatings = courseRatings.map((oldRating) => {
-      if (
-        oldRating.subject === course.subject &&
-        oldRating.code === course.code
-      ) {
-        found = true;
-        return { ...oldRating, rating: value };
-      }
-      return oldRating;
-    });
-
-    if (!found) {
-      setCourseRatings([
-        ...courseRatings,
-        {
-          ...course,
-          rating: value,
-        },
-      ]);
-    } else {
-      setCourseRatings(newRatings);
-    }
+    let newRating = courseRatings;
+    let unique_id = course.subject.concat(course.code);
+    newRating[unique_id] = {
+      ...course,
+      rating: value,
+    };
+    setCourseRatings(newRating);
   };
-
-  // useEffect(() => {
-  //   console.log(courseRatings);
-  // }, [courseRatings]);
 
   return (
     <Flex
@@ -132,7 +113,7 @@ export const Survey = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
           <form onSubmit={onSubmit}>
-            <FormControl isRequired>
+            <FormControl>
               <Heading size="lg">Course Preferences</Heading>
               <Divider mt={2} mb={2} />
               <SurveyCourseList handleCourseChange={handleCourseChange} />
