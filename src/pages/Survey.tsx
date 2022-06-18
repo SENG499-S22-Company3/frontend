@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Divider,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -15,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
 import { SurveyCourseList } from "../components/SurveyCourseList";
 
@@ -30,15 +31,14 @@ const SUBMIT = gql`
   }
 `;
 
-interface CourseInterface {
+export interface CourseInterface {
   subject: string;
   code: string;
   term: string;
-  rating: Number;
+  rating: number;
 }
 
 export const Survey = () => {
-  const sliderValues = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200];
   const [nonTeachingTerm1, setNonTeachingTerm1] = useState("");
   const [nonTeachingTerm2, setNonTeachingTerm2] = useState("");
   const [hasRelief, setHasRelief] = useState(false);
@@ -82,7 +82,7 @@ export const Survey = () => {
   };
 
   //Check the course rating object, add if rating doesn't exist, update if rating exists
-  const handleCourseChange = (course: CourseInterface, value: Number) => {
+  const handleCourseChange = (course: CourseInterface, value: number) => {
     let found = false;
 
     const newRatings = courseRatings.map((oldRating) => {
@@ -109,9 +109,9 @@ export const Survey = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(courseRatings);
-  }, [courseRatings]);
+  // useEffect(() => {
+  //   console.log(courseRatings);
+  // }, [courseRatings]);
 
   return (
     <Flex
@@ -133,7 +133,11 @@ export const Survey = () => {
         >
           <form onSubmit={onSubmit}>
             <FormControl isRequired>
+              <Heading size="lg">Course Preferences</Heading>
+              <Divider mt={2} mb={2} />
               <SurveyCourseList handleCourseChange={handleCourseChange} />
+              <Heading size="lg">Other Preferences</Heading>
+              <Divider mt={2} mb={2} />
               <FormLabel htmlFor="nonTeachingTerm1">
                 Non-Teaching Term 1
               </FormLabel>
@@ -142,7 +146,6 @@ export const Survey = () => {
                 name="nonTeachingTerm1"
                 onChange={setNonTeachingTerm1}
                 value={nonTeachingTerm1}
-                mb={5}
               >
                 <Stack direction="row">
                   <Radio value="None">None</Radio>
@@ -151,6 +154,7 @@ export const Survey = () => {
                   <Radio value="Summer">Summer</Radio>
                 </Stack>
               </RadioGroup>
+              <Divider mt={2} mb={2} />
               <FormLabel htmlFor="nonTeachingTerm1">
                 Non-Teaching Term 2
               </FormLabel>
@@ -159,7 +163,6 @@ export const Survey = () => {
                 name="nonTeachingTerm2"
                 onChange={setNonTeachingTerm2}
                 value={nonTeachingTerm2}
-                mb={5}
               >
                 <Stack direction="row">
                   <Radio value="None">None</Radio>
@@ -168,7 +171,7 @@ export const Survey = () => {
                   <Radio value="Summer">Summer</Radio>
                 </Stack>
               </RadioGroup>
-
+              <Divider mt={2} mb={2} />
               <FormLabel htmlFor="hasRelief">Relief</FormLabel>
               <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
                 Has Relief?
@@ -180,10 +183,9 @@ export const Survey = () => {
                 placeholder="Relief Explaination"
                 onChange={(e) => setReliefExplaination(e.target.value)}
                 size="sm"
-                mb={5}
               />
-
-              <FormLabel htmlFor="hasRelief">Topics Course?</FormLabel>
+              <Divider mt={4} mb={2} />
+              <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
               <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
                 Has Topic?
               </Checkbox>
