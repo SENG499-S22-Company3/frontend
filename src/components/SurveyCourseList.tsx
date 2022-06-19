@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { CourseInterface } from "../pages/Survey";
+import { calculateCourseRating } from "../utils/calculateCourseRating";
 
 const COURSES = gql`
   query GetCourses {
@@ -44,32 +45,6 @@ interface ChildProps {
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES, {});
   const [preferences, setPreferences] = useState<PreferenceListInterface>({});
-
-  useEffect(() => {
-    if (typeof error != "undefined") {
-      console.log(error);
-    }
-  }, [error]);
-
-  useEffect(() => {}, []);
-
-  const calculateRating = (able: string, willing: string) => {
-    if (able === "With Effort" && willing === "Unwilling") {
-      return 20;
-    } else if (able === "Able" && willing === "Unwilling") {
-      return 39;
-    } else if (able === "With Effort" && willing === "Willing") {
-      return 40;
-    } else if (able === "Able" && willing === "Willing") {
-      return 78;
-    } else if (able === "With Effort" && willing === "Very Willing") {
-      return 100;
-    } else if (able === "Able" && willing === "Very Willing") {
-      return 195;
-    } else {
-      return 0;
-    }
-  };
 
   const handleChange = (
     course: PreferenceInterface,
@@ -117,7 +92,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
         term: course.term,
         rating: 0,
       },
-      calculateRating(
+      calculateCourseRating(
         newPreferences[unique_id].able,
         newPreferences[unique_id].willing
       )
@@ -126,7 +101,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
 
   if (loading) {
     return <>Loading</>;
-  } else if (!data) {
+  } else if (!data || error) {
     return <>Failed to course fetch data</>;
   } else
     return data.survey.courses.map(
