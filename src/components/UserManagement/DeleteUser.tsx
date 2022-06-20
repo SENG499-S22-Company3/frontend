@@ -39,7 +39,7 @@ export const DeleteUser = (details: UserInfo) => {
         <ModalOverlay />
         <ModalContent textAlign="center" pb={5}>
           <ModalHeader mt={5}>
-            Are you Sure you want to delete <br/>'{details.name}'?
+            Are you Sure you want to delete <br />'{details.name}'?
           </ModalHeader>
           <ModalCloseButton colorScheme="green" />
           <ModalBody>
