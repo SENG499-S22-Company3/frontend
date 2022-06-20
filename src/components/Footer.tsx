@@ -13,15 +13,15 @@ import {
     return (
       <Flex
         w="100vw"
-        h="20px"
+        h="40px"
         position="fixed"
         bottom= "0px"
         bg={bg}
         alignItems="center"
         justifyContent="space-between"
-        px={3}
+        px={5}
       >
-        <Box mr="15px" h="60px" objectFit="contain" >
+        <Box h="40px" objectFit="contain" >
           <Image
             src={`${process.env.PUBLIC_URL}/uviclogo.svg`}
             alt="uvic logo"
@@ -31,19 +31,19 @@ import {
           </Image>
         </Box>
         <Text
-          mr="10px"
         >
           Made by SENG 499 students in Company 3 at the University of Victoria during summer 2022. 
-          <a 
+          
+        </Text>
+        <a 
             href="https://github.com/SENG499-S22-Company3"
-          >
+        >
             <b 
               title="View Source Code on GitHub"
             >
-              GitHub
+              View code on GitHub
             </b>
-          </a>
-        </Text>
+        </a>
         
       </Flex>
     );
