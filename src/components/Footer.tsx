@@ -25,6 +25,7 @@ import {
           <Image
             src={`${process.env.PUBLIC_URL}/uviclogo.svg`}
             alt="uvic logo"
+            padding="5px"
             h="40px"
             minWidth="40px"
           >
@@ -33,7 +34,6 @@ import {
         <Text
         >
           Made by SENG 499 students in Company 3 at the University of Victoria during summer 2022. 
-          
         </Text>
         <a 
             href="https://github.com/SENG499-S22-Company3"
