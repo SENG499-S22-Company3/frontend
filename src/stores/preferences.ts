@@ -1,8 +1,9 @@
-import { Course } from "./schedule";
+import { CourseSection } from "./schedule";
 
+//This is pretty deprecated and not very useful, the GraphQL schema is completely different than this.
 export type Professor = {
   preferences: Preference[];
-  coursesCanTeach: Course[];
+  coursesCanTeach: CourseSection[];
   displayName: string;
   teachingStatus: string;
   requiredEquipment: string;
@@ -13,6 +14,6 @@ export type Professor = {
 };
 
 export type Preference = {
-  course: Course;
+  course: CourseSection;
   preferenceNum: number;
 };

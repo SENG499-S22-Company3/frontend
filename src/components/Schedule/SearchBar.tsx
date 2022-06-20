@@ -6,11 +6,11 @@ import {
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
-import { Course } from "../../stores/schedule";
+import { CourseSection } from "../../stores/schedule";
 
 interface SearchBarProps {
-  termData: Course[];
-  setScheduleData: (data: Course[]) => void;
+  termData: CourseSection[];
+  setScheduleData: (data: CourseSection[]) => void;
 }
 
 export const SearchBar = (props: SearchBarProps) => {
@@ -28,15 +28,18 @@ export const SearchBar = (props: SearchBarProps) => {
 
     //checks if every word of the search exists as an attribute for the course
     const inputWords = searchInput.toLowerCase().split(" ");
-    const filteredAppointments = termData.filter(
-      ({ meetingTime, ...appointment }) => {
-        let appointmentValues = "";
-        Object.values(appointment).forEach(
-          (value) => (appointmentValues += value.toLowerCase())
-        );
-        return inputWords.every((word) => appointmentValues.includes(word));
-      }
-    );
+    const filteredAppointments = termData.filter((course) => {
+      const courseProperties = Object.values(course.CourseID);
+      const courseProfessors = course.professors.map(
+        (prof) => prof.username //TO-DO change to displayName, once it's in the schema
+      );
+
+      let appointmentValues = "";
+      [...courseProperties, ...courseProfessors].forEach(
+        (value) => (appointmentValues += value.toLowerCase())
+      );
+      return inputWords.every((word) => appointmentValues.includes(word));
+    });
     setFiltered(searchInput);
     setScheduleData(filteredAppointments);
   };

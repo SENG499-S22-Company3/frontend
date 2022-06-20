@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Flex, Select, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useLoginStore } from "../stores/login";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
-import mockData from "../mockData.json";
-import { Course } from "../stores/schedule";
+import { CourseSection } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 
 // These schemas will probably change later, all just example data
@@ -21,17 +20,45 @@ const SUBMIT = gql`
   }
 `;
 
+//TO-DO: query for a specific term (fall, spring, summer)
+const COURSES = gql`
+  query GetCourses {
+    courses {
+      CourseID {
+        subject
+        code
+        term
+      }
+      capacity
+      professors {
+        username
+      }
+      startDate
+      endDate
+      meetingTimes {
+        day
+        startTime
+        endTime
+      }
+    }
+  }
+`;
+
 enum ViewTypes {
   table = "table",
   calendar = "calendar",
 }
 
 export const Schedule = () => {
-  const [viewState, setViewState] = useState(ViewTypes.table);
-  const [scheduleData, setScheduleData] = useState<Course[]>(
-    mockData.fallTermCourses
-  );
   const [submit, { data, loading, error }] = useMutation(SUBMIT);
+  const {
+    data: baseScheduleData,
+    loading: scheduleLoading,
+    error: scheduleError,
+  } = useQuery(COURSES, {});
+
+  const [viewState, setViewState] = useState(ViewTypes.table);
+  const [scheduleData, setScheduleData] = useState<CourseSection[]>();
 
   const loginState = useLoginStore();
   const navigate = useNavigate();
@@ -49,6 +76,12 @@ export const Schedule = () => {
       navigate("/");
     }
   }, [data, error, loading, navigate]);
+
+  useEffect(() => {
+    if (baseScheduleData && !scheduleError && !scheduleLoading) {
+      setScheduleData(baseScheduleData.courses);
+    }
+  }, [baseScheduleData, scheduleError, scheduleLoading]);
 
   return (
     <Flex
@@ -75,10 +108,12 @@ export const Schedule = () => {
             <option value="table">Table View</option>
             <option value="calendar">Calendar View</option>
           </Select>
-          <SearchBar
-            termData={mockData.fallTermCourses}
-            setScheduleData={setScheduleData}
-          />
+          {!scheduleLoading && (
+            <SearchBar
+              termData={baseScheduleData.courses}
+              setScheduleData={setScheduleData}
+            />
+          )}
           <Button
             w="300px"
             as={Link}
@@ -98,7 +133,7 @@ export const Schedule = () => {
         >
           <>
             {viewState === ViewTypes.table && <TableView />}
-            {viewState === ViewTypes.calendar && (
+            {viewState === ViewTypes.calendar && scheduleData && (
               <CalendarView data={scheduleData} />
             )}
           </>

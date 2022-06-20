@@ -1,3 +1,5 @@
+import { User } from "./login";
+
 //this is the type that devExtreme expects
 export type Appointment = {
   startDate: Date; //both day and time
@@ -5,39 +7,50 @@ export type Appointment = {
   courseTitle: string;
   courseNumber: string;
   subject: string;
-  sequenceNumber: string;
-  prof: string;
+  section: string;
+  prof: string[];
   classSize: number; //from algo2
 };
 
-//The below types are derived from Algorithm 1's specifications
-export type Assignment = {
-  startDate: string; // Follow "yyyy-mm-dd"
-  endDate: string; // Follow "yyyy-mm-dd"
-  beginTime: string; // Use 24hr "0000" - "2359"
-  endTime: string; // Use 24hr "0000" - "2359"
-  hoursWeek: number;
-  sunday: boolean;
-  monday: boolean;
-  tuesday: boolean;
-  wednesday: boolean;
-  thursday: boolean;
-  friday: boolean;
-  saturday: boolean;
+//from backends GraphQL schema
+
+export type Schedule = {
+  id: string;
+  year: number;
+  createdAt: Date;
+  courses: CourseSection[];
 };
 
-export type Course = {
-  courseNumber: string;
+export type CourseSection = {
+  CourseID: CourseID;
+  hoursPerWeek: number;
+  capacity: number;
+  professors: User[];
+  startDate: Date;
+  endDate: Date;
+  meetingTimes: MeetingTime[];
+};
+
+export type CourseID = {
+  code: string;
   subject: string;
-  sequenceNumber: string; //eg. A01
-  courseTitle: string;
-  prof: string;
-  meetingTime: Assignment;
+  term: string;
+  title: string; //not currently in schema
+  section: string; //not currently in schema
 };
 
-//from algorithm one we will be getting a Schedule object
-export type ScheduleAssignment = {
-  fallTermCourses: Course[];
-  springTermCourses: Course[];
-  summerTermCourses: Course[];
+export type MeetingTime = {
+  day: Day;
+  startTime: String; //Schema has this as Date, but shouldn't this be string??
+  endTime: String; //Schema has this as Date, but shouldn't this be string??
 };
+
+export enum Day {
+  MONDAY = "MONDAY",
+  TUESDAY = "TUESDAY",
+  WEDNESDAY = "WEDNESDAY",
+  THURSDAY = "THURSDAY",
+  FRIDAY = "FRIDAY",
+  SATURDAY = "SATURDAY",
+  SUNDAY = "SUNDAY",
+}

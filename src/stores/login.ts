@@ -5,6 +5,7 @@ export type User = {
   name: string;
   email: string;
   roles: string[];
+  displayName: string; //not currently in schema
 };
 
 export type LoginStore = {

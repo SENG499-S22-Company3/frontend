@@ -16,10 +16,12 @@ export const AppointmentCard = (model: appointmentModel) => {
         <Text fontWeight="bold">
           {courseData.subject} {courseData.courseNumber}
         </Text>
-        <Text>{courseData.sequenceNumber}</Text>
+        <Text>{courseData.section}</Text>
       </Flex>
       <Text fontWeight="bold">{courseData.courseTitle}</Text>
-      <Text>{courseData.prof}</Text>
+      {courseData.prof.map((profName, idx) => (
+        <Text key={idx}>{profName}</Text>
+      ))}
       <Text>
         {formatDate(courseData.startDate, "shortTime")}
         {" - "}
