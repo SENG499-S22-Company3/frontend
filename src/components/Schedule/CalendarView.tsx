@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Scheduler, Editing } from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
-import { Appointment, Course } from "../../stores/schedule";
+import { Appointment, CourseSection } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
+import { weekdayToInt } from "../../utils/weekdayToInt";
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -17,71 +18,78 @@ const getWeekDay = (day: Date) => {
 };
 
 //course assignments that are flagged to be on multiple days should be set for those days
-const splitCourseDays = (course: Course) => {
-  const { monday, tuesday, wednesday, thursday, friday, beginTime, endTime } =
-    course.meetingTime;
-  const daysArray = [monday, tuesday, wednesday, thursday, friday];
+const splitCourseDays = (course: CourseSection) => {
+  const splitDays = course.meetingTimes.map((meetingTime) => {
+    const { startTime, endTime, day } = meetingTime;
 
-  //2022-05-31T is a monday, and we just need the base to be a monday
-  //HH:MM:SS.000-7:00 for time format, it comes in HHMM format.
-  const beginHoursMinutes = [
-    beginTime.slice(0, beginTime.length / 2),
-    beginTime.slice(-beginTime.length / 2),
-  ];
-  const endHourMinutes = [
-    endTime.slice(0, endTime.length / 2),
-    endTime.slice(-endTime.length / 2),
-  ];
+    //2022-05-31T is a monday, and we just need the base to be a monday
+    //HH:MM:SS.000-7:00 for time format, it comes in HHMM format.
+    const beginHoursMinutes = [
+      startTime.slice(0, startTime.length / 2),
+      startTime.slice(-startTime.length / 2),
+    ];
+    const endHourMinutes = [
+      endTime.slice(0, endTime.length / 2),
+      endTime.slice(-endTime.length / 2),
+    ];
 
-  const begin =
-    "2022-05-31T" +
-    beginHoursMinutes[0] +
-    ":" +
-    beginHoursMinutes[1] +
-    ":00.000-07:00";
-  const end =
-    "2022-05-31T" +
-    endHourMinutes[0] +
-    ":" +
-    endHourMinutes[1] +
-    ":00.000-07:00";
+    const start =
+      "2022-05-31T" +
+      beginHoursMinutes[0] +
+      ":" +
+      beginHoursMinutes[1] +
+      ":00.000-07:00";
+    const end =
+      "2022-05-31T" +
+      endHourMinutes[0] +
+      ":" +
+      endHourMinutes[1] +
+      ":00.000-07:00";
 
-  const splitAppointments = daysArray.map((day, index) => {
-    if (!day) {
-      return null;
-    }
-
-    const startDate = new Date(begin);
+    const startDate = new Date(start);
     const endDate = new Date(end);
 
     //change the date based on what day of the week it's supposed to be
-    startDate.setDate(startDate.getDate() + index - 1);
-    endDate.setDate(endDate.getDate() + index - 1);
+    const dayShift = weekdayToInt(day);
+    startDate.setDate(startDate.getDate() + dayShift - 1);
+    endDate.setDate(endDate.getDate() + dayShift - 1);
 
-    const { meetingTime, ...appointment } = {
-      ...course,
+    const meetingDays = {
       startDate: startDate,
       endDate: endDate,
     };
-    return appointment;
+
+    return meetingDays;
   });
-  const validAppointments = splitAppointments.filter(
-    (appointment) => appointment !== null
-  ) as Appointment[];
-  return validAppointments;
+
+  return splitDays;
 };
 
 //convert Course object data from backend to the structure DevExtreme expects
-const buildAppointments = (courses: Course[]) => {
+const buildAppointments = (courses: CourseSection[]) => {
   const appointments = courses.flatMap((course) => {
-    const assignedCourses = splitCourseDays(course);
+    const professors = course.professors.map((prof) => prof.username); //TO-DO switch to displayName, when its in schema
+
+    const assignedCourses = splitCourseDays(course).map((meetingTime) => {
+      return {
+        courseTitle: course.CourseID.code, //not in schema yet
+        courseNumber: course.CourseID.code,
+        subject: course.CourseID.subject,
+        section: "TEMP_SECTION", //not in schema yet
+        prof: professors,
+        classSize: course.capacity,
+        startDate: meetingTime.startDate,
+        endDate: meetingTime.endDate,
+      } as Appointment;
+    });
+
     return assignedCourses;
   });
   return appointments;
 };
 
 interface CalendarProps {
-  data: Course[];
+  data: CourseSection[];
 }
 
 export const CalendarView = (props: CalendarProps) => {

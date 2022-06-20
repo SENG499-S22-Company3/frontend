@@ -1,7 +1,6 @@
 import { Day } from "../stores/schedule";
 
 export const weekdayToInt = (dayOfWeek: Day) => {
-  console.log(dayOfWeek);
   if (dayOfWeek === Day.MONDAY) {
     return 0;
   }
