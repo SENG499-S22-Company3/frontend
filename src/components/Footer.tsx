@@ -6,19 +6,8 @@ import {
     useColorModeValue,
   } from "@chakra-ui/react";
 
-  import { useLoginStore, LoginStore } from "../stores/login";
-  import { gql, useMutation } from "@apollo/client";
-  
-  const LOGOUT = gql`
-    mutation Logout {
-      logout {
-        success
-      }
-    }
-  `;
   
   export const Footer = () => {
-    const loginState = useLoginStore();
     const bg = useColorModeValue("gray.100", "gray.700");
   
     return (
@@ -41,8 +30,19 @@ import {
           >
           </Image>
         </Box>
-        <Text>
-            Made by SENG 499 students in Company 3 at the University of Victoria during summer 2022. <a href="https://github.com/SENG499-S22-Company3"><b title="View Source Code on GitHub">GitHub</b></a>
+        <Text
+          mr="10px"
+        >
+          Made by SENG 499 students in Company 3 at the University of Victoria during summer 2022. 
+          <a 
+            href="https://github.com/SENG499-S22-Company3"
+          >
+            <b 
+              title="View Source Code on GitHub"
+            >
+              GitHub
+            </b>
+          </a>
         </Text>
         
       </Flex>
