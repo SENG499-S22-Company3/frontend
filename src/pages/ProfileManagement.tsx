@@ -53,7 +53,7 @@ export const ProfileManagement = () => {
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-          <CreateUser/>
+          <CreateUser />
           <Table variant="striped" size="md">
             <Thead>
               <Tr>
@@ -72,8 +72,8 @@ export const ProfileManagement = () => {
                   <Td>{item.department}</Td>
                   <Td>{item.role}</Td>
                   <Td>
-                    <EditUser {...item}/>
-                    <DeleteUser {...item}/>
+                    <EditUser {...item} />
+                    <DeleteUser {...item} />
                   </Td>
                 </Tr>
               ))}
