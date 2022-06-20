@@ -12,7 +12,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { NotFound } from "./pages/NotFound";
 import { Survey } from "./pages/Survey";
 import { NavHeader } from "./components/Nav";
-
+import { Footer } from "./components/Footer";
 const config: ThemeConfig = {
   initialColorMode: "dark",
   useSystemColorMode: false,
@@ -37,5 +37,6 @@ export const App = () => (
       <Route path="/surveyresults" element={<SurveyResults />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+    <Footer />
   </ChakraProvider>
 );
