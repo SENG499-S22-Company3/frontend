@@ -42,7 +42,7 @@ import {
           </Image>
         </Box>
         <Text>
-            Made by SENG 490 students in Company 3 at the University of Victoria during summer 2022. <a href="https://github.com/SENG499-S22-Company3"><b title="View Source Code on GitHub">GitHub</b></a>
+            Made by SENG 499 students in Company 3 at the University of Victoria during summer 2022. <a href="https://github.com/SENG499-S22-Company3"><b title="View Source Code on GitHub">GitHub</b></a>
         </Text>
         
       </Flex>
