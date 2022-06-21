@@ -11,10 +11,10 @@ import {
 import { gql, useMutation } from "@apollo/client";
 
 const GENERATE = gql`
-  mutation GenerateSchedule($year: String!, $semester: String!) {
-    generateSchedule(year: $year, year: $semester) {
+  mutation GenerateSchedule($year: String!, $term: String!) {
+    generateSchedule(year: $year, term: $term) {
       year
-      semester
+      term
     }
   }
 `;
