@@ -7,10 +7,9 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
   TableContainer,
 } from "@chakra-ui/react";
-import { waitFor } from "@testing-library/react";
+
 
 //course assignments that are flagged to be on multiple days should be set for those days
 const splitCourseDays = (course: CourseSection) => {
@@ -87,67 +86,68 @@ const populateTable = (courses: Appointment[])=>{
   var table_b = document.getElementById("table_body");
   if (table_b != null){
     //remove previous table
-    if (table_b.childNodes.length != 0){
+    if (table_b.childNodes.length !== 0){
       while(table_b.childNodes.length > 0){
-        console.log(table_b.childNodes);
         table_b.childNodes[0].remove();
       }
     }
-
+    var nTd, nTr; 
     for (var i = 0;i < courses.length; i++){
-      console.log(courses[i]);
-      var nTr = document.createElement('Tr');
+      nTr = document.createElement('Tr');
+
       var sdate = courses[i].startDate.toString().split(' ').slice(0, 4).join(' ');
       var stime = courses[i].startDate.toString().split(' ').slice(4, 5).join(' ');
       var edate = courses[i].endDate.toString().split(' ').slice(0, 4).join(' ');
       var etime = courses[i].endDate.toString().split(' ').slice(4, 5).join(' ')
+
       //Course title
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].subject + " " + courses[i].courseTitle;
       nTr.appendChild(nTd);
   
       //Schedule time
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = stime + " / " + etime;
       nTr.appendChild(nTd);
   
       //Term
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = "Summer";
       nTr.appendChild(nTd);
   
       //Prof
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].prof[0];
       nTr.appendChild(nTd);
   
       //Course Code
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].section;
       nTr.appendChild(nTd);
   
       //Start/End Data
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = sdate + " / " + edate;
       nTr.appendChild(nTd);
   
       //# of students
-      var nTd = document.createElement('Td');
+      nTd = document.createElement('Td');
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].classSize.toString();
       nTr.appendChild(nTd);
       table_b?.appendChild(nTr);
     }
   }
-  
-  
-  
+  else{
+    //table not loaded yet, try again in 100ms
+    setTimeout(function(){populateTable(courses)},100);
+  }
 } 
 
 interface TableProps {
