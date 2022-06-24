@@ -1,15 +1,7 @@
 import React from "react";
 import { Appointment, CourseSection } from "../../stores/schedule";
 import { weekdayToInt } from "../../utils/weekdayToInt";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  TableContainer,
-} from "@chakra-ui/react";
-
+import { Table, Thead, Tbody, Tr, Th, TableContainer } from "@chakra-ui/react";
 
 //course assignments that are flagged to be on multiple days should be set for those days
 const splitCourseDays = (course: CourseSection) => {
@@ -82,73 +74,90 @@ const buildAppointments = (courses: CourseSection[]) => {
   return appointments;
 };
 
-const populateTable = (courses: Appointment[])=>{
+const populateTable = (courses: Appointment[]) => {
   var table_b = document.getElementById("table_body");
-  if (table_b != null){
+  if (table_b != null) {
     //remove previous table
-    if (table_b.childNodes.length !== 0){
-      while(table_b.childNodes.length > 0){
+    if (table_b.childNodes.length !== 0) {
+      while (table_b.childNodes.length > 0) {
         table_b.childNodes[0].remove();
       }
     }
-    var nTd, nTr; 
-    for (var i = 0;i < courses.length; i++){
-      nTr = document.createElement('Tr');
+    var nTd, nTr;
+    for (var i = 0; i < courses.length; i++) {
+      nTr = document.createElement("Tr");
 
-      var sdate = courses[i].startDate.toString().split(' ').slice(0, 4).join(' ');
-      var stime = courses[i].startDate.toString().split(' ').slice(4, 5).join(' ');
-      var edate = courses[i].endDate.toString().split(' ').slice(0, 4).join(' ');
-      var etime = courses[i].endDate.toString().split(' ').slice(4, 5).join(' ')
+      var sdate = courses[i].startDate
+        .toString()
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      var stime = courses[i].startDate
+        .toString()
+        .split(" ")
+        .slice(4, 5)
+        .join(" ");
+      var edate = courses[i].endDate
+        .toString()
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      var etime = courses[i].endDate
+        .toString()
+        .split(" ")
+        .slice(4, 5)
+        .join(" ");
 
       //Course title
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].subject + " " + courses[i].courseTitle;
       nTr.appendChild(nTd);
-  
+
       //Schedule time
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = stime + " / " + etime;
       nTr.appendChild(nTd);
-  
+
       //Term
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = "Summer";
       nTr.appendChild(nTd);
-  
+
       //Prof
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].prof[0];
       nTr.appendChild(nTd);
-  
+
       //Course Code
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].section;
       nTr.appendChild(nTd);
-  
+
       //Start/End Data
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = sdate + " / " + edate;
       nTr.appendChild(nTd);
-  
+
       //# of students
-      nTd = document.createElement('Td');
+      nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
       nTd.innerText = courses[i].classSize.toString();
       nTr.appendChild(nTd);
       table_b?.appendChild(nTr);
     }
-  }
-  else{
+  } else {
     //table not loaded yet, try again in 100ms
-    setTimeout(function(){populateTable(courses)},100);
+    setTimeout(function () {
+      populateTable(courses);
+    }, 100);
   }
-} 
+};
 
 interface TableProps {
   data: CourseSection[];
@@ -160,7 +169,7 @@ export const TableView = (props: TableProps) => {
   populateTable(appointments);
   return (
     <TableContainer overflowY="auto">
-      <Table size="sm" variant="striped" colorScheme="gray" >
+      <Table size="sm" variant="striped" colorScheme="gray">
         <Thead>
           <Tr>
             <Th>Course</Th>
@@ -172,10 +181,7 @@ export const TableView = (props: TableProps) => {
             <Th>Students</Th>
           </Tr>
         </Thead>
-        <Tbody
-          id = "table_body" 
-        >
-        </Tbody>
+        <Tbody id="table_body"></Tbody>
       </Table>
     </TableContainer>
   );

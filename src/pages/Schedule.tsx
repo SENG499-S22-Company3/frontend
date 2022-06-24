@@ -135,8 +135,8 @@ export const Schedule = () => {
             >
               <>
                 {viewState === ViewTypes.table && scheduleData && (
-                  <TableView data={scheduleData} />)
-                }
+                  <TableView data={scheduleData} />
+                )}
                 {viewState === ViewTypes.calendar && scheduleData && (
                   <CalendarView data={scheduleData} />
                 )}
