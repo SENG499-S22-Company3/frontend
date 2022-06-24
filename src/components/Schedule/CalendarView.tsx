@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { createRef, useState } from "react";
 import { Scheduler, Editing } from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
 import { Appointment, CourseSection } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
 import { weekdayToInt } from "../../utils/weekdayToInt";
+import { AppointmentTooltip } from "./AppointmentTooltip";
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -94,6 +95,7 @@ interface CalendarProps {
 
 export const CalendarView = (props: CalendarProps) => {
   const { data } = props;
+  const scheduleRef = createRef<Scheduler>();
 
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
   const [viewState, setViewState] = useState("workWeek");
@@ -126,8 +128,12 @@ export const CalendarView = (props: CalendarProps) => {
       {/* the library's TypeScript configuration is broken, not allowing Scheduler to have children */}
       {/*@ts-ignore*/}
       <Scheduler
+        ref={scheduleRef}
         dataSource={appointments}
         appointmentRender={AppointmentCard}
+        appointmentTooltipRender={(model) => (
+          <AppointmentTooltip model={model} scheduleRef={scheduleRef} />
+        )}
         customizeDateNavigatorText={(info) => getWeekDay(info.startDate)}
         dateCellTemplate={dateCell}
         timeZone="America/Vancouver"
