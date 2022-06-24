@@ -134,7 +134,9 @@ export const Schedule = () => {
               style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
             >
               <>
-                {viewState === ViewTypes.table && <TableView />}
+                {viewState === ViewTypes.table && scheduleData && (
+                  <TableView data={scheduleData} />)
+                }
                 {viewState === ViewTypes.calendar && scheduleData && (
                   <CalendarView data={scheduleData} />
                 )}
