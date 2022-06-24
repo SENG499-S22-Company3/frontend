@@ -1,6 +1,5 @@
 import {
   Flex,
-  Text,
   Link,
   Image,
   Box,
@@ -14,8 +13,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import React, { useEffect } from "react";
-import { useLoginStore, LoginStore } from "../stores/login";
+import React, { useEffect, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
 
@@ -27,23 +25,39 @@ const LOGOUT = gql`
   }
 `;
 
-const LoginStatus = (props: { loginState: LoginStore }) => {
-  const { loginState } = props;
+const LoginStatus = () => {
+  const [loginState, setLoginState] = useState(
+    JSON.parse(localStorage.getItem("loggedIn") || '{ "loggedIn": "false" }')
+  );
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user") || '{ "user": "" }')
+  );
   const [logout, { data, loading, error }] = useMutation(LOGOUT);
   const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data && data.Logout.success) {
+    setUser(JSON.parse(localStorage.getItem("user") || '{ "user": "" }'));
+    setLoginState(
+      JSON.parse(localStorage.getItem("loggedIn") || '{ "loggedIn": "false" }')
+    );
+  }, [navigate]);
+
+  useEffect(() => {
+    if (data && data.logout.success) {
       toast({
         title: "Successfully logged out",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
+      localStorage.setItem("token", "");
+      localStorage.setItem("user", "");
+      localStorage.setItem("loggedIn", "false");
       navigate("/");
     }
-  }, [data, toast, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, toast]);
 
   useEffect(() => {
     if (error) {
@@ -59,12 +73,12 @@ const LoginStatus = (props: { loginState: LoginStore }) => {
     return <Spinner size="lg" />;
   }
 
-  if (loginState.loggedIn && loginState.user !== undefined) {
+  if (loginState && user !== "") {
     return (
       <Box ml="auto">
         <Menu>
           <MenuButton as={Link}>
-            <b>Hello, {loginState.user.name}!</b>
+            <b>Hello, {user.name}!</b>
           </MenuButton>
           <MenuList>
             <MenuItem onClick={() => logout()}>Sign out</MenuItem>
@@ -84,8 +98,15 @@ const NavLink = (props: { to: string; desc: string } & LinkProps) => (
 );
 
 export const NavHeader = () => {
-  const loginState = useLoginStore();
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user") || '{ "user": "" }')
+  );
+  const navigate = useNavigate();
   const bg = useColorModeValue("gray.100", "gray.700");
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user") || '{ "user": "" }'));
+  }, [navigate]);
 
   return (
     <Flex
@@ -109,22 +130,23 @@ export const NavHeader = () => {
         </Box>
 
         <NavLink to="/" desc="Home" />
-        {/* admin condition is temporarily commented out for testing */}
-        {
-          /* loginState.user && loginState.user.roles.includes("admin") */ true && (
-            <>
-              <NavLink to="/dashboard" desc="Admin Dashboard" />
-              <NavLink to="/generate" desc="Generate Schedules" />
-            </>
-          )
-        }
-        <NavLink to="/profileManagement" desc="Profile Management" />
-        <NavLink to="/schedule" desc="View Schedules" />
-        <NavLink to="/survey" desc="Preferences Survey" />
-        <NavLink to="/surveyresults" desc="Survey Results" />
+        {user && user["roles"] && user["roles"].includes("admin") && (
+          <>
+            <NavLink to="/dashboard" desc="Admin Dashboard" />
+            <NavLink to="/generate" desc="Generate Schedules" />
+            <NavLink to="/profileManagement" desc="Profile Management" />
+            <NavLink to="/schedule" desc="View Schedules" />
+            <NavLink to="/surveyresults" desc="Survey Results" />
+          </>
+        )}
+        {user && user["roles"] && user["roles"].includes("user") && (
+          <>
+            <NavLink to="/survey" desc="Preferences Survey" />
+          </>
+        )}
       </Flex>
       <Flex alignItems="center">
-        <LoginStatus loginState={loginState} />
+        <LoginStatus />
         <ColorModeSwitcher />
       </Flex>
     </Flex>
