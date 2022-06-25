@@ -22,4 +22,4 @@ COPY --from=frontendBuilder \
     /usr/share/nginx/html/app
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf.template
-CMD /bin/sh -c "envsubst '\$PORT' '\$GRAPHQL_API_URL' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
+CMD /bin/sh -c "envsubst '\$PORT,\$GRAPHQL_API_URL' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
