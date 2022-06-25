@@ -23,7 +23,7 @@ export const Footer = () => {
           minWidth="40px"
         ></Image>
       </Box>
-      <Text>
+      <Text color="gray">
         Made by SENG 499 students in Company 3 at the University of Victoria
         during summer 2022.
       </Text>

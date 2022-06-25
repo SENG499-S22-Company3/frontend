@@ -12,13 +12,14 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation /*useQuery*/ } from "@apollo/client";
+import { useLoginStore } from "../stores/login";
+import shallow from "zustand/shallow";
 
 const LOGIN = gql`
   mutation login($password: String!, $username: String!) {
     login(password: $password, username: $username) {
       message
       success
-      token
     }
   }
 `;
@@ -47,29 +48,51 @@ export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [login, { data, loading, error }] = useMutation(LOGIN);
+
+  const [user, loggedIn, persistUser] = useLoginStore(
+    (state) => [state.user, state.loggedIn, state.persistUser],
+    shallow
+  );
+
   const bg = useColorModeValue("gray.50", "gray.700");
   const navigate = useNavigate();
 
+  // Navigate away to the right page once the user logs in
+  // (or if they are already logged in when they navigate to this page)
+  useEffect(() => {
+    if (loggedIn && user !== undefined) {
+      user.roles.includes("admin")
+        ? navigate("/dashboard")
+        : navigate("/survey");
+    }
+  }, [loggedIn, user, navigate]);
+
   useEffect(() => {
     if (data && !error && !loading) {
-      if (data.login.success === true) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("token", data.login.token);
+      if (
+        data.login.success === true ||
+        // need the `me` endpoint to handle this case, so this is still blocked
+        data.login.message.toLowerCase().includes("already logged in")
+      ) {
         // This will go once the ME query is working
-        const user = {
+        const usr = {
           username: username,
           name: username,
           email: username,
           roles: ["admin"],
           displayName: username,
         };
-        localStorage.setItem("user", JSON.stringify(user));
-        user.roles.includes("admin")
-          ? navigate("/dashboard")
-          : navigate("/survey");
+
+        if (data.login.message.toLowerCase().includes("already logged in")) {
+          console.warn("already logged in warning!");
+        }
+
+        persistUser(usr);
+      } else {
+        console.error(data.login);
       }
     }
-  }, [data, error, loading, navigate, username]);
+  }, [data, error, loading, username, persistUser]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     login({ variables: { username, password } });

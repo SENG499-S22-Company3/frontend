@@ -15,11 +15,13 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
+import { useLoginStore } from "../stores/login";
+import shallow from "zustand/shallow";
 
 const LOGOUT = gql`
   mutation Logout {
@@ -30,38 +32,27 @@ const LOGOUT = gql`
 `;
 
 const LoginStatus = () => {
-  const [loginState, setLoginState] = useState(
-    JSON.parse(localStorage.getItem("loggedIn") || '{ "loggedIn": "false" }')
-  );
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user") || '{ "user": "" }')
+  const [user, loggedIn, unPersistUser] = useLoginStore(
+    (state) => [state.user, state.loggedIn, state.unPersistUser],
+    shallow
   );
   const [logout, { data, loading, error }] = useMutation(LOGOUT);
   const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user") || '{ "user": "" }'));
-    setLoginState(
-      JSON.parse(localStorage.getItem("loggedIn") || '{ "loggedIn": "false" }')
-    );
-  }, [navigate]);
-
-  useEffect(() => {
-    if (data && data.logout.success) {
+    if (data && data.logout.success === true) {
       toast({
         title: "Successfully logged out",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      localStorage.setItem("token", "");
-      localStorage.setItem("user", "");
-      localStorage.setItem("loggedIn", "false");
+      unPersistUser();
       navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, toast]);
+  }, [data]);
 
   useEffect(() => {
     if (error) {
@@ -77,7 +68,7 @@ const LoginStatus = () => {
     return <Spinner size="lg" />;
   }
 
-  if (loginState && user !== "") {
+  if (loggedIn && user !== undefined) {
     return (
       <Box ml="auto">
         <Menu>
@@ -92,38 +83,31 @@ const LoginStatus = () => {
     );
   }
 
-  return <NavLink to="/login" desc="Login" mr={0} />;
+  return <BoldNavLink to="/login" desc="Login" mr={0} />;
 };
 
-const NavLink = (
-  props: { to: string; desc: string; bold?: boolean } & LinkProps
-) => (
+const NavLink = (props: { to: string; desc: string } & LinkProps) => (
   <Link as={ReactRouterLink} mr={4} {...props}>
-    {props.bold === undefined || props.bold === true ? (
-      <b>{props.desc}</b>
-    ) : (
-      <>{props.desc}</>
-    )}
+    <>{props.desc}</>
+  </Link>
+);
+
+const BoldNavLink = (props: { to: string; desc: string } & LinkProps) => (
+  <Link as={ReactRouterLink} mr={4} {...props}>
+    <b>{props.desc}</b>
   </Link>
 );
 
 export const NavHeader = () => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user") || '{ "user": "" }')
-  );
-  const navigate = useNavigate();
+  const [user] = useLoginStore((state) => [state.user], shallow);
   const bg = useColorModeValue("gray.100", "gray.700");
   const isSmall = useBreakpointValue({ base: true, xl: false });
 
   // admin condition is temporarily commented out for testing
-  // const isAdmin = user && user["roles"] && user["roles"].includes("admin");
-  // const isUser = user && user["roles"] && user["roles"].includes("user");
-  const isAdmin = true;
-  const isUser = true;
-
-  useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user") || '{ "user": "" }'));
-  }, [navigate]);
+  const isAdmin = user && user["roles"] && user["roles"].includes("admin");
+  const isUser = user && user["roles"] && user["roles"].includes("user");
+  // const isAdmin = true;
+  // const isUser = true;
 
   return (
     <Flex
@@ -154,45 +138,28 @@ export const NavHeader = () => {
               />
               <MenuList>
                 <MenuItem>
-                  <NavLink bold={false} to="/" desc="Home" />
+                  <NavLink to="/" desc="Home" />
                 </MenuItem>
                 {isAdmin && (
                   <>
                     <MenuDivider />
                     <MenuItem>
-                      <NavLink
-                        bold={false}
-                        to="/dashboard"
-                        desc="Admin Dashboard"
-                      />
+                      <NavLink to="/dashboard" desc="Admin Dashboard" />
+                    </MenuItem>
+                    <MenuItem>
+                      <NavLink to="/generate" desc="Generate Schedules" />
                     </MenuItem>
                     <MenuItem>
                       <NavLink
-                        bold={false}
-                        to="/generate"
-                        desc="Generate Schedules"
-                      />
-                    </MenuItem>
-                    <MenuItem>
-                      <NavLink
-                        bold={false}
                         to="/profileManagement"
                         desc="Profile Management"
                       />
                     </MenuItem>
                     <MenuItem>
-                      <NavLink
-                        bold={false}
-                        to="/schedule"
-                        desc="View Schedules"
-                      />
+                      <NavLink to="/schedule" desc="View Schedules" />
                     </MenuItem>
                     <MenuItem>
-                      <NavLink
-                        bold={false}
-                        to="/surveyresults"
-                        desc="Survey Results"
-                      />
+                      <NavLink to="/surveyresults" desc="Survey Results" />
                     </MenuItem>
                   </>
                 )}
@@ -200,11 +167,7 @@ export const NavHeader = () => {
                   <>
                     <MenuDivider />
                     <MenuItem>
-                      <NavLink
-                        bold={false}
-                        to="/survey"
-                        desc="Preferences Survey"
-                      />
+                      <NavLink to="/survey" desc="Preferences Survey" />
                     </MenuItem>
                   </>
                 )}
@@ -213,19 +176,22 @@ export const NavHeader = () => {
           </>
         ) : (
           <>
-            <NavLink to="/" desc="Home" />
+            <BoldNavLink to="/" desc="Home" />
             {isAdmin && (
               <>
-                <NavLink to="/dashboard" desc="Admin Dashboard" />
-                <NavLink to="/generate" desc="Generate Schedules" />
-                <NavLink to="/profileManagement" desc="Profile Management" />
-                <NavLink to="/schedule" desc="View Schedules" />
-                <NavLink to="/surveyresults" desc="Survey Results" />
+                <BoldNavLink to="/dashboard" desc="Admin Dashboard" />
+                <BoldNavLink to="/generate" desc="Generate Schedules" />
+                <BoldNavLink
+                  to="/profileManagement"
+                  desc="Profile Management"
+                />
+                <BoldNavLink to="/schedule" desc="View Schedules" />
+                <BoldNavLink to="/surveyresults" desc="Survey Results" />
               </>
             )}
             {isUser && (
               <>
-                <NavLink to="/survey" desc="Preferences Survey" />
+                <BoldNavLink to="/survey" desc="Preferences Survey" />
               </>
             )}
           </>
