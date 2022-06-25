@@ -1,158 +1,79 @@
-import React from "react";
-import { Appointment, CourseSection } from "../../stores/schedule";
-import { weekdayToInt } from "../../utils/weekdayToInt";
+import { CourseSection } from "../../stores/schedule";
+
 import { Table, Thead, Tbody, Tr, Th, TableContainer } from "@chakra-ui/react";
 
-//course assignments that are flagged to be on multiple days should be set for those days
-const splitCourseDays = (course: CourseSection) => {
-  const splitDays = course.meetingTimes.map((meetingTime) => {
-    const { startTime, endTime, day } = meetingTime;
-
-    //2022-05-31T is a monday, and we just need the base to be a monday
-    //HH:MM:SS.000-7:00 for time format, it comes in HHMM format.
-    const beginHoursMinutes = [
-      startTime.slice(0, startTime.length / 2),
-      startTime.slice(-startTime.length / 2),
-    ];
-    const endHourMinutes = [
-      endTime.slice(0, endTime.length / 2),
-      endTime.slice(-endTime.length / 2),
-    ];
-
-    const start =
-      "2022-05-31T" +
-      beginHoursMinutes[0] +
-      ":" +
-      beginHoursMinutes[1] +
-      ":00.000-07:00";
-    const end =
-      "2022-05-31T" +
-      endHourMinutes[0] +
-      ":" +
-      endHourMinutes[1] +
-      ":00.000-07:00";
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    //change the date based on what day of the week it's supposed to be
-    const dayShift = weekdayToInt(day);
-    startDate.setDate(startDate.getDate() + dayShift - 1);
-    endDate.setDate(endDate.getDate() + dayShift - 1);
-
-    const meetingDays = {
-      startDate: startDate,
-      endDate: endDate,
-    };
-
-    return meetingDays;
-  });
-
-  return splitDays;
-};
-
-//convert Course object data from backend to the structure DevExtreme expects
-const buildAppointments = (courses: CourseSection[]) => {
-  const appointments = courses.flatMap((course) => {
-    const professors = course.professors.map((prof) => prof.username); //TO-DO switch to displayName, when its in schema
-
-    const assignedCourses = splitCourseDays(course).map((meetingTime) => {
-      return {
-        courseTitle: course.CourseID.code, //not in schema yet
-        courseNumber: course.CourseID.code,
-        subject: course.CourseID.subject,
-        section: "TEMP_SECTION", //not in schema yet
-        prof: professors,
-        classSize: course.capacity,
-        startDate: meetingTime.startDate,
-        endDate: meetingTime.endDate,
-      } as Appointment;
-    });
-
-    return assignedCourses;
-  });
-  return appointments;
-};
-
-const populateTable = (courses: Appointment[]) => {
+const populateTable = (courses: CourseSection[]) => {
   var table_b = document.getElementById("table_body");
   if (table_b != null) {
     //remove previous table
-    if (table_b.childNodes.length !== 0) {
-      while (table_b.childNodes.length > 0) {
-        table_b.childNodes[0].remove();
-      }
-    }
+    // if (table_b.childNodes.length !== 0){
+    //   while(table_b.childNodes.length > 0){
+    //     table_b.childNodes[0].remove();
+    //   }
+    // }
     var nTd, nTr;
     for (var i = 0; i < courses.length; i++) {
       nTr = document.createElement("Tr");
 
-      var sdate = courses[i].startDate
-        .toString()
-        .split(" ")
-        .slice(0, 4)
-        .join(" ");
-      var stime = courses[i].startDate
-        .toString()
-        .split(" ")
-        .slice(4, 5)
-        .join(" ");
-      var edate = courses[i].endDate
-        .toString()
-        .split(" ")
-        .slice(0, 4)
-        .join(" ");
-      var etime = courses[i].endDate
-        .toString()
-        .split(" ")
-        .slice(4, 5)
-        .join(" ");
-
       //Course title
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = courses[i].subject + " " + courses[i].courseTitle;
+      nTd.innerText =
+        courses[i].CourseID.subject + " " + courses[i].CourseID.code;
       nTr.appendChild(nTd);
 
       //Schedule time
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = stime + " / " + etime;
+      nTd.innerText =
+        courses[i].meetingTimes[0].startTime +
+        " / " +
+        courses[i].meetingTimes[0].endTime;
+      nTr.appendChild(nTd);
+
+      //Days
+      nTd = document.createElement("Td");
+      nTd.style.padding = "8px 16px";
+      var days = "";
+      var len = courses[i].meetingTimes.length;
+      for (var y = 0; y < len; y++) {
+        days = days + courses[i].meetingTimes[y].day.slice(0, 3) + " ";
+      }
+      nTd.innerText = days;
       nTr.appendChild(nTd);
 
       //Term
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = "Summer";
+      nTd.innerText = courses[i].CourseID.term;
       nTr.appendChild(nTd);
 
       //Prof
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = courses[i].prof[0];
+      nTd.innerText = courses[i].professors[0].username;
       nTr.appendChild(nTd);
 
-      //Course Code
+      //Course section
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = courses[i].section;
+      nTd.innerText = "section";
       nTr.appendChild(nTd);
 
       //Start/End Data
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = sdate + " / " + edate;
+      nTd.innerText = courses[i].startDate + " / " + courses[i].endDate;
       nTr.appendChild(nTd);
 
       //# of students
       nTd = document.createElement("Td");
       nTd.style.padding = "8px 16px";
-      nTd.innerText = courses[i].classSize.toString();
+      nTd.innerText = courses[i].capacity.toString();
       nTr.appendChild(nTd);
       table_b?.appendChild(nTr);
     }
   } else {
-    //table not loaded yet, try again in 100ms
     setTimeout(function () {
       populateTable(courses);
     }, 100);
@@ -165,8 +86,9 @@ interface TableProps {
 
 export const TableView = (props: TableProps) => {
   const { data } = props;
-  const appointments = buildAppointments(data);
-  populateTable(appointments);
+  console.log(data);
+  // const appointments = buildAppointments(data);
+  populateTable(data);
   return (
     <TableContainer overflowY="auto">
       <Table size="sm" variant="striped" colorScheme="gray">
@@ -174,9 +96,10 @@ export const TableView = (props: TableProps) => {
           <Tr>
             <Th>Course</Th>
             <Th>Schedule Time</Th>
+            <Th>Days</Th>
             <Th>Term</Th>
             <Th>Prof/InsTructor</Th>
-            <Th>CRN</Th>
+            <Th>Section</Th>
             <Th>Start/End Date</Th>
             <Th>Students</Th>
           </Tr>
