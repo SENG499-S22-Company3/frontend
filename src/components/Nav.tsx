@@ -27,6 +27,7 @@ const LOGOUT = gql`
   mutation Logout {
     logout {
       success
+      message
     }
   }
 `;
@@ -41,15 +42,24 @@ const LoginStatus = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data && data.logout.success === true) {
-      toast({
-        title: "Successfully logged out",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      unPersistUser();
-      navigate("/");
+    if (data) {
+      if (data.logout.success) {
+        toast({
+          title: "Successfully logged out",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        unPersistUser();
+        navigate("/");
+      } else {
+        toast({
+          title: "Failed to logged out",
+          description: data.logout.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
