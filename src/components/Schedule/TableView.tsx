@@ -6,11 +6,11 @@ const populateTable = (courses: CourseSection[]) => {
   var table_b = document.getElementById("table_body");
   if (table_b != null) {
     //remove previous table
-    // if (table_b.childNodes.length !== 0){
-    //   while(table_b.childNodes.length > 0){
-    //     table_b.childNodes[0].remove();
-    //   }
-    // }
+    if (table_b.childNodes.length !== 0){
+      while(table_b.childNodes.length > 0){
+        table_b.childNodes[0].remove();
+      }
+    }
     var nTd, nTr;
     for (var i = 0; i < courses.length; i++) {
       nTr = document.createElement("Tr");
