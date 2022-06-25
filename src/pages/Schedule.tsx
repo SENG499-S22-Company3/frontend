@@ -1,24 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Container, Flex, Select, Heading } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { useLoginStore } from "../stores/login";
+import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
 import { CourseSection } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
-
-// These schemas will probably change later, all just example data
-const SUBMIT = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      username
-      email
-      roles
-    }
-  }
-`;
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -50,7 +37,6 @@ enum ViewTypes {
 }
 
 export const Schedule = () => {
-  const [submit, { data, loading, error }] = useMutation(SUBMIT);
   const {
     data: baseScheduleData,
     loading: scheduleLoading,
@@ -59,23 +45,6 @@ export const Schedule = () => {
 
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
-
-  const loginState = useLoginStore();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (loginState.loggedIn) {
-      navigate("/");
-    }
-  }, [loginState.loggedIn, navigate]);
-
-  useEffect(() => {
-    if (data && !error && !loading) {
-      // TODO: This route will change to whatever The default page is once The
-      // user is logged in
-      navigate("/");
-    }
-  }, [data, error, loading, navigate]);
 
   useEffect(() => {
     if (baseScheduleData && !scheduleError && !scheduleLoading) {

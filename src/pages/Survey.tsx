@@ -14,10 +14,8 @@ import {
   Textarea,
   useColorModeValue,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { useLoginStore } from "../stores/login";
 import { SurveyCourseList } from "../components/SurveyCourseList";
 
 // these schemas will probably change later, all just example data
@@ -51,11 +49,8 @@ export const Survey = () => {
   const [topicDescription, setTopicDescription] = useState("");
   const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
 
-  const [submit, { data, loading, error }] = useMutation(SUBMIT);
+  const [submit, { loading, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
-
-  const loginState = useLoginStore();
-  const navigate = useNavigate();
 
   const toggleRelief = () => {
     setHasRelief(!hasRelief);
@@ -64,20 +59,6 @@ export const Survey = () => {
   const toggleTopic = () => {
     setHasTopic(!hasTopic);
   };
-
-  useEffect(() => {
-    if (loginState.loggedIn) {
-      navigate("/");
-    }
-  }, [loginState.loggedIn, navigate]);
-
-  useEffect(() => {
-    if (data && !error && !loading) {
-      // TODO: this route will change to whatever the default page is once the
-      // user is logged in
-      navigate("/");
-    }
-  }, [data, error, loading, navigate]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     submit({ variables: { courseRatings } });
