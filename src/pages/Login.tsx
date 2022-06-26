@@ -42,7 +42,8 @@ export const Login = () => {
   const [login, { data: loginData, loading: loginLoading, error: loginError }] =
     useMutation(LOGIN);
   const [fetchMeData, { data: meData, loading: meLoading, error: meError }] =
-    useLazyQuery(ME);
+    // use network-only fetch policy so user info isn't cached between logins/logouts
+    useLazyQuery(ME, { fetchPolicy: "network-only" });
 
   const toast = useToast();
 

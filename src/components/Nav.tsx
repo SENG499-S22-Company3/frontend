@@ -37,7 +37,7 @@ const LoginStatus = () => {
     (state) => [state.user, state.loggedIn, state.unPersistUser],
     shallow
   );
-  const [logout, { data, loading, error }] = useMutation(LOGOUT);
+  const [logout, { client, data, loading, error }] = useMutation(LOGOUT);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -53,7 +53,11 @@ const LoginStatus = () => {
           duration: 3000,
           isClosable: true,
         });
+
+        // Reset the store so that the user information isn't cached
+        client.resetStore();
         unPersistUser();
+
         navigate("/");
       } else {
         toast({
