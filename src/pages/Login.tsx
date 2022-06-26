@@ -113,7 +113,7 @@ export const Login = () => {
       } else if (loginError) {
         toast({
           title: "Failed to login",
-          description: loginData.login.message,
+          description: loginError.message,
           status: "error",
           isClosable: true,
         });
