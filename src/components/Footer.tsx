@@ -9,7 +9,7 @@ import {
 
 export const Footer = () => {
   const bg = useColorModeValue("gray.100", "gray.700");
-  const isSmall = useBreakpointValue({ base: true, xl: false });
+  const isSmall = useBreakpointValue({ base: true, lg: false });
 
   return (
     <Flex
