@@ -1,19 +1,20 @@
 import { ChakraProvider, extendTheme, ThemeConfig } from "@chakra-ui/react";
-import { colors } from "./theme/colors";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import shallow from "zustand/shallow";
+import { Footer } from "./components/Footer";
+import { NavHeader } from "./components/Nav";
+import { Dashboard } from "./pages/Dashboard";
+import { Generate } from "./pages/Generate";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
-import { Generate } from "./pages/Generate";
-import { Schedule } from "./pages/Schedule";
-import { SurveyResults } from "./pages/SurveyResults";
-import { ProfileManagement } from "./pages/ProfileManagement";
-import { Dashboard } from "./pages/Dashboard";
 import { NotFound } from "./pages/NotFound";
+import { ProfileManagement } from "./pages/ProfileManagement";
+import { Schedule } from "./pages/Schedule";
 import { Survey } from "./pages/Survey";
-import { NavHeader } from "./components/Nav";
-import { Footer } from "./components/Footer";
+import { SurveyResults } from "./pages/SurveyResults";
+import { useLoginStore } from "./stores/login";
+import { colors } from "./theme/colors";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -26,14 +27,14 @@ const theme = extendTheme({
 });
 
 export const App = () => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user") || '{ "user": "" }')
+  const [user, fetchUser] = useLoginStore(
+    (state) => [state.user, state.fetchUser],
+    shallow
   );
-  const navigate = useNavigate();
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user") || '{ "user": "" }'));
-  }, [navigate]);
+    fetchUser();
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
