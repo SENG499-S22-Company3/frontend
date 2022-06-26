@@ -1,4 +1,10 @@
-import { User } from "./login";
+export type User = {
+  username: string;
+  name: string;
+  email: string;
+  roles: string[];
+  displayName: string; //not currently in schema
+};
 
 //this is the type that devExtreme expects
 export type Appointment = {

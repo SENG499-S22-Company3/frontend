@@ -7,6 +7,7 @@ import {
   Heading,
   Input,
   Select,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { gql, useMutation } from "@apollo/client";
 
@@ -24,6 +25,8 @@ export const Generate = () => {
   const [year, setYear] = useState("");
   const [term, setTerm] = useState("");
 
+  const bg = useColorModeValue("gray.50", "gray.700");
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     submit({ variables: { year, term } });
     e.preventDefault();
@@ -38,7 +41,7 @@ export const Generate = () => {
       flexDirection="column"
     >
       <Container
-        bg="gray.700"
+        bg={bg}
         borderRadius={20}
         p={10}
         style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}

@@ -6,10 +6,20 @@ import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
 
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  InMemoryCache,
+} from "@apollo/client";
+
+const httpLink = createHttpLink({
+  uri: "/graphql",
+  credentials: "include",
+});
 
 const client = new ApolloClient({
-  uri: "/graphql",
+  link: httpLink,
   cache: new InMemoryCache(),
 });
 
