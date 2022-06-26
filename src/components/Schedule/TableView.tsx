@@ -1,4 +1,5 @@
-import React from "react";
+import { CourseSection } from "../../stores/schedule";
+
 import {
   Table,
   Thead,
@@ -9,7 +10,53 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
-export const TableView = () => {
+interface TableProps {
+  data: CourseSection[];
+}
+
+export const TableView = (props: TableProps) => {
+  const { data } = props;
+
+  var tableData = [
+    {
+      course: "",
+      schedule_time: "",
+      days: "",
+      term: "",
+      prof: "",
+      section: "",
+      start_end: "",
+      capacity: "",
+    },
+  ];
+
+  const populateTable = (courses: CourseSection[]) => {
+    tableData.pop();
+
+    for (var i = 0; i < courses.length; i++) {
+      var d = "";
+      var len = courses[i].meetingTimes.length;
+      for (var y = 0; y < len; y++) {
+        d = d + courses[i].meetingTimes[y].day.slice(0, 3) + " ";
+      }
+      tableData.push({
+        course: courses[i].CourseID.subject + " " + courses[i].CourseID.code,
+        schedule_time:
+          courses[i].meetingTimes[0].startTime +
+          " / " +
+          courses[i].meetingTimes[0].endTime,
+        days: d,
+        term: courses[i].CourseID.term,
+        prof: courses[i].professors[0].username,
+        section: (i + 1).toString(),
+        start_end: courses[i].startDate + " / " + courses[i].endDate,
+        capacity: courses[i].capacity.toString(),
+      });
+    }
+  };
+
+  populateTable(data);
+
   return (
     <TableContainer overflowY="auto">
       <Table size="sm" variant="striped" colorScheme="gray">
@@ -17,194 +64,27 @@ export const TableView = () => {
           <Tr>
             <Th>Course</Th>
             <Th>Schedule Time</Th>
+            <Th>Days</Th>
             <Th>Term</Th>
             <Th>Prof/InsTructor</Th>
-            <Th>CRN</Th>
+            <Th>Section</Th>
             <Th>Start/End Date</Th>
-            <Th>Students</Th>
+            <Th>Capacity</Th>
           </Tr>
         </Thead>
-        <Tbody>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
-          <Tr>
-            <Td>SENG 499</Td>
-            <Td>Wed: 1500-1620</Td>
-            <Td>Summer</Td>
-            <Td>Daniela Damian</Td>
-            <Td>30792</Td>
-            <Td>Wed May 04, 2022 - Fri Jul 29, 2022</Td>
-            <Td>82</Td>
-          </Tr>
+        <Tbody id="table_body">
+          {tableData.map((item) => (
+            <Tr key={item.section}>
+              <Td>{item.course}</Td>
+              <Td>{item.schedule_time}</Td>
+              <Td>{item.days}</Td>
+              <Td>{item.term}</Td>
+              <Td>{item.prof}</Td>
+              <Td>{item.section}</Td>
+              <Td>{item.start_end}</Td>
+              <Td>{item.capacity}</Td>
+            </Tr>
+          ))}
         </Tbody>
       </Table>
     </TableContainer>
