@@ -43,7 +43,10 @@ const LoginStatus = () => {
 
   useEffect(() => {
     if (data) {
-      if (data.logout.success) {
+      if (
+        data.logout.success ||
+        data.logout.message.toLowerCase().includes("not logged in")
+      ) {
         toast({
           title: "Successfully logged out",
           status: "success",

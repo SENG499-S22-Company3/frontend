@@ -1,3 +1,4 @@
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import {
   Button,
   Container,
@@ -8,12 +9,12 @@ import {
   Heading,
   Input,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { gql, useMutation /*useQuery*/ } from "@apollo/client";
-import { useLoginStore } from "../stores/login";
 import shallow from "zustand/shallow";
+import { useLoginStore } from "../stores/login";
 
 const LOGIN = gql`
   mutation login($password: String!, $username: String!) {
@@ -24,30 +25,26 @@ const LOGIN = gql`
   }
 `;
 
-//This query doesn't appear to be working. Will use once it is working though.
-/*
 const ME = gql`
   query me {
     me {
       id
       username
-      password
       role
-      preferences {
-        id {
-          code
-        }
-      }
-      active
     }
   }
 `;
-*/
 
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [login, { data, loading, error }] = useMutation(LOGIN);
+
+  const [login, { data: loginData, loading: loginLoading, error: loginError }] =
+    useMutation(LOGIN);
+  const [fetchMeData, { data: meData, loading: meLoading, error: meError }] =
+    useLazyQuery(ME);
+
+  const toast = useToast();
 
   const [user, loggedIn, persistUser] = useLoginStore(
     (state) => [state.user, state.loggedIn, state.persistUser],
@@ -65,49 +62,68 @@ export const Login = () => {
         ? navigate("/dashboard")
         : navigate("/survey");
     }
-  }, [loggedIn, user, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loggedIn, user]);
 
+  // Store the user's information once the `me` query resolves
   useEffect(() => {
-    if (data && !error && !loading) {
-      if (
-        data.login.success === true ||
-        // need the `me` endpoint to handle this case, so this is still blocked
-        data.login.message.toLowerCase().includes("already logged in")
-      ) {
-        // This will go once the ME query is working
+    if (!meLoading) {
+      if (meData && !meError) {
         const usr = {
-          username: username,
-          name: username,
-          email: username,
-          roles: ["admin"],
-          displayName: username,
+          username: meData.me.username,
+          roles: [meData.me.role.toLowerCase()],
+          // None of these three fields are part of the schema yet
+          displayName: meData.me.username,
+          name: meData.me.username,
+          email: "test@uvic.ca",
         };
 
-        if (data.login.message.toLowerCase().includes("already logged in")) {
-          console.warn("already logged in warning!");
-        }
-
         persistUser(usr);
-      } else {
-        console.error(data.login);
+      } else if (meError) {
+        console.error(meError);
+        toast({
+          title: "Failed to fetch user data",
+          description: meError.message,
+          status: "error",
+          isClosable: true,
+        });
       }
     }
-  }, [data, error, loading, username, persistUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meData, meError, meLoading]);
+
+  // Fetch the user's data once the `login` query resolves
+  useEffect(() => {
+    if (!loginLoading) {
+      if (loginData && !loginError) {
+        if (
+          loginData.login.success ||
+          loginData.login.message.toLowerCase().includes("already logged in")
+        ) {
+          fetchMeData();
+        } else {
+          console.error(loginData.login);
+          toast({
+            title: "Failed to login",
+            description: loginData.login.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      } else if (loginError) {
+        toast({
+          title: "Failed to login",
+          description: loginData.login.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loginData, loginError, loginLoading]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     login({ variables: { username, password } });
-    /* This should be used to get the current user info to store. However, the PR isn't merged yet
-    const {
-      data: meData,
-      loading: meLoading,
-      error: meError,
-    } = useQuery(ME, {});
-    if (meData && !meLoading && !meError) {
-      if (data.login.success === true) {
-        localStorage.setItem('user', JSON.stringify(meData));
-      }
-    }
-    */
     e.preventDefault();
   };
 
@@ -148,7 +164,7 @@ export const Login = () => {
                 mb={5}
               />
               <Button
-                isLoading={loading}
+                isLoading={loginLoading}
                 type="submit"
                 colorScheme="green"
                 variant="solid"
@@ -157,9 +173,9 @@ export const Login = () => {
                 Sign in
               </Button>
             </FormControl>
-            <FormControl isInvalid={error !== undefined}>
-              {error !== undefined && (
-                <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
+            <FormControl isInvalid={loginError !== undefined}>
+              {loginError !== undefined && (
+                <FormErrorMessage mt={5}>{loginError.message}</FormErrorMessage>
               )}
             </FormControl>
           </form>
