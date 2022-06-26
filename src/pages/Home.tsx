@@ -22,7 +22,7 @@ export const Home = () => {
         colorScheme="green"
         variant="solid"
       >
-        Sign in
+        Log in
       </Button>
     </Flex>
   );

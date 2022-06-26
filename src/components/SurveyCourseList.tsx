@@ -3,6 +3,7 @@ import {
   Divider,
   Flex,
   FormLabel,
+  Text,
   Grid,
   GridItem,
   Heading,
@@ -102,7 +103,11 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   if (loading) {
     return <>Loading</>;
   } else if (!data || error) {
-    return <>Failed to course fetch data</>;
+    return (
+      <Text color="red.400" mb={3}>
+        Failed to course fetch data
+      </Text>
+    );
   } else
     return data.survey.courses.map(
       (course: PreferenceInterface, index: number) => (

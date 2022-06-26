@@ -37,20 +37,27 @@ const LoginStatus = () => {
     (state) => [state.user, state.loggedIn, state.unPersistUser],
     shallow
   );
-  const [logout, { data, loading, error }] = useMutation(LOGOUT);
+  const [logout, { client, data, loading, error }] = useMutation(LOGOUT);
   const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (data) {
-      if (data.logout.success) {
+      if (
+        data.logout.success ||
+        data.logout.message.toLowerCase().includes("not logged in")
+      ) {
         toast({
           title: "Successfully logged out",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
+
+        // Reset the store so that the user information isn't cached
+        client.resetStore();
         unPersistUser();
+
         navigate("/");
       } else {
         toast({
@@ -86,7 +93,7 @@ const LoginStatus = () => {
             <b>Hello, {user.name}!</b>
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={() => logout()}>Sign out</MenuItem>
+            <MenuItem onClick={() => logout()}>Log out</MenuItem>
           </MenuList>
         </Menu>
       </Box>
