@@ -89,7 +89,7 @@ const LoginStatus = () => {
             <b>Hello, {user.name}!</b>
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={() => logout()}>Sign out</MenuItem>
+            <MenuItem onClick={() => logout()}>Log out</MenuItem>
           </MenuList>
         </Menu>
       </Box>

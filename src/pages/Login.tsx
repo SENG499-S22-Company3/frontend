@@ -137,7 +137,7 @@ export const Login = () => {
       flexDirection="column"
     >
       <Container mb={32}>
-        <Heading mb={6}>Sign in to Schedulater</Heading>
+        <Heading mb={6}>Log in to Schedulater</Heading>
         <Flex
           bg={bg}
           p={10}
@@ -170,7 +170,7 @@ export const Login = () => {
                 variant="solid"
                 w="100%"
               >
-                Sign in
+                Log in
               </Button>
             </FormControl>
             <FormControl isInvalid={loginError !== undefined}>
