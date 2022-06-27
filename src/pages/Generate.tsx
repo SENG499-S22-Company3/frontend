@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Container,
@@ -8,29 +8,64 @@ import {
   Input,
   Select,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { gql, useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
 const GENERATE = gql`
-  mutation GenerateSchedule($year: String!, $term: String!) {
-    generateSchedule(year: $year, term: $term) {
-      year
-      term
+  mutation generate($input: GenerateScheduleInput!) {
+    generateSchedule(input: $input) {
+      message
+      success
     }
   }
 `;
 
 export const Generate = () => {
-  const [submit, { data, loading, error }] = useMutation(GENERATE);
+  const [generate, { data, loading, error }] = useMutation(GENERATE);
+  const navigate = useNavigate();
   const [year, setYear] = useState("");
   const [term, setTerm] = useState("");
 
   const bg = useColorModeValue("gray.50", "gray.700");
 
+  const toast = useToast();
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    submit({ variables: { year, term } });
     e.preventDefault();
+    let input = {
+      year: Number(year),
+    };
+    generate({ variables: { input } });
   };
+
+  useEffect(() => {
+    if (!loading) {
+      if (data && !error) {
+        if (data.generateSchedule.success) {
+          navigate("/schedule");
+        } else {
+          console.log(data);
+          toast({
+            title: "Failed to Generate Scheudle",
+            description: data.generateSchedule.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      } else if (error) {
+        console.log(error);
+        toast({
+          title: "Failed to Generate Scheudle",
+          description: error.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    }
+  }, [data, loading, error]);
+
   return (
     <Flex
       w="100%"
@@ -83,6 +118,7 @@ export const Generate = () => {
             w="300px"
             colorScheme="purple"
             variant="solid"
+            type="submit"
             isLoading={loading}
           >
             Generate Schedule
