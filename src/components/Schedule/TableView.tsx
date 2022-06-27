@@ -9,6 +9,7 @@ import {
   Td,
   TableContainer,
 } from "@chakra-ui/react";
+import { formatDate, formatTime } from "../../utils/formatDate";
 
 interface TableProps {
   data: CourseSection[];
@@ -39,17 +40,19 @@ export const TableView = (props: TableProps) => {
       for (var y = 0; y < len; y++) {
         d = d + courses[i].meetingTimes[y].day.slice(0, 3) + " ";
       }
+      const startTime = new Date(courses[i].meetingTimes[0].startTime);
+      const endTime = new Date(courses[i].meetingTimes[0].endTime);
+      const startDate = new Date(courses[i].startDate);
+      const endDate = new Date(courses[i].endDate);
+
       tableData.push({
         course: courses[i].CourseID.subject + " " + courses[i].CourseID.code,
-        schedule_time:
-          courses[i].meetingTimes[0].startTime +
-          " / " +
-          courses[i].meetingTimes[0].endTime,
+        schedule_time: formatTime(startTime) + " / " + formatTime(endTime),
         days: d,
         term: courses[i].CourseID.term,
-        prof: courses[i].professors[0].username,
-        section: (i + 1).toString(),
-        start_end: courses[i].startDate + " / " + courses[i].endDate,
+        prof: "temp", //not in schema
+        section: (i + 1).toString(), //not in schema
+        start_end: formatDate(startDate) + " / " + formatDate(endDate),
         capacity: courses[i].capacity.toString(),
       });
     }
