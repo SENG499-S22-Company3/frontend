@@ -9,23 +9,29 @@ import { SearchBar } from "../components/Schedule/SearchBar";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
-  query GetCourses {
-    courses {
-      CourseID {
-        subject
-        code
-        term
-      }
-      capacity
-      professors {
-        username
-      }
-      startDate
-      endDate
-      meetingTimes {
-        day
-        startTime
-        endTime
+  query s {
+    schedule(year: 2022) {
+      id
+      year
+      createdAt
+      courses(term: FALL) {
+        CourseID {
+          subject
+          code
+          term
+        }
+        hoursPerWeek
+        professors {
+          username
+        }
+        capacity
+        startDate
+        endDate
+        meetingTimes {
+          day
+          startTime
+          endTime
+        }
       }
     }
   }
@@ -48,7 +54,7 @@ export const Schedule = () => {
 
   useEffect(() => {
     if (baseScheduleData && !scheduleError && !scheduleLoading) {
-      setScheduleData(baseScheduleData.courses);
+      setScheduleData(baseScheduleData.schedule.courses);
     }
   }, [baseScheduleData, scheduleError, scheduleLoading]);
 
@@ -82,7 +88,7 @@ export const Schedule = () => {
                 <option value="calendar">Calendar View</option>
               </Select>
               <SearchBar
-                termData={baseScheduleData.courses}
+                termData={baseScheduleData.schedule.courses}
                 setScheduleData={setScheduleData}
               />
               <Button

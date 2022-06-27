@@ -24,28 +24,23 @@ const splitCourseDays = (course: CourseSection) => {
     const { startTime, endTime, day } = meetingTime;
 
     //2022-05-31T is a monday, and we just need the base to be a monday
-    //HH:MM:SS.000-7:00 for time format, it comes in HHMM format.
-    const beginHoursMinutes = [
-      startTime.slice(0, startTime.length / 2),
-      startTime.slice(-startTime.length / 2),
-    ];
-    const endHourMinutes = [
-      endTime.slice(0, endTime.length / 2),
-      endTime.slice(-endTime.length / 2),
-    ];
+    //HH:MM:SS.000-7:00 for time format, it comes in HHMM format
+
+    const startTimeDate = new Date(startTime);
+    const endTimeDate = new Date(endTime);
 
     const start =
       "2022-05-31T" +
-      beginHoursMinutes[0] +
+      startTimeDate.getHours() +
       ":" +
-      beginHoursMinutes[1] +
-      ":00.000-07:00";
+      startTimeDate.getMinutes() +
+      ":00.000Z";
     const end =
       "2022-05-31T" +
-      endHourMinutes[0] +
+      endTimeDate.getHours() +
       ":" +
-      endHourMinutes[1] +
-      ":00.000-07:00";
+      endTimeDate.getMinutes() +
+      ":00.000Z";
 
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -69,7 +64,7 @@ const splitCourseDays = (course: CourseSection) => {
 //convert Course object data from backend to the structure DevExtreme expects
 const buildAppointments = (courses: CourseSection[]) => {
   const appointments = courses.flatMap((course) => {
-    const professors = course.professors.map((prof) => prof.username); //TO-DO switch to displayName, when its in schema
+    //const professors = course.professors.map((prof) => prof.username); //TO-DO switch to displayName, when its in schema
 
     const assignedCourses = splitCourseDays(course).map((meetingTime) => {
       return {
@@ -77,7 +72,7 @@ const buildAppointments = (courses: CourseSection[]) => {
         courseNumber: course.CourseID.code,
         subject: course.CourseID.subject,
         section: "TEMP_SECTION", //not in schema yet
-        prof: professors,
+        prof: ["temp name"], //not in schema yet
         classSize: course.capacity,
         startDate: meetingTime.startDate,
         endDate: meetingTime.endDate,

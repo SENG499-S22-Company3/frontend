@@ -47,8 +47,8 @@ export type CourseID = {
 
 export type MeetingTime = {
   day: Day;
-  startTime: String; //Schema has this as Date, but shouldn't this be string??
-  endTime: String; //Schema has this as Date, but shouldn't this be string??
+  startTime: Date; //Schema has this as Date, but shouldn't this be string??
+  endTime: Date; //Schema has this as Date, but shouldn't this be string??
 };
 
 export enum Day {
