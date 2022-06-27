@@ -5,6 +5,7 @@ import { Appointment, CourseSection } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
 import { weekdayToInt } from "../../utils/weekdayToInt";
 import { AppointmentTooltip } from "./AppointmentTooltip";
+import { formatTimeString } from "../../utils/formatDate";
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -29,26 +30,20 @@ const splitCourseDays = (course: CourseSection) => {
     const startTimeDate = new Date(startTime);
     const endTimeDate = new Date(endTime);
 
+    const [startHours, startMinutes] = formatTimeString(startTimeDate);
+    const [endHours, endMinutes] = formatTimeString(endTimeDate);
+
     const start =
-      "2022-05-31T" +
-      startTimeDate.getHours() +
-      ":" +
-      startTimeDate.getMinutes() +
-      ":00.000-0700";
-    const end =
-      "2022-05-31T" +
-      endTimeDate.getHours() +
-      ":" +
-      endTimeDate.getMinutes() +
-      ":00.000-0700";
+      "2022-05-31T" + startHours + ":" + startMinutes + ":00.000+1000";
+    const end = "2022-05-31T" + endHours + ":" + endMinutes + ":00.000+1000";
 
     const startDate = new Date(start);
     const endDate = new Date(end);
 
     //change the date based on what day of the week it's supposed to be
     const dayShift = weekdayToInt(day);
-    startDate.setDate(startDate.getDate() + dayShift - 1);
-    endDate.setDate(endDate.getDate() + dayShift - 1);
+    startDate.setDate(startDate.getDate() + dayShift);
+    endDate.setDate(endDate.getDate() + dayShift);
 
     const meetingDays = {
       startDate: startDate,
@@ -99,6 +94,7 @@ export const CalendarView = (props: CalendarProps) => {
 
   //for now just mock one semesters data
   const appointments = buildAppointments(data);
+
   //custom stylings to override the DevExtreme stylings
   const css = `
     .dx-scheduler-navigator-previous {  

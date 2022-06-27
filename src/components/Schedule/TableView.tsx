@@ -9,7 +9,7 @@ import {
   Td,
   TableContainer,
 } from "@chakra-ui/react";
-import { formatDate, formatTime } from "../../utils/formatDate";
+import { formatDate, formatTimeString } from "../../utils/formatDate";
 
 interface TableProps {
   data: CourseSection[];
@@ -42,12 +42,22 @@ export const TableView = (props: TableProps) => {
       }
       const startTime = new Date(courses[i].meetingTimes[0].startTime);
       const endTime = new Date(courses[i].meetingTimes[0].endTime);
+      const [, startMinutes] = formatTimeString(startTime);
+      const [, endMinutes] = formatTimeString(endTime);
+
       const startDate = new Date(courses[i].startDate);
       const endDate = new Date(courses[i].endDate);
 
       tableData.push({
         course: courses[i].CourseID.subject + " " + courses[i].CourseID.code,
-        schedule_time: formatTime(startTime) + " / " + formatTime(endTime),
+        schedule_time:
+          startTime.getHours() +
+          ":" +
+          startMinutes +
+          "/" +
+          endTime.getHours() +
+          ":" +
+          endMinutes,
         days: d,
         term: courses[i].CourseID.term,
         prof: "temp", //not in schema
