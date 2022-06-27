@@ -34,7 +34,7 @@ export const Generate = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let input = {
+    const input = {
       year: Number(year),
     };
     generate({ variables: { input } });
@@ -48,7 +48,7 @@ export const Generate = () => {
         } else {
           console.log(data);
           toast({
-            title: "Failed to Generate Scheudle",
+            title: "Failed to Generate Schedule",
             description: data.generateSchedule.message,
             status: "error",
             isClosable: true,
@@ -57,7 +57,7 @@ export const Generate = () => {
       } else if (error) {
         console.log(error);
         toast({
-          title: "Failed to Generate Scheudle",
+          title: "Failed to Generate Schedule",
           description: error.message,
           status: "error",
           isClosable: true,
