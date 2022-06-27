@@ -34,13 +34,13 @@ const splitCourseDays = (course: CourseSection) => {
       startTimeDate.getHours() +
       ":" +
       startTimeDate.getMinutes() +
-      ":00.000Z";
+      ":00.000-0700";
     const end =
       "2022-05-31T" +
       endTimeDate.getHours() +
       ":" +
       endTimeDate.getMinutes() +
-      ":00.000Z";
+      ":00.000-0700";
 
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -99,7 +99,6 @@ export const CalendarView = (props: CalendarProps) => {
 
   //for now just mock one semesters data
   const appointments = buildAppointments(data);
-
   //custom stylings to override the DevExtreme stylings
   const css = `
     .dx-scheduler-navigator-previous {  
