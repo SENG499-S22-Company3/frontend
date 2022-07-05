@@ -1,6 +1,6 @@
 import React from "react";
-import { Flex, HStack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Flex, Heading, Box, Text } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 
 export const Dashboard = () => {
@@ -9,36 +9,82 @@ export const Dashboard = () => {
   return (
     <Flex
       w="100%"
-      minH="calc(100vh - 5.5rem)"
       pt={30}
       alignItems="center"
       justifyContent="center"
       flexDirection="column"
-      mb={32}
+      mt={64}
     >
+    <Heading mb={10}>Admin Dashboard</Heading>
       <Flex mb={32}>
-        <HStack spacing="24px" alignItems="center" justifyContent="center">
-          <Card
-            title="Survey Results"
-            description="View the results of the surveys that professors have submitted"
-            navigateTo="/surveyresults"
-          />
-          <Card
-            title="Schedule"
-            description="View class schedules"
-            navigateTo="/schedule"
-          />
-          <Card
-            title="Generate"
-            description="Generate a schedule"
-            navigateTo="/generate"
-          />
-          <Card
-            title="Profile Management"
-            description="Manage profiles of different professors"
-            navigateTo="/profileManagement"
-          />
-        </HStack>
+        <Box p="1vw">
+          <Link to="/surveyresults">
+            <Box
+              w="15vw"
+              minW="150px"
+              p="1vw"
+              style={{ boxShadow: "0px 0px 10px" }}
+              textAlign="center"
+              borderRadius="10px"
+            >
+              <Text fontWeight="700" pb="10px">
+                Survey Results
+              </Text>
+              View the results of surveys.
+            </Box>
+          </Link>
+        </Box>
+        <Box p="1vw">
+          <Link to="/schedule">
+            <Box
+              w="15vw"
+              minW="150px"
+              p="1vw"
+              style={{ boxShadow: "0px 0px 10px" }}
+              textAlign="center"
+              borderRadius="10px"
+            >
+              <Text fontWeight="700" pb="10px">
+                Schedule
+              </Text>
+              View class schedules.
+            </Box>
+          </Link>
+        </Box>
+        <Box p="1vw">
+          <Link to="/generate">
+            <Box
+              w="15vw"
+              minW="150px"
+              p="1vw"
+              style={{ boxShadow: "0px 0px 10px" }}
+              textAlign="center"
+              borderRadius="10px"
+            >
+              <Text fontWeight="700" pb="10px">
+                Generate
+              </Text>
+              Generate a schedule.
+            </Box>
+          </Link>
+        </Box>
+        <Box p="1vw">
+          <Link to="/profileManagement">
+            <Box
+              w="15vw"
+              minW="150px"
+              p="1vw"
+              style={{ boxShadow: "0px 0px 10px" }}
+              textAlign="center"
+              borderRadius="10px"
+            >
+              <Text fontWeight="700" pb="10px">
+                Profile Management
+              </Text>
+              Manage professor profiles.
+            </Box>
+          </Link>
+        </Box>
       </Flex>
     </Flex>
   );
