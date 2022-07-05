@@ -25,6 +25,7 @@ import {
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import {
+  ActionMeta,
   GroupBase,
   MultiValue,
   OptionBase,
@@ -41,8 +42,8 @@ const GENERATE = gql`
 `;
 
 const GET_COURSES = gql`
-  query get_courses {
-    courses(term: SUMMER) {
+  query get_courses($term: Term!) {
+    courses(term: $term) {
       CourseID {
         subject
         code
@@ -51,22 +52,6 @@ const GET_COURSES = gql`
   }
 `;
 
-const temp_course_list = [
-  {
-    label: "SENG 426",
-    value: "SENG 426",
-    colorScheme: "green",
-  },
-  {
-    label: "SENG 440",
-    value: "SENG 440",
-  },
-  {
-    label: "SENG 499",
-    value: "SENG 499",
-  },
-];
-
 interface CoursePreference {
   course: string;
   sections: number;
@@ -74,15 +59,31 @@ interface CoursePreference {
 
 interface CourseOption extends OptionBase {
   label: string;
-  value: string;
+  value: {
+    code: string;
+    subject: string;
+  };
+}
+
+interface CourseSection {
+  CourseID: {
+    subject: string;
+    code: string;
+  };
+}
+interface CourseInput {
+  code: string;
+  subject: string;
+  sections: number;
 }
 
 export const Generate = () => {
   const [year, setYear] = useState("");
-  const [term, setTerm] = useState("SPRING");
-  const [selectedCourses, setSelectedCourses] = useState<
-    MultiValue<CourseOption>
-  >([]);
+  const [term, setTerm] = useState("");
+  const [courseOptions, setCourseOptions] = useState<Array<CourseOption>>([]);
+  const [selectedCourses, setSelectedCourses] = useState<Array<CourseInput>>(
+    []
+  );
   const [generate, { data, loading, error }] = useMutation(GENERATE);
   const {
     data: courseData,
@@ -99,20 +100,77 @@ export const Generate = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // console.log(selectedCourses);
     const input = {
       year: Number(year),
     };
     generate({ variables: { input } });
   };
 
-  const handleCourseChange = (courses: MultiValue<CourseOption>) => {
-    console.log(courses);
-    setSelectedCourses(courses);
+  const handleCourseChange = (
+    courses: MultiValue<CourseOption>,
+    actionMeta: ActionMeta<CourseOption>
+  ) => {
+    if (actionMeta.action === "select-option") {
+      if (actionMeta.option) {
+        const newSelected = [
+          ...selectedCourses,
+          {
+            code: actionMeta.option.value.code,
+            subject: actionMeta.option.value.subject,
+            sections: 1,
+          },
+        ];
+        setSelectedCourses(newSelected);
+      } else {
+        console.log("Option Not Defined");
+      }
+    } else if (actionMeta.action === "remove-value") {
+      if (actionMeta.removedValue) {
+        setSelectedCourses(
+          selectedCourses.filter(function (course) {
+            return (
+              course.code !== actionMeta.removedValue.value.code &&
+              course.subject !== actionMeta.removedValue.value.subject
+            );
+          })
+        );
+      } else {
+        console.log("Removed Value Not Defined");
+      }
+    } else if (actionMeta.action === "clear") {
+      setSelectedCourses([]);
+    } else {
+      console.log("Unknown Action: " + actionMeta.action);
+    }
+  };
+
+  const handleSectionChange = (course: CourseInput, value: number) => {
+    console.log(course);
+    console.log(value);
+    const newSelected = selectedCourses.map((selected_course) => {
+      if (
+        selected_course.code === course.code &&
+        selected_course.subject === course.subject
+      ) {
+        return { ...selected_course, sections: value };
+      } else {
+        return { ...selected_course };
+      }
+    });
+    setSelectedCourses(newSelected);
   };
 
   useEffect(() => {
-    // console.log(courseData);
-    // console.log(courseError);
+    if (!courseError && !courseLoading && courseData) {
+      const options = courseData.courses.map((course: CourseSection) => {
+        return {
+          label: course.CourseID.subject + " " + course.CourseID.code,
+          value: course.CourseID,
+        };
+      });
+      setCourseOptions(options);
+    }
   }, [courseData, courseError, courseLoading]);
 
   useEffect(() => {
@@ -164,6 +222,7 @@ export const Generate = () => {
           <Grid templateColumns="repeat(2, 1fr)" gap={10}>
             <GridItem
               bg="gray.800"
+              minW="450px"
               p={10}
               borderRadius={10}
               flexDir="column"
@@ -193,15 +252,15 @@ export const Generate = () => {
                 mb={5}
                 w="50%"
               >
-                <option value="Spring">Spring</option>
-                <option value="Summer">Summer</option>
-                <option value="Fall">Fall</option>
+                <option value="SPRING">Spring</option>
+                <option value="SUMMER">Summer</option>
+                <option value="FALL">Fall</option>
               </Select>
               <FormLabel htmlFor="courses">Courses</FormLabel>
               <SelectPlus<CourseOption, true, GroupBase<CourseOption>>
                 isMulti
                 name="courses"
-                options={temp_course_list}
+                options={courseOptions}
                 placeholder="Select courses"
                 onChange={handleCourseChange}
               />
@@ -214,34 +273,40 @@ export const Generate = () => {
               style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
             >
               <Heading mb={4} size="md">
-                Course Sections
+                Course Selections
               </Heading>
               <Table variant="striped" size="sm">
                 <Thead>
                   <Tr>
                     <Th>Course</Th>
                     <Th>Sections</Th>
-                    <Th>Delete</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {selectedCourses.map((course) => (
-                    <Tr key={course.value}>
-                      <Td>{course.value}</Td>
-                      <Td>
-                        <NumberInput defaultValue={1} max={10} min={1} w={20}>
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      </Td>
-                      <Td>
-                        <Button bg="red.500">Delete</Button>
-                      </Td>
-                    </Tr>
-                  ))}
+                  {selectedCourses
+                    ? selectedCourses.map((course) => (
+                        <Tr key={course.subject + course.code}>
+                          <Td>{course.subject + " " + course.code}</Td>
+                          <Td>
+                            <NumberInput
+                              defaultValue={1}
+                              max={10}
+                              min={1}
+                              w={20}
+                              onChange={(valueAsString, ValueAsNumber) =>
+                                handleSectionChange(course, ValueAsNumber)
+                              }
+                            >
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          </Td>
+                        </Tr>
+                      ))
+                    : null}
                 </Tbody>
               </Table>
             </GridItem>
