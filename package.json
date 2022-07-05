@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "/app/",
-  "proxy": "https://seng499-c3-backend.herokuapp.com",
+  "proxy": "http://localhost:4000",
   "dependencies": {
     "@apollo/client": "^3.6.4",
     "@chakra-ui/icons": "^2.0.1",

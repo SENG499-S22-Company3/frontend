@@ -15,7 +15,7 @@ export const Dashboard = () => {
       flexDirection="column"
       mt={64}
     >
-    <Heading mb={10}>Admin Dashboard</Heading>
+      <Heading mb={10}>Admin Dashboard</Heading>
       <Flex mb={32}>
         <Box p="1vw">
           <Link to="/surveyresults">
