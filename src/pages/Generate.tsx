@@ -12,7 +12,10 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Radio,
+  RadioGroup,
   Select,
+  Stack,
   Table,
   Tbody,
   Td,
@@ -41,6 +44,8 @@ const GENERATE = gql`
   }
 `;
 
+// This query is grabbing course sections (courses that have already been scheudled)
+// We will need a new endpoint to grab the CourseIDs I think
 const GET_COURSES = gql`
   query get_courses($term: Term!) {
     courses(term: $term) {
@@ -51,11 +56,6 @@ const GET_COURSES = gql`
     }
   }
 `;
-
-interface CoursePreference {
-  course: string;
-  sections: number;
-}
 
 interface CourseOption extends OptionBase {
   label: string;
@@ -84,6 +84,8 @@ export const Generate = () => {
   const [selectedCourses, setSelectedCourses] = useState<Array<CourseInput>>(
     []
   );
+  const [algorithm1, setAlgorithm1] = useState("Company 3");
+  const [algorithm2, setAlgorithm2] = useState("Company 3");
   const [generate, { data, loading, error }] = useMutation(GENERATE);
   const {
     data: courseData,
@@ -146,8 +148,6 @@ export const Generate = () => {
   };
 
   const handleSectionChange = (course: CourseInput, value: number) => {
-    console.log(course);
-    console.log(value);
     const newSelected = selectedCourses.map((selected_course) => {
       if (
         selected_course.code === course.code &&
@@ -162,14 +162,18 @@ export const Generate = () => {
   };
 
   useEffect(() => {
-    if (!courseError && !courseLoading && courseData) {
-      const options = courseData.courses.map((course: CourseSection) => {
-        return {
-          label: course.CourseID.subject + " " + course.CourseID.code,
-          value: course.CourseID,
-        };
-      });
-      setCourseOptions(options);
+    if (!courseLoading) {
+      if (!courseError && courseData) {
+        const options = courseData.courses.map((course: CourseSection) => {
+          return {
+            label: course.CourseID.subject + " " + course.CourseID.code,
+            value: course.CourseID,
+          };
+        });
+        setCourseOptions(options);
+      } else {
+        console.log(courseError);
+      }
     }
   }, [courseData, courseError, courseLoading]);
 
@@ -197,7 +201,7 @@ export const Generate = () => {
         });
       }
     }
-  }, [data, loading, error]);
+  }, [data, loading, error, navigate, toast]);
 
   return (
     <Flex
@@ -264,6 +268,34 @@ export const Generate = () => {
                 placeholder="Select courses"
                 onChange={handleCourseChange}
               />
+              <FormLabel mt={5} htmlFor="algorithm1">
+                Algorithm 1
+              </FormLabel>
+              <RadioGroup
+                id="algorithm1"
+                name="algorithm1"
+                onChange={setAlgorithm1}
+                value={algorithm1}
+              >
+                <Stack direction="row">
+                  <Radio value="Company 3">Company 3</Radio>
+                  <Radio value="Company 4">Company 4</Radio>
+                </Stack>
+              </RadioGroup>
+              <FormLabel mt={5} htmlFor="algorithm2">
+                Algorithm 2
+              </FormLabel>
+              <RadioGroup
+                id="algorithm2"
+                name="algorithm2"
+                onChange={setAlgorithm2}
+                value={algorithm2}
+              >
+                <Stack direction="row">
+                  <Radio value="Company 3">Company 3</Radio>
+                  <Radio value="Company 4">Company 4</Radio>
+                </Stack>
+              </RadioGroup>
             </GridItem>
             <GridItem
               bg="gray.800"
