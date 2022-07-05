@@ -95,7 +95,7 @@ export const TableView = (props: TableProps) => {
                 startDate: course.startDate,
                 endDate: course.endDate,
                 capacity: course.capacity,
-                days: item.days.split(" ").slice(0, -1),
+                days: course.meetingTimes.map((meeting) => meeting.day),
               } as ModalItem;
               return (
                 <Tr key={index}>

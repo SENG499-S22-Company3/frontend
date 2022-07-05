@@ -34,17 +34,16 @@ const splitCourseDays = (course: CourseSection) => {
     const [startHours, startMinutes] = formatTimeString(startTimeDate);
     const [endHours, endMinutes] = formatTimeString(endTimeDate);
 
-    const start =
-      "2022-05-31T" + startHours + ":" + startMinutes + ":00.000+1000";
-    const end = "2022-05-31T" + endHours + ":" + endMinutes + ":00.000+1000";
+    const start = "2022-05-31T" + startHours + ":" + startMinutes + ":00.000";
+    const end = "2022-05-31T" + endHours + ":" + endMinutes + ":00.000";
 
     const startDate = new Date(start);
     const endDate = new Date(end);
 
     //change the date based on what day of the week it's supposed to be
     const dayShift = weekdayToInt(day);
-    startDate.setDate(startDate.getDate() + dayShift);
-    endDate.setDate(endDate.getDate() + dayShift);
+    startDate.setDate(startDate.getDate() + dayShift - 1);
+    endDate.setDate(endDate.getDate() + dayShift - 1);
 
     const meetingDays = {
       startDate: startDate,

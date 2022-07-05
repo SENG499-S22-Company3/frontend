@@ -13,6 +13,8 @@ import {
   Input,
   FormErrorMessage,
   Checkbox,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import DateBox from "devextreme-react/date-box";
 import { Appointment } from "../../stores/schedule";
@@ -20,6 +22,7 @@ import { ViewTypes } from "../../pages/Schedule";
 
 export interface ModalItem extends Appointment {
   days: string[];
+  removedDays?: string[];
 }
 
 interface AppointmentModalProps {
@@ -37,7 +40,17 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
   const initialRef = useRef(null);
   const days = courseUpdate.days;
 
-  const handleCheck = (weekDay: string, isChecked: boolean) => {
+  const handleCheck = (weekDay: string, isChecked?: boolean) => {
+    //handles the radio button case
+    if (!isChecked && isChecked !== false) {
+      setCourseUpdate({
+        ...courseUpdate,
+        days: [weekDay],
+      });
+      return;
+    }
+
+    //handles check box case
     let newDays = days;
     if (isChecked) {
       newDays = [...newDays, weekDay];
@@ -56,7 +69,10 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
       setError(true);
       return;
     }
-    onSubmit(courseUpdate);
+    const removedDays = courseData.days.filter(
+      (day) => !courseUpdate.days.includes(day)
+    );
+    onSubmit({ ...courseUpdate, removedDays: removedDays });
     onClose();
   };
   return (
@@ -175,53 +191,68 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                   })
                 }
               />
-              <FormControl display={"flex"} justifyContent={"space-between"}>
-                <Checkbox
-                  isChecked={days.includes("MON")}
-                  onChange={(e) =>
-                    handleCheck(e.target.value, e.target.checked)
-                  }
-                  value="MON"
-                >
-                  Mon
-                </Checkbox>
-                <Checkbox
-                  isChecked={days.includes("TUE")}
-                  onChange={(e) =>
-                    handleCheck(e.target.value, e.target.checked)
-                  }
-                  value="TUE"
-                >
-                  Tues
-                </Checkbox>
-                <Checkbox
-                  isChecked={days.includes("WED")}
-                  onChange={(e) =>
-                    handleCheck(e.target.value, e.target.checked)
-                  }
-                  value="WED"
-                >
-                  Wed
-                </Checkbox>
-                <Checkbox
-                  isChecked={days.includes("THU")}
-                  onChange={(e) =>
-                    handleCheck(e.target.value, e.target.checked)
-                  }
-                  value="THU"
-                >
-                  Thurs
-                </Checkbox>
-                <Checkbox
-                  isChecked={days.includes("FRI")}
-                  onChange={(e) =>
-                    handleCheck(e.target.value, e.target.checked)
-                  }
-                  value="FRI"
-                >
-                  Fri
-                </Checkbox>
-              </FormControl>
+              {viewState === ViewTypes.table ? (
+                <FormControl display={"flex"} justifyContent={"space-between"}>
+                  <Checkbox
+                    isChecked={days.includes("MONDAY")}
+                    onChange={(e) =>
+                      handleCheck(e.target.value, e.target.checked)
+                    }
+                    value="MONDAY"
+                  >
+                    Mon
+                  </Checkbox>
+                  <Checkbox
+                    isChecked={days.includes("TUESDAY")}
+                    onChange={(e) =>
+                      handleCheck(e.target.value, e.target.checked)
+                    }
+                    value="TUESDAY"
+                  >
+                    Tues
+                  </Checkbox>
+                  <Checkbox
+                    isChecked={days.includes("WEDNESDAY")}
+                    onChange={(e) =>
+                      handleCheck(e.target.value, e.target.checked)
+                    }
+                    value="WEDNESDAY"
+                  >
+                    Wed
+                  </Checkbox>
+                  <Checkbox
+                    isChecked={days.includes("THURSDAY")}
+                    onChange={(e) =>
+                      handleCheck(e.target.value, e.target.checked)
+                    }
+                    value="THURSDAY"
+                  >
+                    Thurs
+                  </Checkbox>
+                  <Checkbox
+                    isChecked={days.includes("FRIDAY")}
+                    onChange={(e) =>
+                      handleCheck(e.target.value, e.target.checked)
+                    }
+                    value="FRIDAY"
+                  >
+                    Fri
+                  </Checkbox>
+                </FormControl>
+              ) : (
+                <FormControl>
+                  <RadioGroup
+                    onChange={handleCheck}
+                    value={courseUpdate.days[0]}
+                  >
+                    <Radio value="MONDAY">Mon</Radio>
+                    <Radio value="TUESDAY">Tues</Radio>
+                    <Radio value="WEDNESDAY">Wed</Radio>
+                    <Radio value="THURSDAY">Thurs</Radio>
+                    <Radio value="FRIDAY">Fri</Radio>
+                  </RadioGroup>
+                </FormControl>
+              )}
             </FormControl>
           </ModalBody>
           <ModalFooter>

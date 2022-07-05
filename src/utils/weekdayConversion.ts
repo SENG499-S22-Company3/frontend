@@ -24,24 +24,24 @@ export const weekdayToInt = (dayOfWeek: Day) => {
 
 export const weekdayToString = (dayOfWeek: number) => {
   if (dayOfWeek === 0) {
-    return "SUN";
+    return "SUNDAY";
   }
   if (dayOfWeek === 1) {
-    return "MON";
+    return "MONDAY";
   }
   if (dayOfWeek === 2) {
-    return "TUE";
+    return "TUESDAY";
   }
   if (dayOfWeek === 3) {
-    return "WED";
+    return "WEDNESDAY";
   }
   if (dayOfWeek === 4) {
-    return "THU";
+    return "THURSDAY";
   }
   if (dayOfWeek === 5) {
-    return "FRI";
+    return "FRIDAY";
   }
-  return "SAT";
+  return "SATURDAY";
 };
 
 export const weekdayShortToLong = (dayOfWeek: string) => {

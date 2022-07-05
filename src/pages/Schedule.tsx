@@ -55,18 +55,18 @@ const mockData = [
     endDate: new Date(),
     meetingTimes: [
       {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        startTime: new Date(new Date().setHours(new Date().getHours())),
+        endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
         day: Day.TUESDAY,
       },
       {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        startTime: new Date(new Date().setHours(new Date().getHours())),
+        endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
         day: Day.WEDNESDAY,
       },
       {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        startTime: new Date(new Date().setHours(new Date().getHours())),
+        endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
         day: Day.FRIDAY,
       },
     ],
@@ -86,18 +86,18 @@ const mockData = [
     endDate: new Date(),
     meetingTimes: [
       {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        startTime: new Date(new Date().setHours(new Date().getHours() - 4)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 3)),
         day: Day.TUESDAY,
       },
       {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        startTime: new Date(new Date().setHours(new Date().getHours() - 4)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 3)),
         day: Day.WEDNESDAY,
       },
       {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        startTime: new Date(new Date().setHours(new Date().getHours() - 4)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 3)),
         day: Day.FRIDAY,
       },
     ],
@@ -144,17 +144,34 @@ export const Schedule = () => {
     if (!scheduleData) {
       return;
     }
-
+    //get the previous version
+    const oldCourse = scheduleData.find(
+      (course) => course.id === updatedCourse.id
+    );
     const professors = updatedCourse.professors.map((prof) => {
       return { name: prof };
     });
-    const meetingTimes = updatedCourse.days.map((day) => {
+
+    const newMeetingTimes = updatedCourse.days.map((day) => {
       return {
-        day: weekdayShortToLong(day),
+        day: day,
         startTime: updatedCourse.startTime,
         endTime: updatedCourse.endTime,
       } as MeetingTime;
     });
+    //filter out old meeting times that overlap the new meeting times, then merge them.
+    const removedDays = updatedCourse.removedDays;
+    const newDays = updatedCourse.days;
+    const oldMeetingTimes =
+      oldCourse?.meetingTimes.filter(
+        (meeting) =>
+          !newDays.includes(meeting.day) && !removedDays?.includes(meeting.day)
+      ) || [];
+
+    const meetingTimes = [...oldMeetingTimes, ...newMeetingTimes];
+
+    const startDate = updatedCourse.startDate || oldCourse?.startDate;
+    const endDate = updatedCourse.startDate || oldCourse?.endDate;
 
     const courseSection = {
       id: updatedCourse.id,
@@ -167,8 +184,8 @@ export const Schedule = () => {
       section: updatedCourse.section,
       capacity: updatedCourse.capacity,
       professors: professors,
-      startDate: updatedCourse.startDate,
-      endDate: updatedCourse.endDate,
+      startDate: startDate,
+      endDate: endDate,
       meetingTimes: meetingTimes,
     } as CourseSection;
 
