@@ -1,5 +1,4 @@
-import { Appointment, CourseSection } from "../../stores/schedule";
-
+import { CourseSection } from "../../stores/schedule";
 import {
   Table,
   Thead,
