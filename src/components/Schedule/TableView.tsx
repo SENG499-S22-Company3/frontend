@@ -91,14 +91,12 @@ export const TableView = (props: TableProps) => {
             {data.map((course, index) => {
               const item = formatTableItem(course);
               const modalItem = {
-                id: course.id,
                 ...course.CourseID,
+                ...course,
+                id: course.id,
                 professors: course.professors.map((prof) => prof.displayName),
                 startTime: new Date(course.meetingTimes[0].startTime),
                 endTime: new Date(course.meetingTimes[0].endTime),
-                startDate: course.startDate,
-                endDate: course.endDate,
-                capacity: course.capacity,
                 days: course.meetingTimes.map((meeting) => meeting.day),
               } as ModalItem;
               return (
