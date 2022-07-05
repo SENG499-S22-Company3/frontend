@@ -14,18 +14,18 @@ export const AppointmentCard = (model: appointmentModel) => {
     <div>
       <Flex justifyContent={"space-between"}>
         <Text fontWeight="bold">
-          {courseData.subject} {courseData.courseNumber}
+          {courseData.subject} {courseData.code}
         </Text>
         <Text>{courseData.section}</Text>
       </Flex>
-      <Text fontWeight="bold">{courseData.courseTitle}</Text>
-      {courseData.prof.map((profName, idx) => (
-        <Text key={idx}>{profName}</Text>
+      <Text fontWeight="bold">{courseData.title}</Text>
+      {courseData.professors.map((prof, idx) => (
+        <Text key={idx}>{prof}</Text>
       ))}
       <Text>
-        {formatDate(courseData.startDate, "shortTime")}
+        {formatDate(courseData.startTime, "shortTime")}
         {" - "}
-        {formatDate(courseData.endDate, "shortTime")}
+        {formatDate(courseData.endTime, "shortTime")}
       </Text>
     </div>
   );
