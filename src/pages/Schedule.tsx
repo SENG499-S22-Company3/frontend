@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Container, Flex, Select, Heading } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
@@ -7,7 +7,6 @@ import { CalendarView } from "../components/Schedule/CalendarView";
 import { CourseSection, Day, MeetingTime } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
-import { weekdayShortToLong } from "../utils/weekdayConversion";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -118,6 +117,7 @@ export const Schedule = () => {
 
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
+  const baseScheduleRef = useRef(scheduleData);
 
   useEffect(() => {
     if (baseScheduleData && !scheduleError && !scheduleLoading) {
@@ -126,6 +126,7 @@ export const Schedule = () => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
       });
       setScheduleData(coursesId);
+      baseScheduleRef.current = coursesId;
     }
   }, [baseScheduleData, scheduleError, scheduleLoading]);
 
@@ -137,6 +138,7 @@ export const Schedule = () => {
       return { ...course, id: Math.floor(Math.random() * 10000) };
     });
     setScheduleData(coursesId);
+    baseScheduleRef.current = coursesId;
   }, []);
 
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
@@ -149,7 +151,7 @@ export const Schedule = () => {
       (course) => course.id === updatedCourse.id
     );
     const professors = updatedCourse.professors.map((prof) => {
-      return { name: prof };
+      return { displayName: prof };
     });
 
     const newMeetingTimes = updatedCourse.days.map((day) => {
@@ -192,7 +194,9 @@ export const Schedule = () => {
     const filteredSchedule = scheduleData.filter(
       (course) => course.id !== courseSection.id
     );
-    setScheduleData([courseSection, ...filteredSchedule]);
+    const newSchedule = [courseSection, ...filteredSchedule];
+    setScheduleData(newSchedule);
+    baseScheduleRef.current = newSchedule;
   };
 
   return (
@@ -225,7 +229,7 @@ export const Schedule = () => {
                 <option value="calendar">Calendar View</option>
               </Select>
               <SearchBar
-                termData={baseScheduleData.schedule.courses}
+                termData={baseScheduleRef.current || []}
                 setScheduleData={setScheduleData}
               />
               <Button

@@ -37,6 +37,10 @@ const formatTableItem = (course: CourseSection) => {
   const startDate = new Date(course.startDate);
   const endDate = new Date(course.endDate);
 
+  const professors = course.professors
+    .map((prof) => prof.displayName)
+    .join(" ");
+
   return {
     course: course.CourseID.subject + " " + course.CourseID.code,
     schedule_time:
@@ -49,7 +53,7 @@ const formatTableItem = (course: CourseSection) => {
       endMinutes,
     days: d,
     term: course.CourseID.term,
-    prof: "temp", //not in schema
+    prof: professors, //not in schema
     section: "temp", //not in schema
     start_end: formatDate(startDate) + " / " + formatDate(endDate),
     capacity: course.capacity.toString(),
@@ -89,7 +93,7 @@ export const TableView = (props: TableProps) => {
               const modalItem = {
                 id: course.id,
                 ...course.CourseID,
-                professors: course.professors.map((prof) => prof.name),
+                professors: course.professors.map((prof) => prof.displayName),
                 startTime: new Date(course.meetingTimes[0].startTime),
                 endTime: new Date(course.meetingTimes[0].endTime),
                 startDate: course.startDate,
