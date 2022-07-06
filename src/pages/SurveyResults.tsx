@@ -111,8 +111,6 @@ export const SurveyResults = () => {
     console.log(item);
   };
 
-  const bg = useColorModeValue("gray.50", "gray.700");
-
   return (
     <Flex
       w="100%"
@@ -125,7 +123,6 @@ export const SurveyResults = () => {
       <Container maxW="container.xl">
         <Heading mb={6}>Professor Preferences Survey Results</Heading>
         <Flex
-          bg={bg}
           p={10}
           borderRadius={10}
           flexDir="column"

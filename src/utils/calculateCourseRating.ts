@@ -1,16 +1,16 @@
 export const calculateCourseRating = (able: string, willing: string) => {
   if (able === "With Effort" && willing === "Unwilling") {
-    return 20;
+    return 1;
   } else if (able === "Able" && willing === "Unwilling") {
-    return 39;
+    return 2;
   } else if (able === "With Effort" && willing === "Willing") {
-    return 40;
+    return 3;
   } else if (able === "Able" && willing === "Willing") {
-    return 78;
+    return 4;
   } else if (able === "With Effort" && willing === "Very Willing") {
-    return 100;
+    return 5;
   } else if (able === "Able" && willing === "Very Willing") {
-    return 195;
+    return 6;
   } else {
     return 0;
   }

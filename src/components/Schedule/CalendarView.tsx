@@ -3,9 +3,10 @@ import { Scheduler, Editing } from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
 import { Appointment, CourseSection } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
-import { weekdayToInt } from "../../utils/weekdayToInt";
+import { weekdayToInt } from "../../utils/weekdayConversion";
 import { AppointmentTooltip } from "./AppointmentTooltip";
 import { formatTimeString } from "../../utils/formatDate";
+import { ModalItem } from "./AppointmentModal";
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -33,17 +34,16 @@ const splitCourseDays = (course: CourseSection) => {
     const [startHours, startMinutes] = formatTimeString(startTimeDate);
     const [endHours, endMinutes] = formatTimeString(endTimeDate);
 
-    const start =
-      "2022-05-31T" + startHours + ":" + startMinutes + ":00.000+1000";
-    const end = "2022-05-31T" + endHours + ":" + endMinutes + ":00.000+1000";
+    const start = "2022-05-31T" + startHours + ":" + startMinutes + ":00.000";
+    const end = "2022-05-31T" + endHours + ":" + endMinutes + ":00.000";
 
     const startDate = new Date(start);
     const endDate = new Date(end);
 
     //change the date based on what day of the week it's supposed to be
     const dayShift = weekdayToInt(day);
-    startDate.setDate(startDate.getDate() + dayShift);
-    endDate.setDate(endDate.getDate() + dayShift);
+    startDate.setDate(startDate.getDate() + dayShift - 1);
+    endDate.setDate(endDate.getDate() + dayShift - 1);
 
     const meetingDays = {
       startDate: startDate,
@@ -59,18 +59,20 @@ const splitCourseDays = (course: CourseSection) => {
 //convert Course object data from backend to the structure DevExtreme expects
 const buildAppointments = (courses: CourseSection[]) => {
   const appointments = courses.flatMap((course) => {
-    //const professors = course.professors.map((prof) => prof.username); //TO-DO switch to displayName, when its in schema
+    const professors = course.professors.map((prof) => prof.displayName); //TO-DO switch to displayName, when its in schema
 
     const assignedCourses = splitCourseDays(course).map((meetingTime) => {
       return {
-        courseTitle: course.CourseID.code, //not in schema yet
-        courseNumber: course.CourseID.code,
+        id: course.id,
+        title: course.CourseID.code, //not in schema yet
+        code: course.CourseID.code,
         subject: course.CourseID.subject,
+        term: course.CourseID.term,
         section: "TEMP_SECTION", //not in schema yet
-        prof: ["temp name"], //not in schema yet
-        classSize: course.capacity,
-        startDate: meetingTime.startDate,
-        endDate: meetingTime.endDate,
+        professors: professors, //not in schema yet
+        capacity: course.capacity,
+        startTime: meetingTime.startDate,
+        endTime: meetingTime.endDate,
       } as Appointment;
     });
 
@@ -81,10 +83,11 @@ const buildAppointments = (courses: CourseSection[]) => {
 
 interface CalendarProps {
   data: CourseSection[];
+  onUpdateSubmit: (updatedCourse: ModalItem) => void;
 }
 
 export const CalendarView = (props: CalendarProps) => {
-  const { data } = props;
+  const { data, onUpdateSubmit } = props;
   const scheduleRef = createRef<Scheduler>();
 
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
@@ -122,7 +125,11 @@ export const CalendarView = (props: CalendarProps) => {
         dataSource={appointments}
         appointmentRender={AppointmentCard}
         appointmentTooltipRender={(model) => (
-          <AppointmentTooltip model={model} scheduleRef={scheduleRef} />
+          <AppointmentTooltip
+            model={model}
+            scheduleRef={scheduleRef}
+            onUpdateSubmit={onUpdateSubmit}
+          />
         )}
         customizeDateNavigatorText={(info) => getWeekDay(info.startDate)}
         dateCellTemplate={dateCell}
@@ -137,13 +144,14 @@ export const CalendarView = (props: CalendarProps) => {
         onCurrentViewChange={setViewState}
         onCurrentDateChange={setCurrentDate}
         onCellClick={(cell) => setCurrentDate(cell.cellData.startDate)}
+        startDateExpr={"startTime"}
+        endDateExpr={"endTime"}
       >
         <Editing
           allowAdding={false}
           allowDragging={false}
           allowDeleting={false}
           allowResizing={false}
-          allowUpdating={false}
         />
       </Scheduler>
     </>

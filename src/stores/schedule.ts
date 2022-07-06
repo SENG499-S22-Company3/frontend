@@ -1,21 +1,19 @@
-export type User = {
-  username: string;
-  name: string;
-  email: string;
-  roles: string[];
-  displayName: string; //not currently in schema
-};
+import { User } from "./login";
 
 //this is the type that devExtreme expects
 export type Appointment = {
-  startDate: Date; //both day and time
-  endDate: Date; //both day and time
-  courseTitle: string;
-  courseNumber: string;
+  id: number;
+  title: string;
+  code: string;
+  term: string;
   subject: string;
   section: string;
-  prof: string[];
-  classSize: number; //from algo2
+  professors: string[];
+  capacity: number; //from algo2
+  startTime: Date; //for table view
+  endTime: Date; //for table view
+  startDate?: Date; //both day and time
+  endDate?: Date; //both day and time
 };
 
 //from backends GraphQL schema
@@ -28,7 +26,9 @@ export type Schedule = {
 };
 
 export type CourseSection = {
+  id: number;
   CourseID: CourseID;
+  section: string; //not currently in schema
   hoursPerWeek: number;
   capacity: number;
   professors: User[];
@@ -42,13 +42,12 @@ export type CourseID = {
   subject: string;
   term: string;
   title: string; //not currently in schema
-  section: string; //not currently in schema
 };
 
 export type MeetingTime = {
   day: Day;
-  startTime: Date; //Schema has this as Date, but shouldn't this be string??
-  endTime: Date; //Schema has this as Date, but shouldn't this be string??
+  startTime: Date;
+  endTime: Date;
 };
 
 export enum Day {

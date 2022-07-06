@@ -1,9 +1,12 @@
 import React from "react";
 import { formatDate } from "devextreme/localization";
-import { Flex, IconButton, Text } from "@chakra-ui/react";
+import { Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 import { Appointment } from "../../stores/schedule";
 import { CloseIcon, EditIcon } from "@chakra-ui/icons";
 import Scheduler from "devextreme-react/scheduler";
+import { AppointmentModal, ModalItem } from "./AppointmentModal";
+import { ViewTypes } from "../../pages/Schedule";
+import { weekdayToString } from "../../utils/weekdayConversion";
 
 interface appointmentModel {
   appointmentData: Appointment;
@@ -13,10 +16,13 @@ interface appointmentModel {
 interface AppointmentTooltipProps {
   model: appointmentModel;
   scheduleRef: React.RefObject<Scheduler>;
+  onUpdateSubmit: (updatedCourse: ModalItem) => void;
 }
 
 export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
-  const { model, scheduleRef } = props;
+  const { model, scheduleRef, onUpdateSubmit } = props;
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const courseData = model.appointmentData;
   const schedule = scheduleRef?.current?.instance;
 
@@ -30,7 +36,7 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
         <Flex justifyContent={"space-between"} alignItems={"center"}>
           <Flex>
             <Text fontWeight="bold">
-              {courseData.subject} {courseData.courseNumber}
+              {courseData.subject} {courseData.code}
             </Text>
             <Text px={"0.5rem"}>{courseData.section}</Text>
           </Flex>
@@ -41,7 +47,8 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
               icon={<EditIcon />}
               variant={"ghost"}
               onClick={(e) => {
-                schedule?.showAppointmentPopup(courseData);
+                schedule?.hideAppointmentTooltip();
+                onOpen();
                 e.stopPropagation();
               }}
             />
@@ -58,17 +65,32 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
           </Flex>
         </Flex>
         <Flex flexDirection={"column"} textAlign={"left"}>
-          <Text>{"temp title"}</Text>
-          {courseData.prof.map((profName) => (
-            <Text pr={"0.5rem"}>{profName}</Text>
+          <Flex>
+            <Text fontWeight={"bold"} marginRight={"0.25rem"}>
+              {courseData.capacity}
+            </Text>
+            <Text>Students</Text>
+          </Flex>
+          {courseData.professors.map((prof) => (
+            <Text pr={"0.5rem"}>{prof}</Text>
           ))}
           <Text>
-            {formatDate(courseData.startDate, "shortTime")}
+            {formatDate(courseData.startTime, "shortTime")}
             {" - "}
-            {formatDate(courseData.endDate, "shortTime")}
+            {formatDate(courseData.endTime, "shortTime")}
           </Text>
         </Flex>
       </Flex>
+      <AppointmentModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={onUpdateSubmit}
+        courseData={{
+          ...courseData,
+          days: [weekdayToString(courseData.startTime.getDay())],
+        }}
+        viewState={ViewTypes.calendar}
+      />
     </>
   );
 };
