@@ -30,12 +30,12 @@ export const SearchBar = (props: SearchBarProps) => {
     const inputWords = searchInput.toLowerCase().split(" ");
     const filteredAppointments = termData.filter((course) => {
       const courseProperties = Object.values(course.CourseID);
-      // const courseProfessors = course.professors.map(
-      //   (prof) => prof.username //TO-DO change to displayName, once it's in the schema
-      // );
+      const courseProfessors = course.professors.map(
+        (prof) => prof.displayName
+      );
 
       let appointmentValues = "";
-      [...courseProperties /*...courseProfessors*/].forEach(
+      [...courseProperties, ...courseProfessors].forEach(
         (value) => (appointmentValues += value.toLowerCase())
       );
       return inputWords.every((word) => appointmentValues.includes(word));

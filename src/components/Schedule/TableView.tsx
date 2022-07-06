@@ -1,5 +1,4 @@
 import { CourseSection } from "../../stores/schedule";
-
 import {
   Table,
   Thead,
@@ -8,98 +7,134 @@ import {
   Th,
   Td,
   TableContainer,
+  IconButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { formatDate, formatTimeString } from "../../utils/formatDate";
+import { EditIcon } from "@chakra-ui/icons";
+import { AppointmentModal, ModalItem } from "./AppointmentModal";
+import { useState } from "react";
+import { ViewTypes } from "../../pages/Schedule";
 
 interface TableProps {
   data: CourseSection[];
+  onUpdateSubmit: (updatedCourse: ModalItem) => void;
 }
 
+const formatTableItem = (course: CourseSection) => {
+  var d = "";
+  var len = course.meetingTimes.length;
+  for (var y = 0; y < len; y++) {
+    d = d + course.meetingTimes[y].day.slice(0, 3) + " ";
+  }
+
+  const startTime = new Date(course.meetingTimes[0].startTime);
+  const endTime = new Date(course.meetingTimes[0].endTime);
+  const [, startMinutes] = formatTimeString(startTime);
+  const [, endMinutes] = formatTimeString(endTime);
+
+  const startDate = new Date(course.startDate);
+  const endDate = new Date(course.endDate);
+
+  const professors = course.professors
+    .map((prof) => prof.displayName)
+    .join(" ");
+
+  return {
+    course: course.CourseID.subject + " " + course.CourseID.code,
+    schedule_time:
+      startTime.getHours() +
+      ":" +
+      startMinutes +
+      "/" +
+      endTime.getHours() +
+      ":" +
+      endMinutes,
+    days: d,
+    term: course.CourseID.term,
+    prof: professors, //not in schema
+    section: "temp", //not in schema
+    start_end: formatDate(startDate) + " / " + formatDate(endDate),
+    capacity: course.capacity.toString(),
+  };
+};
+
 export const TableView = (props: TableProps) => {
-  const { data } = props;
+  const { data, onUpdateSubmit } = props;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedCourse, setSelectedCourse] = useState<ModalItem | null>(null);
 
-  var tableData = [
-    {
-      course: "",
-      schedule_time: "",
-      days: "",
-      term: "",
-      prof: "",
-      section: "",
-      start_end: "",
-      capacity: "",
-    },
-  ];
-
-  const populateTable = (courses: CourseSection[]) => {
-    tableData.pop();
-
-    for (var i = 0; i < courses.length; i++) {
-      var d = "";
-      var len = courses[i].meetingTimes.length;
-      for (var y = 0; y < len; y++) {
-        d = d + courses[i].meetingTimes[y].day.slice(0, 3) + " ";
-      }
-      const startTime = new Date(courses[i].meetingTimes[0].startTime);
-      const endTime = new Date(courses[i].meetingTimes[0].endTime);
-      const [, startMinutes] = formatTimeString(startTime);
-      const [, endMinutes] = formatTimeString(endTime);
-
-      const startDate = new Date(courses[i].startDate);
-      const endDate = new Date(courses[i].endDate);
-
-      tableData.push({
-        course: courses[i].CourseID.subject + " " + courses[i].CourseID.code,
-        schedule_time:
-          startTime.getHours() +
-          ":" +
-          startMinutes +
-          "/" +
-          endTime.getHours() +
-          ":" +
-          endMinutes,
-        days: d,
-        term: courses[i].CourseID.term,
-        prof: "temp", //not in schema
-        section: (i + 1).toString(), //not in schema
-        start_end: formatDate(startDate) + " / " + formatDate(endDate),
-        capacity: courses[i].capacity.toString(),
-      });
-    }
+  const handleUpdateSubmit = (updatedCourse: ModalItem) => {
+    setSelectedCourse(null);
+    onUpdateSubmit(updatedCourse);
   };
 
-  populateTable(data);
-
   return (
-    <TableContainer overflowY="auto">
-      <Table size="sm" variant="striped" colorScheme="gray">
-        <Thead>
-          <Tr>
-            <Th>Course</Th>
-            <Th>Schedule Time</Th>
-            <Th>Days</Th>
-            <Th>Term</Th>
-            <Th>Prof/InsTructor</Th>
-            <Th>Section</Th>
-            <Th>Start/End Date</Th>
-            <Th>Capacity</Th>
-          </Tr>
-        </Thead>
-        <Tbody id="table_body">
-          {tableData.map((item) => (
-            <Tr key={item.section}>
-              <Td>{item.course}</Td>
-              <Td>{item.schedule_time}</Td>
-              <Td>{item.days}</Td>
-              <Td>{item.term}</Td>
-              <Td>{item.prof}</Td>
-              <Td>{item.section}</Td>
-              <Td>{item.start_end}</Td>
-              <Td>{item.capacity}</Td>
+    <>
+      <TableContainer overflowY="auto">
+        <Table size="sm" variant="striped" colorScheme="gray">
+          <Thead>
+            <Tr>
+              <Th>Course</Th>
+              <Th>Schedule Time</Th>
+              <Th>Days</Th>
+              <Th>Term</Th>
+              <Th>Prof/Instructor</Th>
+              <Th>Section</Th>
+              <Th>Start/End Date</Th>
+              <Th>Capacity</Th>
+              <Th>Edit</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+          </Thead>
+          <Tbody id="table_body">
+            {data.map((course, index) => {
+              const item = formatTableItem(course);
+              const modalItem = {
+                ...course.CourseID,
+                ...course,
+                id: course.id,
+                professors: course.professors.map((prof) => prof.displayName),
+                startTime: new Date(course.meetingTimes[0].startTime),
+                endTime: new Date(course.meetingTimes[0].endTime),
+                days: course.meetingTimes.map((meeting) => meeting.day),
+              } as ModalItem;
+              return (
+                <Tr key={index}>
+                  <Td>{item.course}</Td>
+                  <Td>{item.schedule_time}</Td>
+                  <Td>{item.days}</Td>
+                  <Td>{item.term}</Td>
+                  <Td>{item.prof}</Td>
+                  <Td>{item.section}</Td>
+                  <Td>{item.start_end}</Td>
+                  <Td>{item.capacity}</Td>
+                  <Td>
+                    <IconButton
+                      aria-label="Edit course"
+                      size="sm"
+                      icon={<EditIcon />}
+                      variant={"ghost"}
+                      onClick={() => {
+                        setSelectedCourse(modalItem);
+                        onOpen();
+                      }}
+                    />
+                  </Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      {selectedCourse && (
+        <AppointmentModal
+          isOpen={isOpen}
+          onClose={onClose}
+          onSubmit={handleUpdateSubmit}
+          courseData={selectedCourse}
+          viewState={ViewTypes.table}
+        />
+      )}
+    </>
   );
 };
