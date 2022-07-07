@@ -343,7 +343,7 @@ export const Generate = () => {
                   </Thead>
                   <Tbody>
                     {selectedCourses
-                      ? selectedCourses?.map((course) => (
+                      ? selectedCourses.map((course) => (
                           <Tr key={course.subject + course.code}>
                             <Td>{course.subject + " " + course.code}</Td>
                             <Td>
