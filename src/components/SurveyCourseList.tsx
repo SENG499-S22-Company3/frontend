@@ -12,7 +12,7 @@ import {
   Td,
   Box,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CourseInterface } from "../pages/Survey";
 import { calculateCourseRating } from "../utils/calculateCourseRating";
 

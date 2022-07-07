@@ -12,9 +12,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  RadioGroup,
-  Stack,
-  Radio,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
@@ -34,9 +31,9 @@ const CREATE = gql`
 export const CreateUser = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [department, setDepartment] = useState("");
+  // const [role, setRole] = useState("");
   const [createUserMutation, { loading, data, error }] = useMutation(CREATE);
 
   const bg = useColorModeValue("gray.50", "gray.800");
