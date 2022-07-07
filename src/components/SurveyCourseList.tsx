@@ -1,15 +1,16 @@
 import { gql, useQuery } from "@apollo/client";
 import {
-  Divider,
-  Flex,
-  FormLabel,
   Text,
-  Grid,
-  GridItem,
-  Heading,
   Radio,
   RadioGroup,
   Stack,
+  Table,
+  Tr,
+  Thead,
+  Th,
+  Tbody,
+  Td,
+  Box,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { CourseInterface } from "../pages/Survey";
@@ -42,6 +43,18 @@ interface PreferenceListInterface {
 interface ChildProps {
   handleCourseChange(course: CourseInterface, value: number): void;
 }
+
+// const data = {
+//   survey: {
+//     courses: [
+//       { subject: "SENG", code: "265", term: "SPRING" },
+//       { subject: "SENG", code: "275", term: "SPRING" },
+//       { subject: "SENG", code: "321", term: "SPRING" },
+//       { subject: "SENG", code: "360", term: "SPRING" },
+//       { subject: "SENG", code: "440", term: "SPRING" },
+//     ],
+//   },
+// };
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES, {});
@@ -109,45 +122,58 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       </Text>
     );
   } else
-    return data.survey.courses.map(
-      (course: PreferenceInterface, index: number) => (
-        <Flex key={"course-" + index} w="full" mb={2}>
-          <Grid templateColumns="repeat(3,1fr)" gap={3}>
-            <GridItem colSpan={3}>
-              <Heading size="sm">
-                {course.subject} {course.code}
-              </Heading>
-            </GridItem>
-            <GridItem>
-              <FormLabel htmlFor="canTeach">Can Teach?</FormLabel>
-              <RadioGroup
-                id="canTeach"
-                onChange={(v) => handleChange(course, "Able", v)}
-              >
-                <Stack direction="row">
-                  <Radio value="Able">Able</Radio>
-                  <Radio value="With Effort">With Effort</Radio>
-                </Stack>
-              </RadioGroup>
-            </GridItem>
-            <GridItem>
-              <FormLabel htmlFor="willingTeach">Willing to Teach?</FormLabel>
-              <RadioGroup
-                id="willingTeach"
-                onChange={(v) => handleChange(course, "Willingness", v)}
-              >
-                <Stack direction="row">
-                  <Radio value="Unwilling">Unwilling</Radio>
-                  <Radio value="Willing">Willing</Radio>
-                  <Radio value="Very Willing">Very Willing</Radio>
-                </Stack>
-              </RadioGroup>
-            </GridItem>
-            <GridItem colSpan={3}>
-              <Divider mt={2} mb={2} />
-            </GridItem>
-          </Grid>
-        </Flex>
-      )
+    return (
+      <Box
+        bg="gray.800"
+        p={5}
+        mt={5}
+        mb={5}
+        borderRadius={10}
+        style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+      >
+        <Table variant="striped" size="sm">
+          <Thead>
+            <Tr>
+              <Th>Course</Th>
+              <Th>Ability to Teach</Th>
+              <Th>Willingness to Teach</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {data.survey.courses.map(
+              (course: PreferenceInterface, index: number) => (
+                <Tr key={"preference-" + index}>
+                  <Td>
+                    {course.subject} {course.code}
+                  </Td>
+                  <Td>
+                    <RadioGroup
+                      id="canTeach"
+                      onChange={(v) => handleChange(course, "Able", v)}
+                    >
+                      <Stack direction="row">
+                        <Radio value="Able">Able</Radio>
+                        <Radio value="With Effort">With Effort</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Td>
+                  <Td>
+                    <RadioGroup
+                      id="willingTeach"
+                      onChange={(v) => handleChange(course, "Willingness", v)}
+                    >
+                      <Stack direction="row">
+                        <Radio value="Unwilling">Unwilling</Radio>
+                        <Radio value="Willing">Willing</Radio>
+                        <Radio value="Very Willing">Very Willing</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Td>
+                </Tr>
+              )
+            )}
+          </Tbody>
+        </Table>
+      </Box>
     );
 };

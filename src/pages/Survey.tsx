@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Checkbox,
   Container,
@@ -41,8 +42,7 @@ interface CourseListInterface {
 }
 
 export const Survey = () => {
-  const [nonTeachingTerm1, setNonTeachingTerm1] = useState("");
-  const [nonTeachingTerm2, setNonTeachingTerm2] = useState("");
+  const [nonTeachingTerm, setNonTeachingTerm] = useState("");
   const [hasRelief, setHasRelief] = useState(false);
   const [reliefExplaination, setReliefExplaination] = useState("");
   const [hasTopic, setHasTopic] = useState(false);
@@ -67,7 +67,7 @@ export const Survey = () => {
 
   const handleCourseChange = (course: CourseInterface, value: number) => {
     let newRating = courseRatings;
-    let unique_id = course.subject.concat(course.code);
+    const unique_id = course.subject.concat(course.code);
     newRating[unique_id] = {
       ...course,
       rating: value,
@@ -96,71 +96,60 @@ export const Survey = () => {
           <form onSubmit={onSubmit}>
             <FormControl>
               <Heading size="lg">Course Preferences</Heading>
-              <Divider mt={2} mb={2} />
               <SurveyCourseList handleCourseChange={handleCourseChange} />
               <Heading size="lg">Other Preferences</Heading>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="nonTeachingTerm1">
-                Non-Teaching Term 1
-              </FormLabel>
-              <RadioGroup
-                id="nonTeachingTerm1"
-                name="nonTeachingTerm1"
-                onChange={setNonTeachingTerm1}
-                value={nonTeachingTerm1}
-              >
-                <Stack direction="row">
-                  <Radio value="None">None</Radio>
-                  <Radio value="Fall">Fall</Radio>
-                  <Radio value="Spring">Spring</Radio>
-                  <Radio value="Summer">Summer</Radio>
-                </Stack>
-              </RadioGroup>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="nonTeachingTerm1">
-                Non-Teaching Term 2
-              </FormLabel>
-              <RadioGroup
-                id="nonTeachingTerm2"
-                name="nonTeachingTerm2"
-                onChange={setNonTeachingTerm2}
-                value={nonTeachingTerm2}
-              >
-                <Stack direction="row">
-                  <Radio value="None">None</Radio>
-                  <Radio value="Fall">Fall</Radio>
-                  <Radio value="Spring">Spring</Radio>
-                  <Radio value="Summer">Summer</Radio>
-                </Stack>
-              </RadioGroup>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="hasRelief">Relief</FormLabel>
-              <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
-                Has Relief?
-              </Checkbox>
-              <Textarea
-                isDisabled={!hasRelief}
-                id="large_text"
-                value={reliefExplaination}
-                placeholder="Relief Explaination"
-                onChange={(e) => setReliefExplaination(e.target.value)}
-                size="sm"
-              />
-              <Divider mt={4} mb={2} />
-              <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
-              <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
-                Has Topic?
-              </Checkbox>
-              <Textarea
-                isDisabled={!hasTopic}
-                id="topicDescription"
-                value={topicDescription}
-                placeholder="Topics Course Description"
-                onChange={(e) => setTopicDescription(e.target.value)}
-                size="sm"
+              <Box
+                bg="gray.800"
+                p={5}
+                mt={5}
                 mb={5}
-              />
+                borderRadius={10}
+                style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+              >
+                <FormLabel htmlFor="nonTeachingTerm">
+                  Non-Teaching Term
+                </FormLabel>
+                <RadioGroup
+                  id="nonTeachingTerm"
+                  name="nonTeachingTerm"
+                  onChange={setNonTeachingTerm}
+                  value={nonTeachingTerm}
+                >
+                  <Stack direction="row">
+                    <Radio value="Fall">Fall</Radio>
+                    <Radio value="Spring">Spring</Radio>
+                    <Radio value="Summer">Summer</Radio>
+                  </Stack>
+                </RadioGroup>
 
+                <Divider mt={2} mb={2} />
+                <FormLabel htmlFor="hasRelief">Relief</FormLabel>
+                <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
+                  Has Relief?
+                </Checkbox>
+                <Textarea
+                  isDisabled={!hasRelief}
+                  id="large_text"
+                  value={reliefExplaination}
+                  placeholder="Relief Explaination"
+                  onChange={(e) => setReliefExplaination(e.target.value)}
+                  size="sm"
+                />
+                <Divider mt={4} mb={2} />
+                <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
+                <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
+                  Has Topic?
+                </Checkbox>
+                <Textarea
+                  isDisabled={!hasTopic}
+                  id="topicDescription"
+                  value={topicDescription}
+                  placeholder="Topics Course Description"
+                  onChange={(e) => setTopicDescription(e.target.value)}
+                  size="sm"
+                  mb={5}
+                />
+              </Box>
               <Button
                 isLoading={loading}
                 type="submit"
