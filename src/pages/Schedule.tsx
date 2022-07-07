@@ -4,9 +4,15 @@ import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
-import { CourseSection, Day, MeetingTime } from "../stores/schedule";
+import {
+  Appointment,
+  CourseSection,
+  Day,
+  MeetingTime,
+} from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
+import { weekdayToString } from "../utils/weekdayConversion";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -120,7 +126,7 @@ export const Schedule = () => {
   const baseScheduleRef = useRef(scheduleData);
 
   useEffect(() => {
-    if (baseScheduleData && !scheduleError && !scheduleLoading) {
+    if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
       const courses = baseScheduleData.schedule.courses;
       const coursesId = courses.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
@@ -141,20 +147,24 @@ export const Schedule = () => {
     baseScheduleRef.current = coursesId;
   }, []);
 
+  useEffect(() => {
+    const onUnmount = () => {
+      //do graphQL mutation to store new schedule before unmount
+    };
+    return onUnmount;
+  }, []);
+
+  //called after submitting from edit modal
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
-    //convert modal item into course section
     if (!scheduleData) {
       return;
     }
-    //get the previous version
-    const oldCourse = scheduleData.find(
+    const oldCourse = baseScheduleRef.current?.find(
       (course) => course.id === updatedCourse.id
     );
-    const professors = updatedCourse.professors.map((prof) => {
-      return { displayName: prof };
-    });
 
-    const newMeetingTimes = updatedCourse.days.map((day) => {
+    const newDays = updatedCourse.days;
+    const newMeetingTimes = newDays.map((day) => {
       return {
         day: day,
         startTime: updatedCourse.startTime,
@@ -162,18 +172,60 @@ export const Schedule = () => {
       } as MeetingTime;
     });
     //filter out old meeting times that overlap the new meeting times, then merge them.
-    const removedDays = updatedCourse.removedDays;
-    const newDays = updatedCourse.days;
     const oldMeetingTimes =
       oldCourse?.meetingTimes.filter(
         (meeting) =>
-          !newDays.includes(meeting.day) && !removedDays?.includes(meeting.day)
+          !newDays.includes(meeting.day) &&
+          !updatedCourse.removedDays?.includes(meeting.day)
       ) || [];
-
     const meetingTimes = [...oldMeetingTimes, ...newMeetingTimes];
 
+    const { days, removedDays, ...appointment } = updatedCourse;
+    updateSchedule(appointment, meetingTimes, oldCourse);
+    refreshSchedule();
+  };
+
+  //called after dragging and dropping on the calendar
+  const handleDrag = (updatedCourse: Appointment, oldDate: Date) => {
+    if (!scheduleData) {
+      return;
+    }
+    const oldCourse = baseScheduleRef.current?.find(
+      (course) => course.id === updatedCourse.id
+    );
+
+    const day = weekdayToString(updatedCourse.startTime.getDay());
+    const newMeetingTime: MeetingTime = {
+      day: day,
+      startTime: updatedCourse.startTime,
+      endTime: updatedCourse.endTime,
+    };
+
+    const meetingToRemove = oldCourse?.meetingTimes.findIndex(
+      (meeting) =>
+        weekdayToString(oldDate.getDay()) === meeting.day &&
+        oldDate.getHours() === meeting.startTime.getHours()
+    );
+
+    const oldMeetingTimes = oldCourse?.meetingTimes;
+    oldMeetingTimes?.splice(meetingToRemove || 0, 1);
+
+    const meetingTimes = [...(oldMeetingTimes || []), newMeetingTime];
+    updateSchedule(updatedCourse, meetingTimes, oldCourse);
+  };
+
+  //convert calendar appointments into CourseSection object and update state
+  const updateSchedule = (
+    updatedCourse: Appointment,
+    meetingTimes: MeetingTime[],
+    oldCourse?: CourseSection
+  ) => {
+    const professors = updatedCourse.professors.map((prof) => {
+      return { displayName: prof };
+    });
+
     const startDate = updatedCourse.startDate || oldCourse?.startDate;
-    const endDate = updatedCourse.startDate || oldCourse?.endDate;
+    const endDate = updatedCourse.endDate || oldCourse?.endDate;
 
     const courseSection = {
       id: updatedCourse.id,
@@ -191,12 +243,19 @@ export const Schedule = () => {
       meetingTimes: meetingTimes,
     } as CourseSection;
 
-    const filteredSchedule = scheduleData.filter(
+    const filteredSchedule = baseScheduleRef.current?.filter(
       (course) => course.id !== courseSection.id
     );
-    const newSchedule = [courseSection, ...filteredSchedule];
-    setScheduleData(newSchedule);
+    const newSchedule = [courseSection, ...(filteredSchedule || [])];
     baseScheduleRef.current = newSchedule;
+  };
+
+  const refreshSchedule = () => {
+    setScheduleData(baseScheduleRef.current);
+  };
+
+  const getScheduleRef = () => {
+    return baseScheduleRef.current;
   };
 
   return (
@@ -219,17 +278,18 @@ export const Schedule = () => {
                 id="select"
                 w="16rem"
                 value={viewState}
-                onChange={(e) =>
+                onChange={(e) => {
+                  refreshSchedule();
                   e.target.value === "table"
                     ? setViewState(ViewTypes.table)
-                    : setViewState(ViewTypes.calendar)
-                }
+                    : setViewState(ViewTypes.calendar);
+                }}
               >
                 <option value="table">Table View</option>
                 <option value="calendar">Calendar View</option>
               </Select>
               <SearchBar
-                termData={baseScheduleRef.current || []}
+                getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
               />
               <Button
@@ -260,6 +320,8 @@ export const Schedule = () => {
                   <CalendarView
                     data={scheduleData}
                     onUpdateSubmit={handleUpdateSubmit}
+                    onDragSubmit={handleDrag}
+                    refreshSchedule={refreshSchedule}
                   />
                 )}
               </>
