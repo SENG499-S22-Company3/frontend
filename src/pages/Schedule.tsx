@@ -254,6 +254,10 @@ export const Schedule = () => {
     setScheduleData(baseScheduleRef.current);
   };
 
+  const getScheduleRef = () => {
+    return baseScheduleRef.current;
+  };
+
   return (
     <Flex
       w="100%"
@@ -285,7 +289,7 @@ export const Schedule = () => {
                 <option value="calendar">Calendar View</option>
               </Select>
               <SearchBar
-                termData={baseScheduleRef.current || []}
+                getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
               />
               <Button
