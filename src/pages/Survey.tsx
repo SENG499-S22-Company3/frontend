@@ -17,7 +17,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { SurveyCourseList } from "../components/SurveyCourseList";
 
 const SUBMIT = gql`
@@ -25,18 +25,6 @@ const SUBMIT = gql`
     createTeachingPreference(input: $input) {
       success
       message
-    }
-  }
-`;
-
-const COURSES = gql`
-  query GetCourses {
-    survey {
-      courses {
-        subject
-        code
-        term
-      }
     }
   }
 `;
@@ -63,11 +51,6 @@ export const Survey = () => {
   const toast = useToast();
 
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
-  const {
-    loading: courseLoading,
-    data: courseData,
-    error: courseError,
-  } = useQuery(COURSES);
   const bg = useColorModeValue("gray.50", "gray.700");
 
   const toggleRelief = () => {
@@ -140,7 +123,6 @@ export const Survey = () => {
       }
     }
   }, [data, loading, error]);
-
   return (
     <Flex
       w="100%"
@@ -161,12 +143,7 @@ export const Survey = () => {
         >
           <form onSubmit={onSubmit}>
             <Heading size="lg">Course Preferences</Heading>
-            <SurveyCourseList
-              handleCourseChange={handleCourseChange}
-              data={courseData}
-              loading={courseLoading}
-              error={courseError}
-            />
+            <SurveyCourseList handleCourseChange={handleCourseChange} />
             <Heading size="lg">Other Preferences</Heading>
             <Box
               bg="gray.800"
