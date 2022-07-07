@@ -145,7 +145,11 @@ export const Generate = () => {
           })
         );
       } else {
-        console.log("Removed Value Not Defined");
+        toast({
+          title: "Failed to remove course",
+          status: "error",
+          isClosable: true,
+        });
       }
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
