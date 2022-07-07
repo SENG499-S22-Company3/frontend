@@ -16,6 +16,16 @@ import {
   RadioGroup,
   Radio,
   Container,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Flex,
 } from "@chakra-ui/react";
 import DateBox from "devextreme-react/date-box";
 import { Appointment } from "../../stores/schedule";
@@ -131,6 +141,47 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                   })
                 }
               />
+              <FormLabel htmlFor="capacity" marginTop={"0.75rem"}>
+                Capacity
+              </FormLabel>
+              <Flex>
+                <NumberInput
+                  maxW="100px"
+                  mr="2rem"
+                  value={courseUpdate.capacity}
+                  onChange={(value) =>
+                    setCourseUpdate({
+                      ...courseUpdate,
+                      capacity: parseInt(value),
+                    })
+                  }
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <Slider
+                  id="capacity"
+                  flex="1"
+                  focusThumbOnChange={false}
+                  value={courseUpdate.capacity}
+                  onChange={(value) =>
+                    setCourseUpdate({
+                      ...courseUpdate,
+                      capacity: value,
+                    })
+                  }
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb fontSize="sm" color="black" boxSize="28px">
+                    {courseUpdate.capacity.toString()}
+                  </SliderThumb>
+                </Slider>
+              </Flex>
               {viewState === ViewTypes.table && (
                 <>
                   <FormControl isInvalid={timeError} marginTop={"0.75rem"}>
