@@ -163,6 +163,7 @@ export const CalendarView = (props: CalendarProps) => {
           refreshSchedule();
         }}
         onCurrentDateChange={setCurrentDate}
+        onAppointmentDblClick={(e) => (e.cancel = true)}
         startDateExpr={"startTime"}
         endDateExpr={"endTime"}
       >
