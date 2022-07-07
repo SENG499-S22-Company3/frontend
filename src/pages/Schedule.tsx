@@ -147,12 +147,19 @@ export const Schedule = () => {
     baseScheduleRef.current = coursesId;
   }, []);
 
+  useEffect(() => {
+    const onUnmount = () => {
+      //do graphQL mutation to store new schedule before unmount
+    };
+    return onUnmount;
+  }, []);
+
   //called after submitting from edit modal
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
     if (!scheduleData) {
       return;
     }
-    const oldCourse = scheduleData.find(
+    const oldCourse = baseScheduleRef.current?.find(
       (course) => course.id === updatedCourse.id
     );
 
@@ -175,6 +182,7 @@ export const Schedule = () => {
 
     const { days, removedDays, ...appointment } = updatedCourse;
     updateSchedule(appointment, meetingTimes, oldCourse);
+    refreshSchedule();
   };
 
   //called after dragging and dropping on the calendar
@@ -182,7 +190,7 @@ export const Schedule = () => {
     if (!scheduleData) {
       return;
     }
-    const oldCourse = scheduleData.find(
+    const oldCourse = baseScheduleRef.current?.find(
       (course) => course.id === updatedCourse.id
     );
 
@@ -198,7 +206,7 @@ export const Schedule = () => {
         weekdayToString(oldDate.getDay()) === meeting.day &&
         oldDate.getHours() === meeting.startTime.getHours()
     );
-    //TO-DO: FIGURE OUT THE BELOW LOGIC
+
     const oldMeetingTimes = oldCourse?.meetingTimes;
     oldMeetingTimes?.splice(meetingToRemove || 0, 1);
 
@@ -235,12 +243,15 @@ export const Schedule = () => {
       meetingTimes: meetingTimes,
     } as CourseSection;
 
-    const filteredSchedule = scheduleData?.filter(
+    const filteredSchedule = baseScheduleRef.current?.filter(
       (course) => course.id !== courseSection.id
     );
     const newSchedule = [courseSection, ...(filteredSchedule || [])];
-    setScheduleData(newSchedule);
     baseScheduleRef.current = newSchedule;
+  };
+
+  const refreshSchedule = () => {
+    setScheduleData(baseScheduleRef.current);
   };
 
   return (
@@ -263,11 +274,12 @@ export const Schedule = () => {
                 id="select"
                 w="16rem"
                 value={viewState}
-                onChange={(e) =>
+                onChange={(e) => {
+                  refreshSchedule();
                   e.target.value === "table"
                     ? setViewState(ViewTypes.table)
-                    : setViewState(ViewTypes.calendar)
-                }
+                    : setViewState(ViewTypes.calendar);
+                }}
               >
                 <option value="table">Table View</option>
                 <option value="calendar">Calendar View</option>
@@ -305,6 +317,7 @@ export const Schedule = () => {
                     data={scheduleData}
                     onUpdateSubmit={handleUpdateSubmit}
                     onDragSubmit={handleDrag}
+                    refreshSchedule={refreshSchedule}
                   />
                 )}
               </>

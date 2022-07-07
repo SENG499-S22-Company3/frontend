@@ -89,10 +89,11 @@ interface CalendarProps {
   data: CourseSection[];
   onUpdateSubmit: (updatedCourse: ModalItem) => void;
   onDragSubmit: (updatedCourse: Appointment, oldDate: Date) => void;
+  refreshSchedule: () => void;
 }
 
 export const CalendarView = (props: CalendarProps) => {
-  const { data, onUpdateSubmit, onDragSubmit } = props;
+  const { data, onUpdateSubmit, onDragSubmit, refreshSchedule } = props;
   const scheduleRef = createRef<Scheduler>();
 
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
@@ -157,9 +158,11 @@ export const CalendarView = (props: CalendarProps) => {
         startDayHour={8}
         endDayHour={22}
         textExpr="courseTitle"
-        onCurrentViewChange={setViewState}
+        onCurrentViewChange={(value) => {
+          setViewState(value);
+          refreshSchedule();
+        }}
         onCurrentDateChange={setCurrentDate}
-        onCellClick={(cell) => setCurrentDate(cell.cellData.startDate)}
         startDateExpr={"startTime"}
         endDateExpr={"endTime"}
       >
