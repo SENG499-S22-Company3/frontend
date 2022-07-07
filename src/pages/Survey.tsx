@@ -14,18 +14,29 @@ import {
   Stack,
   Textarea,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { SurveyCourseList } from "../components/SurveyCourseList";
 
-// these schemas will probably change later, all just example data
 const SUBMIT = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      username
-      email
-      roles
+  mutation submit($input: CreateTeachingPreferenceInput!) {
+    createTeachingPreference(input: $input) {
+      success
+      message
+    }
+  }
+`;
+
+const COURSES = gql`
+  query GetCourses {
+    survey {
+      courses {
+        subject
+        code
+        term
+      }
     }
   }
 `;
@@ -49,7 +60,14 @@ export const Survey = () => {
   const [topicDescription, setTopicDescription] = useState("");
   const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
 
-  const [submit, { loading, error }] = useMutation(SUBMIT);
+  const toast = useToast();
+
+  const [submit, { loading, data, error }] = useMutation(SUBMIT);
+  const {
+    loading: courseLoading,
+    data: courseData,
+    error: courseError,
+  } = useQuery(COURSES);
   const bg = useColorModeValue("gray.50", "gray.700");
 
   const toggleRelief = () => {
@@ -61,7 +79,25 @@ export const Survey = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    submit({ variables: { courseRatings } });
+    const courses = Object.entries(courseRatings).map((course) => {
+      return {
+        subject: course[1].subject,
+        code: course[1].code,
+        term: course[1].term,
+        preference: course[1].rating,
+      };
+    });
+    const input = {
+      courses: courses,
+      hasRelief: hasRelief,
+      hasTopic: hasTopic,
+      nonTeachingTerm: nonTeachingTerm,
+      peng: false,
+      reliefReason: reliefExplaination,
+      topicDescription: topicDescription,
+      userId: 0,
+    };
+    submit({ variables: { input } });
     e.preventDefault();
   };
 
@@ -74,6 +110,36 @@ export const Survey = () => {
     };
     setCourseRatings(newRating);
   };
+
+  useEffect(() => {
+    if (!loading) {
+      if (data && !error) {
+        if (data.createTeachingPreference.success) {
+          toast({
+            title: "Submitted preferences successfully",
+            status: "success",
+            isClosable: true,
+          });
+        } else {
+          console.log(data);
+          toast({
+            title: "Failed to submit preferences",
+            description: data.createTeachingPreference.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      } else if (error) {
+        console.log(error);
+        toast({
+          title: "Failed to submit preferences",
+          description: error.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    }
+  }, [data, loading, error]);
 
   return (
     <Flex
@@ -94,18 +160,23 @@ export const Survey = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
           <form onSubmit={onSubmit}>
-            <FormControl>
-              <Heading size="lg">Course Preferences</Heading>
-              <SurveyCourseList handleCourseChange={handleCourseChange} />
-              <Heading size="lg">Other Preferences</Heading>
-              <Box
-                bg="gray.800"
-                p={5}
-                mt={5}
-                mb={5}
-                borderRadius={10}
-                style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
-              >
+            <Heading size="lg">Course Preferences</Heading>
+            <SurveyCourseList
+              handleCourseChange={handleCourseChange}
+              data={courseData}
+              loading={courseLoading}
+              error={courseError}
+            />
+            <Heading size="lg">Other Preferences</Heading>
+            <Box
+              bg="gray.800"
+              p={5}
+              mt={5}
+              mb={5}
+              borderRadius={10}
+              style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+            >
+              <FormControl isRequired>
                 <FormLabel htmlFor="nonTeachingTerm">
                   Non-Teaching Term
                 </FormLabel>
@@ -116,50 +187,49 @@ export const Survey = () => {
                   value={nonTeachingTerm}
                 >
                   <Stack direction="row">
-                    <Radio value="Fall">Fall</Radio>
-                    <Radio value="Spring">Spring</Radio>
-                    <Radio value="Summer">Summer</Radio>
+                    <Radio value="FALL">Fall</Radio>
+                    <Radio value="SPRING">Spring</Radio>
+                    <Radio value="SUMMER">Summer</Radio>
                   </Stack>
                 </RadioGroup>
-
-                <Divider mt={2} mb={2} />
-                <FormLabel htmlFor="hasRelief">Relief</FormLabel>
-                <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
-                  Has Relief?
-                </Checkbox>
-                <Textarea
-                  isDisabled={!hasRelief}
-                  id="large_text"
-                  value={reliefExplaination}
-                  placeholder="Relief Explaination"
-                  onChange={(e) => setReliefExplaination(e.target.value)}
-                  size="sm"
-                />
-                <Divider mt={4} mb={2} />
-                <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
-                <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
-                  Has Topic?
-                </Checkbox>
-                <Textarea
-                  isDisabled={!hasTopic}
-                  id="topicDescription"
-                  value={topicDescription}
-                  placeholder="Topics Course Description"
-                  onChange={(e) => setTopicDescription(e.target.value)}
-                  size="sm"
-                  mb={5}
-                />
-              </Box>
-              <Button
-                isLoading={loading}
-                type="submit"
-                colorScheme="green"
-                variant="solid"
-                w="100%"
-              >
-                Submit
-              </Button>
-            </FormControl>
+              </FormControl>
+              <Divider mt={2} mb={2} />
+              <FormLabel htmlFor="hasRelief">Relief</FormLabel>
+              <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
+                Has Relief?
+              </Checkbox>
+              <Textarea
+                isDisabled={!hasRelief}
+                id="large_text"
+                value={reliefExplaination}
+                placeholder="Relief Explaination"
+                onChange={(e) => setReliefExplaination(e.target.value)}
+                size="sm"
+              />
+              <Divider mt={4} mb={2} />
+              <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
+              <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
+                Has Topic?
+              </Checkbox>
+              <Textarea
+                isDisabled={!hasTopic}
+                id="topicDescription"
+                value={topicDescription}
+                placeholder="Topics Course Description"
+                onChange={(e) => setTopicDescription(e.target.value)}
+                size="sm"
+                mb={5}
+              />
+            </Box>
+            <Button
+              isLoading={loading}
+              type="submit"
+              colorScheme="green"
+              variant="solid"
+              w="100%"
+            >
+              Submit
+            </Button>
             <FormControl isInvalid={error !== undefined}>
               {error !== undefined && (
                 <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>

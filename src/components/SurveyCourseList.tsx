@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { ApolloError, gql, useQuery } from "@apollo/client";
 import {
   Text,
   Radio,
@@ -40,8 +40,17 @@ interface PreferenceListInterface {
   [key: string]: PreferenceInterface;
 }
 
+interface DataProp {
+  survey: {
+    courses: Array<PreferenceInterface>;
+  };
+}
+
 interface ChildProps {
   handleCourseChange(course: CourseInterface, value: number): void;
+  data: DataProp;
+  loading: boolean;
+  error: ApolloError | undefined;
 }
 
 // const data = {
@@ -57,7 +66,7 @@ interface ChildProps {
 // };
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
-  const { loading, error, data } = useQuery(COURSES, {});
+  // const { loading, error, data } = useQuery(COURSES);
   const [preferences, setPreferences] = useState<PreferenceListInterface>({});
 
   const handleChange = (
@@ -113,67 +122,69 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     );
   };
 
-  if (loading) {
+  if (props.loading) {
     return <>Loading</>;
-  } else if (!data || error) {
+  } else if (!props.data || props.error) {
     return (
       <Text color="red.400" mb={3}>
         Failed to course fetch data
       </Text>
     );
-  } else
-    return (
-      <Box
-        bg="gray.800"
-        p={5}
-        mt={5}
-        mb={5}
-        borderRadius={10}
-        style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
-      >
-        <Table variant="striped" size="sm">
-          <Thead>
-            <Tr>
-              <Th>Course</Th>
-              <Th>Ability to Teach</Th>
-              <Th>Willingness to Teach</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.survey.courses.map(
-              (course: PreferenceInterface, index: number) => (
-                <Tr key={"preference-" + index}>
-                  <Td>
-                    {course.subject} {course.code}
-                  </Td>
-                  <Td>
-                    <RadioGroup
-                      id="canTeach"
-                      onChange={(v) => handleChange(course, "Able", v)}
-                    >
-                      <Stack direction="row">
-                        <Radio value="Able">Able</Radio>
-                        <Radio value="With Effort">With Effort</Radio>
-                      </Stack>
-                    </RadioGroup>
-                  </Td>
-                  <Td>
-                    <RadioGroup
-                      id="willingTeach"
-                      onChange={(v) => handleChange(course, "Willingness", v)}
-                    >
-                      <Stack direction="row">
-                        <Radio value="Unwilling">Unwilling</Radio>
-                        <Radio value="Willing">Willing</Radio>
-                        <Radio value="Very Willing">Very Willing</Radio>
-                      </Stack>
-                    </RadioGroup>
-                  </Td>
-                </Tr>
-              )
-            )}
-          </Tbody>
-        </Table>
-      </Box>
-    );
+  } else console.log(props.data);
+  return (
+    <Box
+      bg="gray.800"
+      p={5}
+      mt={5}
+      mb={5}
+      borderRadius={10}
+      style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+    >
+      <Table variant="striped" size="sm">
+        <Thead>
+          <Tr>
+            <Th>Course</Th>
+            <Th>Term</Th>
+            <Th>Ability to Teach</Th>
+            <Th>Willingness to Teach</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {props.data.survey.courses.map(
+            (course: PreferenceInterface, index: number) => (
+              <Tr key={"preference-" + index}>
+                <Td>
+                  {course.subject} {course.code}
+                </Td>
+                <Td>{course.term}</Td>
+                <Td>
+                  <RadioGroup
+                    id="canTeach"
+                    onChange={(v) => handleChange(course, "Able", v)}
+                  >
+                    <Stack direction="row">
+                      <Radio value="Able">Able</Radio>
+                      <Radio value="With Effort">With Effort</Radio>
+                    </Stack>
+                  </RadioGroup>
+                </Td>
+                <Td>
+                  <RadioGroup
+                    id="willingTeach"
+                    onChange={(v) => handleChange(course, "Willingness", v)}
+                  >
+                    <Stack direction="row">
+                      <Radio value="Unwilling">Unwilling</Radio>
+                      <Radio value="Willing">Willing</Radio>
+                      <Radio value="Very Willing">Very Willing</Radio>
+                    </Stack>
+                  </RadioGroup>
+                </Td>
+              </Tr>
+            )
+          )}
+        </Tbody>
+      </Table>
+    </Box>
+  );
 };
