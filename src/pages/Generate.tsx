@@ -96,6 +96,8 @@ export const Generate = () => {
 
   const bg = useColorModeValue("gray.50", "gray.700");
 
+  const bgDark = useColorModeValue("gray.50", "gray.800");
+
   const toast = useToast();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -107,7 +109,6 @@ export const Generate = () => {
       algorithm1: algorithm1,
       algorithm2: algorithm2,
     };
-    console.log(input);
     generate({ variables: { input } });
   };
 
@@ -127,12 +128,16 @@ export const Generate = () => {
         ];
         setSelectedCourses(newSelected);
       } else {
-        console.log("Option Not Defined");
+        toast({
+          title: "Option not defined",
+          status: "error",
+          isClosable: true,
+        });
       }
     } else if (actionMeta.action === "remove-value") {
       if (actionMeta.removedValue) {
         setSelectedCourses(
-          selectedCourses.filter(function (course) {
+          selectedCourses.filter((course) => {
             return (
               course.code !== actionMeta.removedValue.value.code &&
               course.subject !== actionMeta.removedValue.value.subject
@@ -145,7 +150,12 @@ export const Generate = () => {
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
     } else {
-      console.log("Unknown Action: " + actionMeta.action);
+      toast({
+        title: "Unknown Action",
+        description: actionMeta.action,
+        status: "error",
+        isClosable: true,
+      });
     }
   };
 
@@ -242,7 +252,7 @@ export const Generate = () => {
           <FormControl isRequired>
             <Grid templateColumns="repeat(2, 1fr)" gap={10}>
               <GridItem
-                bg="gray.800"
+                bg={bgDark}
                 minW="450px"
                 p={10}
                 borderRadius={10}
@@ -315,7 +325,7 @@ export const Generate = () => {
                 </RadioGroup>
               </GridItem>
               <GridItem
-                bg="gray.800"
+                bg={bgDark}
                 p={10}
                 borderRadius={10}
                 flexDir="column"
