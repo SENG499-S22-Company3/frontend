@@ -304,7 +304,6 @@ export const Schedule = () => {
                 getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
               />
-              
             </Flex>
             <Flex
               p={10}
