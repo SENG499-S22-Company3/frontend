@@ -123,7 +123,7 @@ export const Generate = () => {
           {
             code: actionMeta.option.value.code,
             subject: actionMeta.option.value.subject,
-            section: 1,
+            section: 0,
           },
         ];
         setSelectedCourses(newSelected);
@@ -163,13 +163,14 @@ export const Generate = () => {
     }
   };
 
-  const handleSectionChange = (course: CourseInput, value: number) => {
+  const handleSectionChange = (course: CourseInput, value: string) => {
+    const numValue = parseInt(value);
     const newSelected = selectedCourses.map((selected_course) => {
       if (
         selected_course.code === course.code &&
         selected_course.subject === course.subject
       ) {
-        return { ...selected_course, section: value };
+        return { ...selected_course, section: numValue };
       } else {
         return { ...selected_course };
       }
@@ -270,7 +271,6 @@ export const Generate = () => {
                 <FormLabel htmlFor="year">Year</FormLabel>
                 <Select
                   placeholder="Select Year"
-                  value={year}
                   onChange={(e) => setYear(e.target.value)}
                   mb={5}
                   w="50%"
@@ -282,7 +282,6 @@ export const Generate = () => {
                 <FormLabel htmlFor="term">Term</FormLabel>
                 <Select
                   placeholder="Select Term"
-                  value={term}
                   onChange={(e) => setTerm(e.target.value)}
                   mb={5}
                   w="50%"
@@ -351,21 +350,25 @@ export const Generate = () => {
                           <Tr key={course.subject + course.code}>
                             <Td>{course.subject + " " + course.code}</Td>
                             <Td>
-                              <NumberInput
-                                defaultValue={1}
-                                max={10}
-                                min={1}
-                                w={20}
-                                onChange={(valueAsString, ValueAsNumber) =>
-                                  handleSectionChange(course, ValueAsNumber)
+                              <Select
+                                onChange={(e) =>
+                                  handleSectionChange(course, e.target.value)
                                 }
                               >
-                                <NumberInputField />
-                                <NumberInputStepper>
-                                  <NumberIncrementStepper />
-                                  <NumberDecrementStepper />
-                                </NumberInputStepper>
-                              </NumberInput>
+                                <option selected value="0">
+                                  Default
+                                </option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                              </Select>
                             </Td>
                           </Tr>
                         ))
