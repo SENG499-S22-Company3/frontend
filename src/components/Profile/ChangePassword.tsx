@@ -25,7 +25,7 @@ export const ChangePassword = () => {
     setOldPassword("");
     setNewPassword("");
     onClose();
-  }; 
+  };
 
   return (
     <>

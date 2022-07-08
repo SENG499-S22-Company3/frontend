@@ -13,7 +13,7 @@ import { ChangePassword } from "../components/Profile/ChangePassword";
 
 export const Profile = () => {
   const [user] = useLoginStore((state) => [state.user], shallow);
-  
+
   return (
     <Flex
       w="100%"
