@@ -9,17 +9,20 @@ import {
 import { CourseSection } from "../../stores/schedule";
 
 interface SearchBarProps {
-  termData: CourseSection[];
+  getTermData: () => CourseSection[] | undefined;
   setScheduleData: (data: CourseSection[]) => void;
 }
 
 export const SearchBar = (props: SearchBarProps) => {
-  const { termData, setScheduleData } = props;
+  const { getTermData, setScheduleData } = props;
 
   const [searchInput, setSearchInput] = useState("");
   const [filtered, setFiltered] = useState("");
 
   const filterCourses = (clear?: boolean) => {
+    const termData = getTermData();
+    if (!termData) return;
+
     if (searchInput === "" || clear) {
       setFiltered("");
       setScheduleData(termData);
