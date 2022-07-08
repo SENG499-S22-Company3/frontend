@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Container,
   Flex,
@@ -12,10 +13,12 @@ import {
 import { CreateUser } from "../components/UserManagement/CreateUser";
 import { DeleteUser } from "../components/UserManagement/DeleteUser";
 import { EditUser } from "../components/UserManagement/EditUser";
+import { SearchBar } from "../components/ProfileManagement/SearchBar";
+import { Professor } from "../stores/profileManagement";
 
 export const ProfileManagement = () => {
   //Test data to remove later
-  const tableData = [
+  const mockData = [
     {
       name: "Professor A",
       email: "professorA@uvic.ca",
@@ -35,6 +38,7 @@ export const ProfileManagement = () => {
       role: "Professor",
     },
   ];
+  const [professors, setProfessors] = useState<Professor[]>(mockData);
 
   return (
     <Flex
@@ -54,6 +58,11 @@ export const ProfileManagement = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
           <CreateUser />
+          <SearchBar
+            professors={professors}
+            setProfessors={setProfessors}
+            allProfessors={mockData}
+          />
           <Table variant="striped" size="md">
             <Thead>
               <Tr>
@@ -65,7 +74,7 @@ export const ProfileManagement = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {tableData.map((item) => (
+              {professors.map((item) => (
                 <Tr key={item.name}>
                   <Td>{item.name}</Td>
                   <Td>{item.email}</Td>
