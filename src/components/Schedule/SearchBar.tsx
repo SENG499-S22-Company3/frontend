@@ -28,7 +28,6 @@ export const SearchBar = (props: SearchBarProps) => {
   const [filtered, setFiltered] = useState("");
 
   const toggleCourseTypes = (type: string) => {
-
     if (type === "all") {
       setSearchInput("");
       filterCourses(true);
@@ -70,7 +69,6 @@ export const SearchBar = (props: SearchBarProps) => {
 
   return (
     <Flex alignItems="center" justifyContent="space-between">
-      
       <FormLabel htmlFor="course_type" mt={1}>
         Course:
       </FormLabel>
