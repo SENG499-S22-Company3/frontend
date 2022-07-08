@@ -4,17 +4,16 @@ import {
   Container,
   Flex,
   Heading,
-  useColorModeValue,
   Table,
   Tbody,
   Tr,
   Td,
 } from "@chakra-ui/react";
+import { ChangePassword } from "../components/Profile/ChangePassword";
 
 export const Profile = () => {
   const [user] = useLoginStore((state) => [state.user], shallow);
-  const bg = useColorModeValue("gray.50", "gray.700");
-
+  
   return (
     <Flex
       w="100%"
@@ -24,8 +23,7 @@ export const Profile = () => {
       justifyContent="center"
     >
       <Container
-        w="450px"
-        bg={bg}
+        w="500px"
         borderRadius={20}
         p={10}
         style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
@@ -61,6 +59,7 @@ export const Profile = () => {
             </Tr>
           </Tbody>
         </Table>
+        <ChangePassword />
       </Container>
     </Flex>
   );
