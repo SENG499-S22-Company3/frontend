@@ -117,7 +117,10 @@ const BoldNavLink = (props: { to: string; desc: string } & LinkProps) => (
 );
 
 export const NavHeader = () => {
-  const [user] = useLoginStore((state) => [state.user], shallow);
+  const [user, loggedIn] = useLoginStore(
+    (state) => [state.user, state.loggedIn],
+    shallow
+  );
   const bg = useColorModeValue("gray.100", "gray.700");
   const isSmall = useBreakpointValue({ base: true, xl: false });
 
@@ -155,9 +158,11 @@ export const NavHeader = () => {
                 variant="outline"
               />
               <MenuList>
-                <MenuItem>
-                  <NavLink to="/" desc="Home" />
-                </MenuItem>
+                {!loggedIn && (
+                  <MenuItem>
+                    <NavLink to="/" desc="Home" />
+                  </MenuItem>
+                )}
                 {isAdmin && (
                   <>
                     <MenuDivider />
@@ -200,7 +205,7 @@ export const NavHeader = () => {
           </>
         ) : (
           <>
-            <BoldNavLink to="/" desc="Home" />
+            {!loggedIn && <BoldNavLink to="/" desc="Home" />}
             {isAdmin && (
               <>
                 <BoldNavLink to="/dashboard" desc="Admin Dashboard" />

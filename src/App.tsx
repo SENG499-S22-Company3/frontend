@@ -28,8 +28,8 @@ const theme = extendTheme({
 });
 
 export const App = () => {
-  const [user, fetchUser] = useLoginStore(
-    (state) => [state.user, state.fetchUser],
+  const [user, loggedIn, fetchUser] = useLoginStore(
+    (state) => [state.user, state.loggedIn, state.fetchUser],
     shallow
   );
 
@@ -41,7 +41,7 @@ export const App = () => {
     <ChakraProvider theme={theme}>
       <NavHeader />
       <Routes>
-        <Route path="/" element={<Home />} />
+        {!loggedIn && <Route path="/" element={<Home />} />}
         <Route path="/login" element={<Login />} />
         {user && user["roles"] && user["roles"].includes("admin") && (
           <>
