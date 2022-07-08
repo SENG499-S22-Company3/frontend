@@ -23,8 +23,12 @@ export const SearchBar = (props: SearchBarProps) => {
       setProfessors(props.allProfessors);
       return;
     }
-    
-    setProfessors(professors.filter((prof => prof.name.toLowerCase().includes(searchInput.toLowerCase()))));
+
+    setProfessors(
+      professors.filter((prof) =>
+        prof.name.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    );
   };
 
   useEffect(() => {
@@ -44,13 +48,12 @@ export const SearchBar = (props: SearchBarProps) => {
             aria-label="Clear search"
             colorScheme={"red"}
             icon={<CloseIcon />}
-            onClick={() => { setSearchInput(""); }}
+            onClick={() => {
+              setSearchInput("");
+            }}
           />
         ) : (
-          <IconButton
-            aria-label="Search schedule"
-            icon={<SearchIcon />}
-          />
+          <IconButton aria-label="Search schedule" icon={<SearchIcon />} />
         )}
       </InputRightElement>
     </InputGroup>
