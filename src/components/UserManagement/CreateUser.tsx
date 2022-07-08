@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import {
   Modal,
   ModalOverlay,
@@ -11,26 +12,70 @@ import {
   FormControl,
   FormLabel,
   Input,
-  RadioGroup,
-  Stack,
-  Radio,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const CREATE = gql`
+  mutation create($username: String!) {
+    createUser(username: $username) {
+      success
+      message
+      username
+      password
+    }
+  }
+`;
 
 export const CreateUser = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("");
+  const [username, setUsername] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [department, setDepartment] = useState("");
+  // const [role, setRole] = useState("");
+  const [createUserMutation, { loading, data, error }] = useMutation(CREATE);
 
   const bg = useColorModeValue("gray.50", "gray.800");
 
   const createUser = () => {
+    createUserMutation({ variables: { username } });
     //Create User here
     onClose();
   };
+
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!error && data) {
+        if (data.createUser.success) {
+          toast({
+            title: "User creation successful",
+            description: data.createUser.message,
+            status: "success",
+            isClosable: true,
+          });
+        } else {
+          console.log(data);
+          toast({
+            title: "Failed to create user",
+            description: data.createUser.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      } else if (error) {
+        console.log(error);
+        toast({
+          title: "Failed to create user",
+          description: error?.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    }
+  }, [data, loading, error]);
 
   return (
     <>
@@ -52,15 +97,15 @@ export const CreateUser = () => {
               backgroundColor={bg}
             >
               <FormControl isRequired>
-                <FormLabel htmlFor="name">Name</FormLabel>
+                <FormLabel htmlFor="name">Username</FormLabel>
                 <Input
                   id="name"
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   mb={5}
                 />
-                <FormLabel htmlFor="email">Email</FormLabel>
+                {/* <FormLabel htmlFor="email">Email</FormLabel>
                 <Input
                   id="name"
                   type="text"
@@ -94,7 +139,7 @@ export const CreateUser = () => {
                     <Radio value="Admin">Admin</Radio>
                     <Radio value="Professor">Professor</Radio>
                   </Stack>
-                </RadioGroup>
+                </RadioGroup> */}
                 <Button colorScheme="green" mr={3} onClick={createUser}>
                   Create
                 </Button>

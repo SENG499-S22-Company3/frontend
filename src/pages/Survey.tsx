@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Checkbox,
   Container,
@@ -13,18 +14,17 @@ import {
   Stack,
   Textarea,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { SurveyCourseList } from "../components/SurveyCourseList";
 
-// these schemas will probably change later, all just example data
 const SUBMIT = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      username
-      email
-      roles
+  mutation submit($input: CreateTeachingPreferenceInput!) {
+    createTeachingPreference(input: $input) {
+      success
+      message
     }
   }
 `;
@@ -41,15 +41,16 @@ interface CourseListInterface {
 }
 
 export const Survey = () => {
-  const [nonTeachingTerm1, setNonTeachingTerm1] = useState("");
-  const [nonTeachingTerm2, setNonTeachingTerm2] = useState("");
+  const [nonTeachingTerm, setNonTeachingTerm] = useState("");
   const [hasRelief, setHasRelief] = useState(false);
   const [reliefExplaination, setReliefExplaination] = useState("");
   const [hasTopic, setHasTopic] = useState(false);
   const [topicDescription, setTopicDescription] = useState("");
   const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
 
-  const [submit, { loading, error }] = useMutation(SUBMIT);
+  const toast = useToast();
+
+  const [submit, { loading, data, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
 
   const toggleRelief = () => {
@@ -61,13 +62,31 @@ export const Survey = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    submit({ variables: { courseRatings } });
+    const courses = Object.entries(courseRatings).map((course) => {
+      return {
+        subject: course[1].subject,
+        code: course[1].code,
+        term: course[1].term,
+        preference: course[1].rating,
+      };
+    });
+    const input = {
+      courses: courses,
+      hasRelief: hasRelief,
+      hasTopic: hasTopic,
+      nonTeachingTerm: nonTeachingTerm,
+      peng: false,
+      reliefReason: reliefExplaination,
+      topicDescription: topicDescription,
+      userId: 0,
+    };
+    submit({ variables: { input } });
     e.preventDefault();
   };
 
   const handleCourseChange = (course: CourseInterface, value: number) => {
     let newRating = courseRatings;
-    let unique_id = course.subject.concat(course.code);
+    const unique_id = course.subject.concat(course.code);
     newRating[unique_id] = {
       ...course,
       rating: value,
@@ -75,6 +94,35 @@ export const Survey = () => {
     setCourseRatings(newRating);
   };
 
+  useEffect(() => {
+    if (!loading) {
+      if (data && !error) {
+        if (data.createTeachingPreference.success) {
+          toast({
+            title: "Submitted preferences successfully",
+            status: "success",
+            isClosable: true,
+          });
+        } else {
+          console.log(data);
+          toast({
+            title: "Failed to submit preferences",
+            description: data.createTeachingPreference.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      } else if (error) {
+        console.log(error);
+        toast({
+          title: "Failed to submit preferences",
+          description: error.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    }
+  }, [data, loading, error]);
   return (
     <Flex
       w="100%"
@@ -94,45 +142,34 @@ export const Survey = () => {
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
           <form onSubmit={onSubmit}>
-            <FormControl>
-              <Heading size="lg">Course Preferences</Heading>
-              <Divider mt={2} mb={2} />
-              <SurveyCourseList handleCourseChange={handleCourseChange} />
-              <Heading size="lg">Other Preferences</Heading>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="nonTeachingTerm1">
-                Non-Teaching Term 1
-              </FormLabel>
-              <RadioGroup
-                id="nonTeachingTerm1"
-                name="nonTeachingTerm1"
-                onChange={setNonTeachingTerm1}
-                value={nonTeachingTerm1}
-              >
-                <Stack direction="row">
-                  <Radio value="None">None</Radio>
-                  <Radio value="Fall">Fall</Radio>
-                  <Radio value="Spring">Spring</Radio>
-                  <Radio value="Summer">Summer</Radio>
-                </Stack>
-              </RadioGroup>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="nonTeachingTerm1">
-                Non-Teaching Term 2
-              </FormLabel>
-              <RadioGroup
-                id="nonTeachingTerm2"
-                name="nonTeachingTerm2"
-                onChange={setNonTeachingTerm2}
-                value={nonTeachingTerm2}
-              >
-                <Stack direction="row">
-                  <Radio value="None">None</Radio>
-                  <Radio value="Fall">Fall</Radio>
-                  <Radio value="Spring">Spring</Radio>
-                  <Radio value="Summer">Summer</Radio>
-                </Stack>
-              </RadioGroup>
+            <Heading size="lg">Course Preferences</Heading>
+            <SurveyCourseList handleCourseChange={handleCourseChange} />
+            <Heading size="lg">Other Preferences</Heading>
+            <Box
+              bg="gray.800"
+              p={5}
+              mt={5}
+              mb={5}
+              borderRadius={10}
+              style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+            >
+              <FormControl isRequired>
+                <FormLabel htmlFor="nonTeachingTerm">
+                  Non-Teaching Term
+                </FormLabel>
+                <RadioGroup
+                  id="nonTeachingTerm"
+                  name="nonTeachingTerm"
+                  onChange={setNonTeachingTerm}
+                  value={nonTeachingTerm}
+                >
+                  <Stack direction="row">
+                    <Radio value="FALL">Fall</Radio>
+                    <Radio value="SPRING">Spring</Radio>
+                    <Radio value="SUMMER">Summer</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
               <Divider mt={2} mb={2} />
               <FormLabel htmlFor="hasRelief">Relief</FormLabel>
               <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
@@ -160,17 +197,16 @@ export const Survey = () => {
                 size="sm"
                 mb={5}
               />
-
-              <Button
-                isLoading={loading}
-                type="submit"
-                colorScheme="green"
-                variant="solid"
-                w="100%"
-              >
-                Submit
-              </Button>
-            </FormControl>
+            </Box>
+            <Button
+              isLoading={loading}
+              type="submit"
+              colorScheme="green"
+              variant="solid"
+              w="100%"
+            >
+              Submit
+            </Button>
             <FormControl isInvalid={error !== undefined}>
               {error !== undefined && (
                 <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
