@@ -22,26 +22,26 @@ export const weekdayToInt = (dayOfWeek: Day) => {
   return 6;
 };
 
-export const weekdayToString = (dayOfWeek: number) => {
+export const weekdayToString = (dayOfWeek: number): Day => {
   if (dayOfWeek === 0) {
-    return "SUNDAY";
+    return Day.SUNDAY;
   }
   if (dayOfWeek === 1) {
-    return "MONDAY";
+    return Day.MONDAY;
   }
   if (dayOfWeek === 2) {
-    return "TUESDAY";
+    return Day.TUESDAY;
   }
   if (dayOfWeek === 3) {
-    return "WEDNESDAY";
+    return Day.WEDNESDAY;
   }
   if (dayOfWeek === 4) {
-    return "THURSDAY";
+    return Day.THURSDAY;
   }
   if (dayOfWeek === 5) {
-    return "FRIDAY";
+    return Day.FRIDAY;
   }
-  return "SATURDAY";
+  return Day.SATURDAY;
 };
 
 export const weekdayShortToLong = (dayOfWeek: string) => {

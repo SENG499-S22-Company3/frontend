@@ -1,5 +1,9 @@
 import React, { createRef, useState } from "react";
-import { Scheduler, Editing } from "devextreme-react/scheduler";
+import {
+  Scheduler,
+  Editing,
+  AppointmentDragging,
+} from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
 import { Appointment, CourseSection } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
@@ -84,14 +88,17 @@ const buildAppointments = (courses: CourseSection[]) => {
 interface CalendarProps {
   data: CourseSection[];
   onUpdateSubmit: (updatedCourse: ModalItem) => void;
+  onDragSubmit: (updatedCourse: Appointment, oldDate: Date) => void;
+  refreshSchedule: () => void;
 }
 
 export const CalendarView = (props: CalendarProps) => {
-  const { data, onUpdateSubmit } = props;
+  const { data, onUpdateSubmit, onDragSubmit, refreshSchedule } = props;
   const scheduleRef = createRef<Scheduler>();
 
   const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
   const [viewState, setViewState] = useState("workWeek");
+  const dragStartDate = new Set<Date>();
 
   const weekDay = getWeekDay(currentDate);
 
@@ -114,6 +121,16 @@ export const CalendarView = (props: CalendarProps) => {
       visibility: ${viewState === "workWeek" ? "hidden" : "visible"}
      }
   `;
+
+  const handleDragStart = (appointment: Appointment) => {
+    dragStartDate.add(appointment.startTime);
+  };
+
+  const handleDragEnd = async (updatedCourse: Appointment) => {
+    const oldDate = await dragStartDate.values().next().value;
+    onDragSubmit(updatedCourse, oldDate);
+    dragStartDate.clear();
+  };
 
   return (
     <>
@@ -141,17 +158,23 @@ export const CalendarView = (props: CalendarProps) => {
         startDayHour={8}
         endDayHour={22}
         textExpr="courseTitle"
-        onCurrentViewChange={setViewState}
+        onCurrentViewChange={(value) => {
+          setViewState(value);
+          refreshSchedule();
+        }}
         onCurrentDateChange={setCurrentDate}
-        onCellClick={(cell) => setCurrentDate(cell.cellData.startDate)}
+        onAppointmentDblClick={(e) => (e.cancel = true)}
         startDateExpr={"startTime"}
         endDateExpr={"endTime"}
       >
         <Editing
           allowAdding={false}
-          allowDragging={false}
           allowDeleting={false}
           allowResizing={false}
+        />
+        <AppointmentDragging
+          onDragStart={(e: any) => handleDragStart(e.itemData)}
+          onDragEnd={(e: any) => handleDragEnd(e.itemData)}
         />
       </Scheduler>
     </>
