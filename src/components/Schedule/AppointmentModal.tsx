@@ -93,6 +93,7 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
     onSubmit({ ...courseUpdate, removedDays: removedDays });
     onClose();
   };
+
   return (
     <>
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
