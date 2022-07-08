@@ -123,7 +123,6 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           <Thead>
             <Tr>
               <Th>Course</Th>
-              <Th>Term</Th>
               <Th>Ability to Teach</Th>
               <Th>Willingness to Teach</Th>
             </Tr>
@@ -137,7 +136,6 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
                       <Td>
                         {course.subject} {course.code}
                       </Td>
-                      <Td>{course.term}</Td>
                       <Td>
                         <RadioGroup
                           id="canTeach"
