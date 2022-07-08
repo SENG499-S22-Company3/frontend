@@ -93,6 +93,7 @@ const LoginStatus = () => {
             <b>Hello, {user.name}!</b>
           </MenuButton>
           <MenuList>
+            <MenuItem onClick={() => navigate("/profile")}>My Profile</MenuItem>
             <MenuItem onClick={() => logout()}>Log out</MenuItem>
           </MenuList>
         </Menu>
@@ -183,6 +184,9 @@ export const NavHeader = () => {
                     <MenuItem>
                       <NavLink to="/surveyresults" desc="Survey Results" />
                     </MenuItem>
+                    <MenuItem>
+                      <NavLink to="/profile" desc="My Profile" />
+                    </MenuItem>
                   </>
                 )}
                 {isUser && (
@@ -190,6 +194,9 @@ export const NavHeader = () => {
                     <MenuDivider />
                     <MenuItem>
                       <NavLink to="/survey" desc="Preferences Survey" />
+                    </MenuItem>
+                    <MenuItem>
+                      <NavLink to="/profile" desc="My Profile" />
                     </MenuItem>
                   </>
                 )}
