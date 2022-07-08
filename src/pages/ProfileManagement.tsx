@@ -59,10 +59,10 @@ export const ProfileManagement = () => {
         >
           <CreateUser />
           <SearchBar
-                professors={professors}
-                setProfessors={setProfessors}
-                allProfessors={mockData}
-              />
+            professors={professors}
+            setProfessors={setProfessors}
+            allProfessors={mockData}
+          />
           <Table variant="striped" size="md">
             <Thead>
               <Tr>
