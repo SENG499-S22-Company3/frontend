@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import {
   Flex,
@@ -21,37 +21,32 @@ interface SearchBarProps {
   setScheduleData: (data: CourseSection[]) => void;
 }
 var courseFilter = "all";
-var termFilter = "all";
 export const SearchBar = (props: SearchBarProps) => {
   const { getTermData, setScheduleData } = props;
 
   let [searchInput, setSearchInput] = useState("");
   const [filtered, setFiltered] = useState("");
 
-  const toggleCourseTypes = (type: string, group: string) => {
-    if (group === "course") courseFilter = type;
-    else termFilter = type;
+  const filterLogic = (type?: string, group?: string) => {
+    if (group === "course" && type) courseFilter = type;
 
-    if (courseFilter == "all" && termFilter == "all") {
-      //both are all so give full list
+    if (courseFilter == "all" && searchInput == "") {
+      //give full list
       setSearchInput("");
       filterCourses(true);
       return;
-    } else if (type == "all") {
-      //all just selected, find out which group
-      if (group === "course") searchInput = termFilter;
-      else searchInput = courseFilter;
+    } else if (courseFilter == "all" && searchInput != "") {
+      //normal search with text from search input
       filterCourses();
       return;
-    } else if (courseFilter == "all" || termFilter == "all") {
-      //only one filter
-      searchInput = type;
+    } else if (courseFilter != "all" && searchInput == "") {
+      //only course filter
+      searchInput = courseFilter;
       filterCourses();
       return;
     } else {
-      //double filtered
-      searchInput = courseFilter;
-      filterCourses(false, termFilter);
+      //double filtered with course and searchinput
+      filterCourses(false, courseFilter);
       return;
     }
   };
@@ -106,60 +101,28 @@ export const SearchBar = (props: SearchBarProps) => {
       <RadioGroup id="course_type" colorScheme="green" defaultValue={"all"}>
         <Stack direction="row">
           <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "course")}
+            onChange={(e) => filterLogic(e.target.value, "course")}
             value="all"
           >
             All
           </Radio>
           <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "course")}
+            onChange={(e) => filterLogic(e.target.value, "course")}
             value="ece"
           >
             ECE
           </Radio>
           <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "course")}
+            onChange={(e) => filterLogic(e.target.value, "course")}
             value="seng"
           >
             SENG
           </Radio>
           <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "course")}
+            onChange={(e) => filterLogic(e.target.value, "course")}
             value="csc"
           >
             CSC
-          </Radio>
-        </Stack>
-      </RadioGroup>
-
-      <FormLabel htmlFor="term" mt={1} ml={10}>
-        Term:
-      </FormLabel>
-      <RadioGroup id="term" colorScheme="blue" defaultValue={"all"}>
-        <Stack direction="row">
-          <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "term")}
-            value="all"
-          >
-            All
-          </Radio>
-          <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "term")}
-            value="summer"
-          >
-            Summer
-          </Radio>
-          <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "term")}
-            value="fall"
-          >
-            Fall
-          </Radio>
-          <Radio
-            onChange={(e) => toggleCourseTypes(e.target.value, "term")}
-            value="spring"
-          >
-            Spring
           </Radio>
         </Stack>
       </RadioGroup>
@@ -169,7 +132,7 @@ export const SearchBar = (props: SearchBarProps) => {
           placeholder="Search"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && filterCourses()}
+          onKeyDown={(e) => e.key === "Enter" && filterLogic()}
         />
         <InputRightElement>
           {searchInput !== "" && filtered === searchInput ? (
@@ -186,7 +149,7 @@ export const SearchBar = (props: SearchBarProps) => {
             <IconButton
               aria-label="Search schedule"
               icon={<SearchIcon />}
-              onClick={() => filterCourses()}
+              onClick={() => filterLogic()}
             />
           )}
         </InputRightElement>

@@ -288,22 +288,23 @@ export const Schedule = () => {
                 <option value="table">Table View</option>
                 <option value="calendar">Calendar View</option>
               </Select>
-            </Flex>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
-              <SearchBar
-                getTermData={getScheduleRef}
-                setScheduleData={setScheduleData}
-              />
               <Button
-                w="300px"
+                w="200px"
                 as={Link}
-                to="/schedule"
+                to="/generate"
                 backgroundColor="purple.300"
                 colorScheme="purple"
                 variant="solid"
               >
                 Regenerate
               </Button>
+            </Flex>
+            <Flex alignItems="center" justifyContent="space-between" mb={5}>
+              <SearchBar
+                getTermData={getScheduleRef}
+                setScheduleData={setScheduleData}
+              />
+              
             </Flex>
             <Flex
               p={10}
