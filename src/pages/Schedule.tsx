@@ -276,7 +276,7 @@ export const Schedule = () => {
             <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <Select
                 id="select"
-                w="16rem"
+                w="10rem"
                 value={viewState}
                 onChange={(e) => {
                   refreshSchedule();
@@ -288,6 +288,8 @@ export const Schedule = () => {
                 <option value="table">Table View</option>
                 <option value="calendar">Calendar View</option>
               </Select>
+            </Flex>
+            <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <SearchBar
                 getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
@@ -300,7 +302,7 @@ export const Schedule = () => {
                 colorScheme="purple"
                 variant="solid"
               >
-                Generate New Schedule
+                Regenerate
               </Button>
             </Flex>
             <Flex
