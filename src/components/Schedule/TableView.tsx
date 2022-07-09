@@ -10,7 +10,11 @@ import {
   IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { formatDate, formatTimeString } from "../../utils/formatDate";
+import {
+  formatAMPM,
+  formatDate,
+  getScheduleTime,
+} from "../../utils/formatDate";
 import { EditIcon } from "@chakra-ui/icons";
 import { AppointmentModal, ModalItem } from "./AppointmentModal";
 import { useState } from "react";
@@ -28,32 +32,24 @@ const formatTableItem = (course: CourseSection) => {
     d = d + course.meetingTimes[y].day.slice(0, 3) + " ";
   }
 
-  const startTime = new Date(course.meetingTimes[0].startTime);
-  const endTime = new Date(course.meetingTimes[0].endTime);
-  const [, startMinutes] = formatTimeString(startTime);
-  const [, endMinutes] = formatTimeString(endTime);
+  const startTime = formatAMPM(new Date(course.meetingTimes[0].startTime));
+  const endTime = formatAMPM(new Date(course.meetingTimes[0].endTime));
 
   const startDate = new Date(course.startDate);
   const endDate = new Date(course.endDate);
 
-  const professors = course.professors
-    .map((prof) => prof.displayName)
-    .join(" ");
+  const professors = ["Joe Biden"];
+  // const professors = course.professors
+  //   .map((prof) => prof.displayName)
+  //   .join(" ");
 
   return {
     course: course.CourseID.subject + " " + course.CourseID.code,
-    schedule_time:
-      startTime.getHours() +
-      ":" +
-      startMinutes +
-      "/" +
-      endTime.getHours() +
-      ":" +
-      endMinutes,
+    schedule_time: startTime + " / " + endTime,
     days: d,
     term: course.CourseID.term,
-    prof: professors, //not in schema
-    section: "temp", //not in schema
+    prof: professors,
+    sectionNumber: course.sectionNumber,
     start_end: formatDate(startDate) + " / " + formatDate(endDate),
     capacity: course.capacity.toString(),
   };
@@ -67,6 +63,11 @@ export const TableView = (props: TableProps) => {
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
     setSelectedCourse(null);
     onUpdateSubmit(updatedCourse);
+  };
+
+  const handleUpdateClose = () => {
+    setSelectedCourse(null);
+    onClose();
   };
 
   return (
@@ -93,9 +94,11 @@ export const TableView = (props: TableProps) => {
                 ...course.CourseID,
                 ...course,
                 id: course.id,
-                professors: course.professors.map((prof) => prof.displayName),
-                startTime: new Date(course.meetingTimes[0].startTime),
-                endTime: new Date(course.meetingTimes[0].endTime),
+                professors: ["Joe Biden"],
+                startDate: new Date(course.startDate),
+                endDate: new Date(course.endDate),
+                startTime: getScheduleTime(course.meetingTimes[0].startTime),
+                endTime: getScheduleTime(course.meetingTimes[0].endTime),
                 days: course.meetingTimes.map((meeting) => meeting.day),
               } as ModalItem;
               return (
@@ -105,7 +108,7 @@ export const TableView = (props: TableProps) => {
                   <Td>{item.days}</Td>
                   <Td>{item.term}</Td>
                   <Td>{item.prof}</Td>
-                  <Td>{item.section}</Td>
+                  <Td>{item.sectionNumber}</Td>
                   <Td>{item.start_end}</Td>
                   <Td>{item.capacity}</Td>
                   <Td>
@@ -129,7 +132,7 @@ export const TableView = (props: TableProps) => {
       {selectedCourse && (
         <AppointmentModal
           isOpen={isOpen}
-          onClose={onClose}
+          onClose={handleUpdateClose}
           onSubmit={handleUpdateSubmit}
           courseData={selectedCourse}
           viewState={ViewTypes.table}

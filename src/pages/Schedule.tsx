@@ -4,15 +4,11 @@ import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
-import {
-  Appointment,
-  CourseSection,
-  Day,
-  MeetingTime,
-} from "../stores/schedule";
+import { Appointment, CourseSection, MeetingTime } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
+import { getUTCDate } from "../utils/formatDate";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -34,6 +30,7 @@ const COURSES = gql`
         capacity
         startDate
         endDate
+        sectionNumber
         meetingTimes {
           day
           startTime
@@ -43,71 +40,6 @@ const COURSES = gql`
     }
   }
 `;
-
-const mockData = [
-  {
-    CourseID: {
-      subject: "CSC",
-      code: "225",
-      term: "summer",
-      title: "hello world",
-    },
-    section: "A01",
-    hoursPerWeek: 50,
-    professors: [],
-    capacity: 50,
-    startDate: new Date(),
-    endDate: new Date(),
-    meetingTimes: [
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours())),
-        endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-        day: Day.TUESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours())),
-        endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-        day: Day.WEDNESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours())),
-        endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-        day: Day.FRIDAY,
-      },
-    ],
-  },
-  {
-    CourseID: {
-      subject: "ECE",
-      code: "260",
-      term: "summer",
-      title: "hello world",
-    },
-    section: "A01",
-    hoursPerWeek: 50,
-    professors: [],
-    capacity: 50,
-    startDate: new Date(),
-    endDate: new Date(),
-    meetingTimes: [
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 4)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 3)),
-        day: Day.TUESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 4)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 3)),
-        day: Day.WEDNESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 4)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 3)),
-        day: Day.FRIDAY,
-      },
-    ],
-  },
-];
 
 export enum ViewTypes {
   table = "table",
@@ -126,7 +58,11 @@ export const Schedule = () => {
   const baseScheduleRef = useRef(scheduleData);
 
   useEffect(() => {
-    if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
+    if (
+      baseScheduleData?.schedule.courses &&
+      !scheduleError &&
+      !scheduleLoading
+    ) {
       const courses = baseScheduleData.schedule.courses;
       const coursesId = courses.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
@@ -135,17 +71,6 @@ export const Schedule = () => {
       baseScheduleRef.current = coursesId;
     }
   }, [baseScheduleData, scheduleError, scheduleLoading]);
-
-  //temp for mockdata
-  useEffect(() => {
-    //assign courses an id so that they can be referenced if they're edited
-    const courses = mockData;
-    const coursesId = courses.map((course) => {
-      return { ...course, id: Math.floor(Math.random() * 10000) };
-    });
-    setScheduleData(coursesId);
-    baseScheduleRef.current = coursesId;
-  }, []);
 
   useEffect(() => {
     const onUnmount = () => {
@@ -167,8 +92,8 @@ export const Schedule = () => {
     const newMeetingTimes = newDays.map((day) => {
       return {
         day: day,
-        startTime: updatedCourse.startTime,
-        endTime: updatedCourse.endTime,
+        startTime: getUTCDate(updatedCourse.startTime),
+        endTime: getUTCDate(updatedCourse.endTime),
       } as MeetingTime;
     });
     //filter out old meeting times that overlap the new meeting times, then merge them.
@@ -197,20 +122,21 @@ export const Schedule = () => {
     const day = weekdayToString(updatedCourse.startTime.getDay());
     const newMeetingTime: MeetingTime = {
       day: day,
-      startTime: updatedCourse.startTime,
-      endTime: updatedCourse.endTime,
+      startTime: getUTCDate(updatedCourse.startTime),
+      endTime: getUTCDate(updatedCourse.endTime),
     };
 
-    const meetingToRemove = oldCourse?.meetingTimes.findIndex(
+    const oldMeetingTimes = oldCourse?.meetingTimes || [];
+    const meetingToRemove = oldMeetingTimes?.findIndex(
       (meeting) =>
         weekdayToString(oldDate.getDay()) === meeting.day &&
-        oldDate.getHours() === meeting.startTime.getHours()
+        oldDate.getHours() === new Date(meeting.startTime).getUTCHours()
     );
 
-    const oldMeetingTimes = oldCourse?.meetingTimes;
-    oldMeetingTimes?.splice(meetingToRemove || 0, 1);
+    const filteredMeetingTimes = [...oldMeetingTimes];
+    filteredMeetingTimes.splice(meetingToRemove || 0, 1);
 
-    const meetingTimes = [...(oldMeetingTimes || []), newMeetingTime];
+    const meetingTimes = [...filteredMeetingTimes, newMeetingTime];
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
   };
 
@@ -235,7 +161,7 @@ export const Schedule = () => {
         term: updatedCourse.term,
         title: updatedCourse.title,
       },
-      section: updatedCourse.section,
+      sectionNumber: updatedCourse.sectionNumber,
       capacity: updatedCourse.capacity,
       professors: professors,
       startDate: startDate,
@@ -269,7 +195,7 @@ export const Schedule = () => {
     >
       <Container mb={32} maxW="container.xl">
         <Heading mb={6}>View Schedule</Heading>
-        {!baseScheduleData || scheduleError ? (
+        {!scheduleData || scheduleError ? (
           <> Failed to fetch course data. Is the backend running? </>
         ) : (
           <>
