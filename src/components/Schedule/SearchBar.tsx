@@ -25,7 +25,7 @@ export const SearchBar = (props: SearchBarProps) => {
   const { getTermData, setScheduleData } = props;
 
   let [searchInput, setSearchInput] = useState("");
-  const [filtered, setFiltered] = useState("");
+  // const [filtered, setFiltered] = useState("");
 
   const filterLogic = (type?: string, group?: string) => {
     if (group === "course" && type) courseFilter = type;
@@ -63,7 +63,6 @@ export const SearchBar = (props: SearchBarProps) => {
     if (!termData) return;
 
     if (searchInput === "" || clear) {
-      setFiltered("");
       setScheduleData(termData);
       return;
     }
@@ -84,7 +83,6 @@ export const SearchBar = (props: SearchBarProps) => {
     });
     if (!next || next == "") {
       //single filter
-      setFiltered(searchInput);
       setScheduleData(filteredAppointments);
     } else {
       //double filter present, run again
@@ -135,7 +133,7 @@ export const SearchBar = (props: SearchBarProps) => {
           onKeyDown={(e) => e.key === "Enter" && filterLogic()}
         />
         <InputRightElement>
-          {searchInput !== "" && filtered === searchInput ? (
+          {searchInput !== "" ? (
             <IconButton
               aria-label="Clear search"
               colorScheme={"red"}
