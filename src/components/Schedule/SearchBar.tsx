@@ -25,7 +25,7 @@ export const SearchBar = (props: SearchBarProps) => {
   const { getTermData, setScheduleData } = props;
 
   const [searchInput, setSearchInput] = useState("");
-  
+
   const [filtered, setFiltered] = useState("");
 
   const filterCourses = (clear?: boolean) => {
@@ -33,16 +33,16 @@ export const SearchBar = (props: SearchBarProps) => {
     if (!termData) return;
 
     if (clear) {
-      if (courseFilter === "all"){
+      if (courseFilter === "all") {
         setFiltered("");
         setScheduleData(termData);
         return;
-      }else{
+      } else {
         filter2(termData);
         return;
       }
     }
-    
+
     //checks if every word of the search exists as an attribute for the course
     const inputWords = searchInput.toLowerCase().split(" ");
     const filteredAppointments = termData.filter((course) => {
@@ -58,14 +58,14 @@ export const SearchBar = (props: SearchBarProps) => {
       return inputWords.every((word) => appointmentValues.includes(word));
     });
     setFiltered(searchInput);
-    if (courseFilter === "all")setScheduleData(filteredAppointments);
+    if (courseFilter === "all") setScheduleData(filteredAppointments);
     else filter2(filteredAppointments);
   };
-  
-  const setFilter = (type:string)=>{
-      courseFilter = type;
-      filterCourses(false);
-  }
+
+  const setFilter = (type: string) => {
+    courseFilter = type;
+    filterCourses(false);
+  };
 
   const filter2 = (td: CourseSection[]) => {
     const termData = td;
@@ -96,28 +96,16 @@ export const SearchBar = (props: SearchBarProps) => {
       </FormLabel>
       <RadioGroup id="course_type" colorScheme="purple" defaultValue={"all"}>
         <Stack direction="row">
-          <Radio
-            onChange={(e) => setFilter(e.target.value)}
-            value="all"
-          >
+          <Radio onChange={(e) => setFilter(e.target.value)} value="all">
             All
           </Radio>
-          <Radio
-            onChange={(e) => setFilter(e.target.value)}
-            value="ece"
-          >
+          <Radio onChange={(e) => setFilter(e.target.value)} value="ece">
             ECE
           </Radio>
-          <Radio
-            onChange={(e) => setFilter(e.target.value)}
-            value="seng"
-          >
+          <Radio onChange={(e) => setFilter(e.target.value)} value="seng">
             SENG
           </Radio>
-          <Radio
-            onChange={(e) => setFilter(e.target.value)}
-            value="csc"
-          >
+          <Radio onChange={(e) => setFilter(e.target.value)} value="csc">
             CSC
           </Radio>
         </Stack>
