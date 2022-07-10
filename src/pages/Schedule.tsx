@@ -25,7 +25,7 @@ const COURSES = gql`
         }
         hoursPerWeek
         professors {
-          username
+          displayName
         }
         capacity
         startDate
