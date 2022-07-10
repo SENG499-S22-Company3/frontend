@@ -93,6 +93,7 @@ const LoginStatus = () => {
             <b>Hello, {user.name}!</b>
           </MenuButton>
           <MenuList>
+            <MenuItem onClick={() => navigate("/profile")}>My Profile</MenuItem>
             <MenuItem onClick={() => logout()}>Log out</MenuItem>
           </MenuList>
         </Menu>
@@ -116,7 +117,10 @@ const BoldNavLink = (props: { to: string; desc: string } & LinkProps) => (
 );
 
 export const NavHeader = () => {
-  const [user] = useLoginStore((state) => [state.user], shallow);
+  const [user, loggedIn] = useLoginStore(
+    (state) => [state.user, state.loggedIn],
+    shallow
+  );
   const bg = useColorModeValue("gray.100", "gray.700");
   const isSmall = useBreakpointValue({ base: true, xl: false });
 
@@ -154,9 +158,11 @@ export const NavHeader = () => {
                 variant="outline"
               />
               <MenuList>
-                <MenuItem>
-                  <NavLink to="/" desc="Home" />
-                </MenuItem>
+                {!loggedIn && (
+                  <MenuItem>
+                    <NavLink to="/" desc="Home" />
+                  </MenuItem>
+                )}
                 {isAdmin && (
                   <>
                     <MenuDivider />
@@ -178,6 +184,9 @@ export const NavHeader = () => {
                     <MenuItem>
                       <NavLink to="/surveyresults" desc="Survey Results" />
                     </MenuItem>
+                    <MenuItem>
+                      <NavLink to="/profile" desc="My Profile" />
+                    </MenuItem>
                   </>
                 )}
                 {isUser && (
@@ -186,6 +195,9 @@ export const NavHeader = () => {
                     <MenuItem>
                       <NavLink to="/survey" desc="Preferences Survey" />
                     </MenuItem>
+                    <MenuItem>
+                      <NavLink to="/profile" desc="My Profile" />
+                    </MenuItem>
                   </>
                 )}
               </MenuList>
@@ -193,7 +205,7 @@ export const NavHeader = () => {
           </>
         ) : (
           <>
-            <BoldNavLink to="/" desc="Home" />
+            {!loggedIn && <BoldNavLink to="/" desc="Home" />}
             {isAdmin && (
               <>
                 <BoldNavLink to="/dashboard" desc="Admin Dashboard" />
