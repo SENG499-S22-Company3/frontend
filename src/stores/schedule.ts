@@ -7,7 +7,7 @@ export type Appointment = {
   code: string;
   term: string;
   subject: string;
-  section: string;
+  sectionNumber: string;
   professors: string[];
   capacity: number; //from algo2
   startTime: Date; //for table view
@@ -28,7 +28,7 @@ export type Schedule = {
 export type CourseSection = {
   id: number;
   CourseID: CourseID;
-  section: string; //not currently in schema
+  sectionNumber: string;
   hoursPerWeek: number;
   capacity: number;
   professors: User[];
