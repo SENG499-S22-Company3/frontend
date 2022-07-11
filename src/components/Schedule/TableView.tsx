@@ -38,10 +38,9 @@ const formatTableItem = (course: CourseSection) => {
   const startDate = new Date(course.startDate);
   const endDate = new Date(course.endDate);
 
-  const professors = ["Joe Biden"];
-  // const professors = course.professors
-  //   .map((prof) => prof.displayName)
-  //   .join(" ");
+  const professors = course.professors
+    .map((prof) => prof.displayName)
+    .join(" ");
 
   return {
     course: course.CourseID.subject + " " + course.CourseID.code,
@@ -94,7 +93,7 @@ export const TableView = (props: TableProps) => {
                 ...course.CourseID,
                 ...course,
                 id: course.id,
-                professors: ["Joe Biden"],
+                professors: course.professors.map((prof) => prof.displayName),
                 startDate: new Date(course.startDate),
                 endDate: new Date(course.endDate),
                 startTime: getScheduleTime(course.meetingTimes[0].startTime),
