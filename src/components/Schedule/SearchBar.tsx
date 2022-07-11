@@ -33,10 +33,9 @@ export const SearchBar = (props: SearchBarProps) => {
     const inputWords = searchInput.toLowerCase().split(" ");
     const filteredAppointments = termData.filter((course) => {
       const courseProperties = Object.values(course.CourseID);
-      // const courseProfessors = course.professors.map(
-      //   (prof) => prof.displayName
-      // );
-      const courseProfessors = ["Joe Biden"];
+      const courseProfessors = course.professors.map(
+        (prof) => prof.displayName
+      );
       let appointmentValues = "";
       [...courseProperties, ...courseProfessors].forEach(
         (value) => (appointmentValues += value.toLowerCase())

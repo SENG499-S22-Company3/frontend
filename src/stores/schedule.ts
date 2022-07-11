@@ -3,7 +3,6 @@ import { User } from "./login";
 //this is the type that devExtreme expects
 export type Appointment = {
   id: number;
-  title: string;
   code: string;
   term: string;
   subject: string;
@@ -41,7 +40,6 @@ export type CourseID = {
   code: string;
   subject: string;
   term: string;
-  title: string; //not currently in schema
 };
 
 export type MeetingTime = {

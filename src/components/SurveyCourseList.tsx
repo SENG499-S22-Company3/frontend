@@ -130,7 +130,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           <Tbody>
             {data.survey.courses
               .filter((course: PreferenceInterface) => {
-                return course.term === "FALL";
+                return course.term === "SUMMER";
               })
               .map((course: PreferenceInterface, index: number) => {
                 return (
