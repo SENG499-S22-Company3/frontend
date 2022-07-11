@@ -131,7 +131,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           <Tbody>
             {data.survey.courses.map(
               (course: PreferenceInterface, index: number) => {
-                if (course.term === "FALL")
+                if (course.term === "SUMMER")
                   return (
                     <Tr key={"preference-" + index}>
                       <Td>
