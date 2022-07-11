@@ -8,11 +8,6 @@ import {
   Grid,
   GridItem,
   Heading,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Radio,
   RadioGroup,
   Select,
@@ -26,7 +21,7 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import { gql, useLazyQuery, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import {
   ActionMeta,
@@ -48,11 +43,12 @@ const GENERATE = gql`
 // This query is grabbing course section (courses that have already been scheudled)
 // We will need a new endpoint to grab the CourseIDs I think
 const GET_COURSES = gql`
-  query get_courses($term: Term!) {
-    courses(term: $term) {
-      CourseID {
+  query GetCourses {
+    survey {
+      courses {
         subject
         code
+        term
       }
     }
   }
@@ -67,10 +63,9 @@ interface CourseOption extends OptionBase {
 }
 
 interface CourseSection {
-  CourseID: {
-    subject: string;
-    code: string;
-  };
+  subject: string;
+  code: string;
+  term: string;
 }
 interface CourseInput {
   code: string;
@@ -88,10 +83,11 @@ export const Generate = () => {
   const [algorithm1, setAlgorithm1] = useState("Company 3");
   const [algorithm2, setAlgorithm2] = useState("Company 3");
   const [generate, { data, loading, error }] = useMutation(GENERATE);
-  const [
-    getCourses,
-    { data: courseData, loading: courseLoading, error: courseError },
-  ] = useLazyQuery(GET_COURSES);
+  const {
+    data: courseData,
+    loading: courseLoading,
+    error: courseError,
+  } = useQuery(GET_COURSES);
   const navigate = useNavigate();
 
   const bg = useColorModeValue("gray.50", "gray.700");
@@ -109,6 +105,7 @@ export const Generate = () => {
       algorithm1: algorithm1,
       algorithm2: algorithm2,
     };
+    console.log(input);
     generate({ variables: { input } });
   };
 
@@ -181,18 +178,25 @@ export const Generate = () => {
   useEffect(() => {
     if (!courseLoading) {
       if (!courseError && courseData) {
-        const options = courseData.courses?.map((course: CourseSection) => {
-          return {
-            label: course.CourseID.subject + " " + course.CourseID.code,
-            value: course.CourseID,
-          };
-        });
+        const options = courseData.survey.courses
+          .filter((course: CourseSection) => {
+            return course.term === term;
+          })
+          .map((course: CourseSection) => {
+            return {
+              label: course.subject + " " + course.code,
+              value: {
+                code: course.code,
+                subject: course.subject,
+              },
+            };
+          });
         setCourseOptions(options);
       } else {
         console.log(courseError);
       }
     }
-  }, [courseData, courseError, courseLoading]);
+  }, [courseData, courseError, courseLoading, term]);
 
   useEffect(() => {
     if (!loading) {
@@ -225,14 +229,6 @@ export const Generate = () => {
       }
     }
   }, [data, loading, error, navigate, toast]);
-
-  useEffect(() => {
-    if (term !== "") {
-      getCourses({
-        variables: { term },
-      });
-    }
-  }, [term, getCourses]);
 
   return (
     <Flex

@@ -123,50 +123,47 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           <Thead>
             <Tr>
               <Th>Course</Th>
-              <Th>Term</Th>
               <Th>Ability to Teach</Th>
               <Th>Willingness to Teach</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {data.survey.courses.map(
-              (course: PreferenceInterface, index: number) => {
-                if (course.term === "SUMMER")
-                  return (
-                    <Tr key={"preference-" + index}>
-                      <Td>
-                        {course.subject} {course.code}
-                      </Td>
-                      <Td>{course.term}</Td>
-                      <Td>
-                        <RadioGroup
-                          id="canTeach"
-                          onChange={(v) => handleChange(course, "Able", v)}
-                        >
-                          <Stack direction="row">
-                            <Radio value="Able">Able</Radio>
-                            <Radio value="With Effort">With Effort</Radio>
-                          </Stack>
-                        </RadioGroup>
-                      </Td>
-                      <Td>
-                        <RadioGroup
-                          id="willingTeach"
-                          onChange={(v) =>
-                            handleChange(course, "Willingness", v)
-                          }
-                        >
-                          <Stack direction="row">
-                            <Radio value="Unwilling">Unwilling</Radio>
-                            <Radio value="Willing">Willing</Radio>
-                            <Radio value="Very Willing">Very Willing</Radio>
-                          </Stack>
-                        </RadioGroup>
-                      </Td>
-                    </Tr>
-                  );
-              }
-            )}
+            {data.survey.courses
+              .filter((course: PreferenceInterface) => {
+                return course.term === "SUMMER";
+              })
+              .map((course: PreferenceInterface, index: number) => {
+                return (
+                  <Tr key={"preference-" + index}>
+                    <Td>
+                      {course.subject} {course.code}
+                    </Td>
+                    <Td>
+                      <RadioGroup
+                        id="canTeach"
+                        onChange={(v) => handleChange(course, "Able", v)}
+                      >
+                        <Stack direction="row">
+                          <Radio value="Able">Able</Radio>
+                          <Radio value="With Effort">With Effort</Radio>
+                        </Stack>
+                      </RadioGroup>
+                    </Td>
+                    <Td>
+                      <RadioGroup
+                        id="willingTeach"
+                        onChange={(v) => handleChange(course, "Willingness", v)}
+                      >
+                        <Stack direction="row">
+                          <Radio value="Unwilling">Unwilling</Radio>
+                          <Radio value="Willing">Willing</Radio>
+                          <Radio value="Very Willing">Very Willing</Radio>
+                        </Stack>
+                      </RadioGroup>
+                    </Td>
+                  </Tr>
+                );
+              })}
           </Tbody>
         </Table>
       </Box>
