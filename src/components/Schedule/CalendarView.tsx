@@ -9,7 +9,7 @@ import { Appointment, CourseSection } from "../../stores/schedule";
 import "devextreme/dist/css/dx.dark.css";
 import { weekdayToInt } from "../../utils/weekdayConversion";
 import { AppointmentTooltip } from "./AppointmentTooltip";
-import { formatTimeString } from "../../utils/formatDate";
+import { getScheduleTime } from "../../utils/formatDate";
 import { ModalItem } from "./AppointmentModal";
 
 //make column headers only the weekday
@@ -29,20 +29,8 @@ const splitCourseDays = (course: CourseSection) => {
   const splitDays = course.meetingTimes.map((meetingTime) => {
     const { startTime, endTime, day } = meetingTime;
 
-    //2022-05-31T is a monday, and we just need the base to be a monday
-    //HH:MM:SS.000-7:00 for time format, it comes in HHMM format
-
-    const startTimeDate = new Date(startTime);
-    const endTimeDate = new Date(endTime);
-
-    const [startHours, startMinutes] = formatTimeString(startTimeDate);
-    const [endHours, endMinutes] = formatTimeString(endTimeDate);
-
-    const start = "2022-05-31T" + startHours + ":" + startMinutes + ":00.000";
-    const end = "2022-05-31T" + endHours + ":" + endMinutes + ":00.000";
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+    const startDate = getScheduleTime(startTime);
+    const endDate = getScheduleTime(endTime);
 
     //change the date based on what day of the week it's supposed to be
     const dayShift = weekdayToInt(day);
@@ -63,7 +51,8 @@ const splitCourseDays = (course: CourseSection) => {
 //convert Course object data from backend to the structure DevExtreme expects
 const buildAppointments = (courses: CourseSection[]) => {
   const appointments = courses.flatMap((course) => {
-    const professors = course.professors.map((prof) => prof.displayName); //TO-DO switch to displayName, when its in schema
+    // const professors = course.professors.map((prof) => prof.displayName);
+    const professors = ["Joe Biden"];
 
     const assignedCourses = splitCourseDays(course).map((meetingTime) => {
       return {
@@ -72,8 +61,8 @@ const buildAppointments = (courses: CourseSection[]) => {
         code: course.CourseID.code,
         subject: course.CourseID.subject,
         term: course.CourseID.term,
-        section: "TEMP_SECTION", //not in schema yet
-        professors: professors, //not in schema yet
+        sectionNumber: course.sectionNumber,
+        professors: professors,
         capacity: course.capacity,
         startTime: meetingTime.startDate,
         endTime: meetingTime.endDate,

@@ -38,7 +38,7 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
             <Text fontWeight="bold">
               {courseData.subject} {courseData.code}
             </Text>
-            <Text px={"0.5rem"}>{courseData.section}</Text>
+            <Text px={"0.5rem"}>{courseData.sectionNumber}</Text>
           </Flex>
           <Flex>
             <IconButton
