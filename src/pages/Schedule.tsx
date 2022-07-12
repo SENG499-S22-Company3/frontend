@@ -197,7 +197,7 @@ export const Schedule = () => {
     >
       <Container mb={32} maxW="container.xl">
         <Heading mb={6}>View Schedule</Heading>
-        
+
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
