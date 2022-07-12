@@ -2,14 +2,15 @@ export type UserInfo = {
   username: string;
   displayName: string;
   role: string;
-  preferences: [
-    {
-      id: {
-        subject: string;
-        code: string;
-      };
-      preference: number;
-    }
-  ];
-}
+  preferences: Preference[];
+};
 
+export type Preference = {
+  id: CourseID;
+  preference: number;
+};
+
+type CourseID = {
+  subject: string;
+  code: string;
+};
