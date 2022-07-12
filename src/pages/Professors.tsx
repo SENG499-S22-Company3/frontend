@@ -10,6 +10,7 @@ import {
   Th,
   Td,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { CreateUser } from "../components/UserManagement/CreateUser";
 import { SearchBar } from "../components/ProfileManagement/SearchBar";
@@ -39,6 +40,8 @@ export const Professors = () => {
   const [allUsers, setAllUsers] = useState<Array<UserInfo>>([]);
   const [filteredUsers, setFilteredUsers] = useState<Array<UserInfo>>([]);
 
+  const toast = useToast();
+
   useEffect(() => {
     if (!loading) {
       if (data && !error) {
@@ -50,6 +53,12 @@ export const Professors = () => {
         setAllUsers(sortedData);
         setFilteredUsers(sortedData);
       } else if (error) {
+        toast({
+          title: "Failed to get professor info",
+          description: error.message,
+          status: "error",
+          isClosable: true,
+        });
         console.log(error);
       }
     }
@@ -89,7 +98,9 @@ export const Professors = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredUsers ? (
+              {loading ? (
+                <>Loading</>
+              ) : filteredUsers ? (
                 filteredUsers.map((user) => (
                   <Tr key={user.username}>
                     <Td>{user.displayName}</Td>
