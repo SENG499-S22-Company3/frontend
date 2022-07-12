@@ -45,13 +45,22 @@ export const Professors = () => {
   useEffect(() => {
     if (!loading) {
       if (data && !error) {
-        const sortedData = data.allUsers
-          .slice()
-          .sort((a: UserInfo, b: UserInfo) => {
-            return a.displayName.localeCompare(b.displayName);
+        if (data.allUsers) {
+          const sortedData = data.allUsers
+            .slice()
+            .sort((a: UserInfo, b: UserInfo) => {
+              return a.displayName.localeCompare(b.displayName);
+            });
+          setAllUsers(sortedData);
+          setFilteredUsers(sortedData);
+        } else {
+          toast({
+            title: "Failed to get professor info",
+            status: "error",
+            isClosable: true,
           });
-        setAllUsers(sortedData);
-        setFilteredUsers(sortedData);
+          console.log(data);
+        }
       } else if (error) {
         toast({
           title: "Failed to get professor info",
@@ -99,7 +108,9 @@ export const Professors = () => {
             </Thead>
             <Tbody>
               {loading ? (
-                <>Loading</>
+                <Tr>
+                  <Td>Loading</Td>
+                </Tr>
               ) : filteredUsers ? (
                 filteredUsers.map((user) => (
                   <Tr key={user.username}>
@@ -113,7 +124,9 @@ export const Professors = () => {
                   </Tr>
                 ))
               ) : (
-                <Text>Failed to fetch users</Text>
+                <Tr>
+                  <Td>Failed to fetch users</Td>
+                </Tr>
               )}
             </Tbody>
           </Table>
