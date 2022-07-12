@@ -51,9 +51,7 @@ const splitCourseDays = (course: CourseSection) => {
 //convert Course object data from backend to the structure DevExtreme expects
 const buildAppointments = (courses: CourseSection[]) => {
   const appointments = courses.flatMap((course) => {
-    // const professors = course.professors.map((prof) => prof.displayName);
-    const professors = ["Joe Biden"];
-
+    const professors = course.professors.map((prof) => prof.displayName);
     const assignedCourses = splitCourseDays(course).map((meetingTime) => {
       return {
         id: course.id,

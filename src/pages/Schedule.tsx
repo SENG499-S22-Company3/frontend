@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Container, Flex, Select, Heading } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Select,
+  Heading,
+  Spinner,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
@@ -17,7 +24,7 @@ const COURSES = gql`
       id
       year
       createdAt
-      courses(term: FALL) {
+      courses(term: SUMMER) {
         CourseID {
           subject
           code
@@ -51,18 +58,14 @@ export const Schedule = () => {
     data: baseScheduleData,
     loading: scheduleLoading,
     error: scheduleError,
-  } = useQuery(COURSES, {});
+  } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
 
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
   const baseScheduleRef = useRef(scheduleData);
 
   useEffect(() => {
-    if (
-      baseScheduleData?.schedule.courses &&
-      !scheduleError &&
-      !scheduleLoading
-    ) {
+    if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
       const courses = baseScheduleData.schedule.courses;
       const coursesId = courses.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
@@ -159,7 +162,6 @@ export const Schedule = () => {
         code: updatedCourse.code,
         subject: updatedCourse.subject,
         term: updatedCourse.term,
-        title: updatedCourse.title,
       },
       sectionNumber: updatedCourse.sectionNumber,
       capacity: updatedCourse.capacity,
@@ -195,8 +197,45 @@ export const Schedule = () => {
     >
       <Container mb={32} maxW="container.xl">
         <Heading mb={6}>View Schedule</Heading>
-        {!scheduleData || scheduleError ? (
-          <> Failed to fetch course data. Is the backend running? </>
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="16rem"
+            value={viewState}
+            onChange={(e) => {
+              refreshSchedule();
+              e.target.value === "table"
+                ? setViewState(ViewTypes.table)
+                : setViewState(ViewTypes.calendar);
+            }}
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+          <SearchBar
+            getTermData={getScheduleRef}
+            setScheduleData={setScheduleData}
+          />
+          <Button
+            w="300px"
+            as={Link}
+            to="/schedule"
+            backgroundColor="purple.300"
+            colorScheme="purple"
+            variant="solid"
+          >
+            Generate New Schedule
+          </Button>
+        </Flex>
+        {!scheduleData || scheduleLoading ? (
+          <Container
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            marginTop="4rem"
+          >
+            <Spinner size="xl" />
+          </Container>
         ) : (
           <>
             <Flex alignItems="center" justifyContent="space-between" mb={5}>

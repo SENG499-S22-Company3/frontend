@@ -203,7 +203,7 @@ export const Generate = () => {
       if (data && !error) {
         if (data.generateSchedule.success) {
           toast({
-            title: "Scheudle Created",
+            title: "Schedule Created",
             status: "success",
             duration: 3000,
             isClosable: true,

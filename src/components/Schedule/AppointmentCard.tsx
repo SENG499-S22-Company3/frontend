@@ -18,7 +18,6 @@ export const AppointmentCard = (model: appointmentModel) => {
         </Text>
         <Text>{courseData.sectionNumber}</Text>
       </Flex>
-      <Text fontWeight="bold">{courseData.title}</Text>
       {courseData.professors.map((prof, idx) => (
         <Text key={idx}>{prof}</Text>
       ))}
