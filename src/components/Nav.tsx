@@ -173,16 +173,10 @@ export const NavHeader = () => {
                       <NavLink to="/generate" desc="Generate Schedules" />
                     </MenuItem>
                     <MenuItem>
-                      <NavLink
-                        to="/profileManagement"
-                        desc="Profile Management"
-                      />
-                    </MenuItem>
-                    <MenuItem>
                       <NavLink to="/schedule" desc="View Schedules" />
                     </MenuItem>
                     <MenuItem>
-                      <NavLink to="/surveyresults" desc="Survey Results" />
+                      <NavLink to="/professors" desc="Professors" />
                     </MenuItem>
                     <MenuItem>
                       <NavLink to="/profile" desc="My Profile" />
@@ -210,12 +204,8 @@ export const NavHeader = () => {
               <>
                 <BoldNavLink to="/dashboard" desc="Admin Dashboard" />
                 <BoldNavLink to="/generate" desc="Generate Schedules" />
-                <BoldNavLink
-                  to="/profileManagement"
-                  desc="Profile Management"
-                />
                 <BoldNavLink to="/schedule" desc="View Schedules" />
-                <BoldNavLink to="/surveyresults" desc="Survey Results" />
+                <BoldNavLink to="/professors" desc="Professors" />
               </>
             )}
             {isUser && (
