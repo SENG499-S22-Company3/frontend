@@ -6,12 +6,12 @@ import {
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
-import { Professor } from "../../stores/profileManagement";
+import { UserInfo } from "../../stores/profileManagement";
 
 interface SearchBarProps {
-  professors: Professor[];
-  setProfessors: (professors: Professor[]) => void;
-  allProfessors: Professor[];
+  professors: UserInfo[];
+  setProfessors: (professors: UserInfo[]) => void;
+  allProfessors: UserInfo[];
 }
 
 export const SearchBar = (props: SearchBarProps) => {
@@ -26,7 +26,7 @@ export const SearchBar = (props: SearchBarProps) => {
 
     setProfessors(
       professors.filter((prof) =>
-        prof.name.toLowerCase().includes(searchInput.toLowerCase())
+        prof.displayName.toLowerCase().includes(searchInput.toLowerCase())
       )
     );
   };
