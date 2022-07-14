@@ -12,14 +12,29 @@ import {
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 const httpLink = createHttpLink({
   uri: "/graphql",
   credentials: "include",
 });
 
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem("schedulater-token");
+
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      // Company 4 backend just puts the token straight into the header with no "Bearer: " prefix
+      authorization: token ?? "",
+    },
+  };
+});
+
 const client = new ApolloClient({
-  link: httpLink,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 

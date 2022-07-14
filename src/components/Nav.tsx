@@ -33,8 +33,13 @@ const LOGOUT = gql`
 `;
 
 const LoginStatus = () => {
-  const [user, loggedIn, unPersistUser] = useLoginStore(
-    (state) => [state.user, state.loggedIn, state.unPersistUser],
+  const [user, loggedIn, unPersistUser, unPersistToken] = useLoginStore(
+    (state) => [
+      state.user,
+      state.loggedIn,
+      state.unPersistUser,
+      state.unPersistToken,
+    ],
     shallow
   );
   const [logout, { client, data, loading, error }] = useMutation(LOGOUT);
@@ -56,6 +61,7 @@ const LoginStatus = () => {
 
         // Reset the store so that the user information isn't cached
         client.resetStore();
+        unPersistToken();
         unPersistUser();
 
         navigate("/");
