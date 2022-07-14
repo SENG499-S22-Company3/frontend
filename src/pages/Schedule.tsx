@@ -6,6 +6,7 @@ import {
   Select,
   Heading,
   Spinner,
+  useColorMode,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
@@ -16,6 +17,7 @@ import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
+import Themes from "devextreme/ui/themes";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -59,10 +61,16 @@ export const Schedule = () => {
     loading: scheduleLoading,
     error: scheduleError,
   } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
-
+  const { colorMode } = useColorMode();
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
   const baseScheduleRef = useRef(scheduleData);
+
+  useEffect(() => {
+    colorMode === "light"
+      ? Themes.current("generic.light")
+      : Themes.current("generic.dark");
+  }, [colorMode]);
 
   useEffect(() => {
     if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {

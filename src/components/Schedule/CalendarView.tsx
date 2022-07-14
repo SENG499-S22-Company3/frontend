@@ -6,7 +6,6 @@ import {
 } from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
 import { Appointment, CourseSection } from "../../stores/schedule";
-import "devextreme/dist/css/dx.dark.css";
 import { weekdayToInt } from "../../utils/weekdayConversion";
 import { AppointmentTooltip } from "./AppointmentTooltip";
 import { getScheduleTime } from "../../utils/formatDate";
