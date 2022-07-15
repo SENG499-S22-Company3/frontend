@@ -195,9 +195,8 @@ export const Schedule = () => {
       justifyContent="center"
       flexDirection="column"
     >
+      <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
-        <Heading mb={6}>View Schedule</Heading>
-
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"

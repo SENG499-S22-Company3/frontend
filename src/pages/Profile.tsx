@@ -21,7 +21,10 @@ export const Profile = () => {
       pt={30}
       alignItems="center"
       justifyContent="center"
+      flexDirection="column"
     >
+      
+      <Heading mb={10}>My Profile</Heading>
       <Container
         w="500px"
         borderRadius={20}
@@ -30,7 +33,6 @@ export const Profile = () => {
         textAlign="center"
         centerContent
       >
-        <Heading mb={4}>My Profile</Heading>
         <Table variant="striped" size="lg">
           <Tbody>
             <Tr key="username">

@@ -82,8 +82,9 @@ export const Professors = () => {
       justifyContent="center"
       flexDirection="column"
     >
+      
+      <Heading mb={10}>Professors</Heading>
       <Container maxW="container.xl">
-        <Heading mb={6}>Professors</Heading>
         <Flex
           p={10}
           borderRadius={10}
