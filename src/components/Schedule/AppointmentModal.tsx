@@ -171,35 +171,72 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Course</ModalHeader>
+          <ModalHeader>Edit Course Section</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
-              <FormLabel htmlFor="subject">Course Subject</FormLabel>
-              <Input
-                id="subject"
-                ref={initialRef}
-                placeholder="Subject"
-                value={courseUpdate?.subject}
-                onChange={(e) =>
-                  setCourseUpdate({ ...courseUpdate, subject: e.target.value })
-                }
-              />
-              <FormLabel htmlFor="code" marginTop={"0.75rem"}>
-                Course Number
-              </FormLabel>
-              <Input
-                id="code"
-                placeholder="Number"
-                value={courseUpdate.code}
-                onChange={(e) =>
-                  setCourseUpdate({
-                    ...courseUpdate,
-                    code: e.target.value,
-                  })
-                }
-              />
-              <FormLabel htmlFor="professors" marginTop={"0.75rem"}>
+              <Flex>
+                <Flex flexDirection={"column"} marginRight={"1rem"}>
+                  <FormLabel htmlFor="subject">Course Subject</FormLabel>
+                  <Input
+                    id="subject"
+                    ref={initialRef}
+                    placeholder="Subject"
+                    value={courseUpdate?.subject}
+                    onChange={(e) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        subject: e.target.value,
+                      })
+                    }
+                  />
+                </Flex>
+                <Flex flexDirection={"column"}>
+                  <FormLabel htmlFor="code">Course Number</FormLabel>
+                  <Input
+                    id="code"
+                    placeholder="Number"
+                    value={courseUpdate.code}
+                    onChange={(e) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        code: e.target.value,
+                      })
+                    }
+                  />
+                </Flex>
+              </Flex>
+              <Flex marginTop={"1.5rem"}>
+                <Flex flexDirection={"column"} marginRight={"1.5rem"}>
+                  <FormLabel htmlFor="title">Course Title</FormLabel>
+                  <Input
+                    id="title"
+                    placeholder="Title"
+                    value={courseUpdate.title}
+                    onChange={(e) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        title: e.target.value,
+                      })
+                    }
+                  />
+                </Flex>
+                <Flex flexDirection={"column"}>
+                  <FormLabel htmlFor="sectionNumber">Section Number</FormLabel>
+                  <Input
+                    id="sectionNumber"
+                    placeholder="Section"
+                    value={courseUpdate.sectionNumber}
+                    onChange={(e) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        sectionNumber: e.target.value,
+                      })
+                    }
+                  />
+                </Flex>
+              </Flex>
+              <FormLabel htmlFor="professors" marginTop={"1.5rem"}>
                 Professors
               </FormLabel>
               <Select<ProfessorOption, true, GroupBase<ProfessorOption>>
@@ -210,7 +247,7 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                 onChange={handleProfessorChange}
                 value={defaultProfessors}
               />
-              <FormLabel htmlFor="capacity" marginTop={"0.75rem"}>
+              <FormLabel htmlFor="capacity" marginTop={"1.5rem"}>
                 Capacity
               </FormLabel>
               <Flex>
@@ -258,7 +295,7 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
               </Flex>
               {viewState === ViewTypes.table && (
                 <>
-                  <FormControl isInvalid={timeError} marginTop={"0.75rem"}>
+                  <FormControl isInvalid={timeError} marginTop={"1.5rem"}>
                     <FormLabel htmlFor="startDate">Start Date</FormLabel>
                     <DateBox
                       id="startDate"
