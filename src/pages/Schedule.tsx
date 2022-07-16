@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Button,
-  Container,
-  Flex,
-  Select,
-  Heading,
-  Spinner,
-} from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Container, Flex, Select, Heading, Spinner } from "@chakra-ui/react";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
-import { Appointment, CourseSection, MeetingTime } from "../stores/schedule";
+import {
+  Appointment,
+  CourseSection,
+  MeetingTime,
+  Day,
+  CourseSectionInput,
+  UpdateScheduleInput,
+  Company,
+} from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
+import { SubmitButton } from "../components/Schedule/SubmitButton";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -27,6 +28,7 @@ const COURSES = gql`
       courses(term: SUMMER) {
         CourseID {
           subject
+          title
           code
           term
         }
@@ -48,6 +50,101 @@ const COURSES = gql`
   }
 `;
 
+const USERS = gql`
+  query getUsers {
+    allUsers {
+      username
+      displayName
+    }
+  }
+`;
+
+const mockData = [
+  {
+    CourseID: {
+      subject: "CSC",
+      code: "225",
+      term: "summer",
+      title: "hello world",
+    },
+    sectionNumber: "A01",
+    hoursPerWeek: 50,
+    professors: [
+      {
+        displayName: "Daniela Damien",
+        username: "",
+        name: "",
+        email: "",
+        roles: [""],
+      },
+    ],
+    capacity: 50,
+    startDate: new Date(),
+    endDate: new Date(),
+    meetingTimes: [
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        day: Day.TUESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        day: Day.WEDNESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        day: Day.FRIDAY,
+      },
+    ],
+  },
+  {
+    CourseID: {
+      subject: "ECE",
+      code: "260",
+      term: "summer",
+      title: "hello world",
+    },
+    sectionNumber: "A01",
+    hoursPerWeek: 50,
+    professors: [
+      {
+        displayName: "Joe Biden",
+        username: "",
+        name: "",
+        email: "",
+        roles: [""],
+      },
+    ],
+    capacity: 50,
+    startDate: new Date(),
+    endDate: new Date(),
+    meetingTimes: [
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        day: Day.TUESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        day: Day.WEDNESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        day: Day.FRIDAY,
+      },
+    ],
+  },
+];
+
+interface User {
+  displayName: string;
+  username: string;
+}
+
 export enum ViewTypes {
   table = "table",
   calendar = "calendar",
@@ -59,21 +156,46 @@ export const Schedule = () => {
     loading: scheduleLoading,
     error: scheduleError,
   } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
+  const { data, loading, error } = useQuery(USERS);
 
+  const [userData, setUserData] = useState<User[]>();
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
+  const [isEditing, setIsEditing] = useState(false);
+
   const baseScheduleRef = useRef(scheduleData);
 
+  // useEffect(() => {
+  //   if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
+  //     const courses = baseScheduleData.schedule.courses;
+  //     const coursesId = courses.map((course: CourseSection) => {
+  //       return { ...course, id: Math.floor(Math.random() * 10000) };
+  //     });
+  //     setScheduleData(coursesId);
+  //     baseScheduleRef.current = coursesId;
+  //   }
+  // }, [baseScheduleData, scheduleError, scheduleLoading]);
+
   useEffect(() => {
-    if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
-      const courses = baseScheduleData.schedule.courses;
-      const coursesId = courses.map((course: CourseSection) => {
-        return { ...course, id: Math.floor(Math.random() * 10000) };
-      });
-      setScheduleData(coursesId);
-      baseScheduleRef.current = coursesId;
+    if (!loading) {
+      if (!error && data) {
+        const userData = data.allUsers;
+        setUserData(userData);
+      } else {
+        console.log(error);
+      }
     }
-  }, [baseScheduleData, scheduleError, scheduleLoading]);
+  }, [data, error, loading]);
+
+  useEffect(() => {
+    //assign courses an id so that they can be referenced if they're edited
+    const courses = mockData;
+    const coursesId = courses.map((course) => {
+      return { ...course, id: Math.floor(Math.random() * 10000) };
+    });
+    setScheduleData(coursesId);
+    baseScheduleRef.current = coursesId;
+  }, []);
 
   useEffect(() => {
     const onUnmount = () => {
@@ -141,9 +263,10 @@ export const Schedule = () => {
 
     const meetingTimes = [...filteredMeetingTimes, newMeetingTime];
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
+    refreshSchedule();
   };
 
-  //convert calendar appointments into CourseSection object and update state
+  //convert calendar appointments into course sections and update state
   const updateSchedule = (
     updatedCourse: Appointment,
     meetingTimes: MeetingTime[],
@@ -162,7 +285,9 @@ export const Schedule = () => {
         code: updatedCourse.code,
         subject: updatedCourse.subject,
         term: updatedCourse.term,
+        title: updatedCourse.title,
       },
+      hoursPerWeek: updatedCourse.hoursPerWeek,
       sectionNumber: updatedCourse.sectionNumber,
       capacity: updatedCourse.capacity,
       professors: professors,
@@ -176,6 +301,7 @@ export const Schedule = () => {
     );
     const newSchedule = [courseSection, ...(filteredSchedule || [])];
     baseScheduleRef.current = newSchedule;
+    setIsEditing(true);
   };
 
   const refreshSchedule = () => {
@@ -184,6 +310,28 @@ export const Schedule = () => {
 
   const getScheduleRef = () => {
     return baseScheduleRef.current;
+  };
+
+  const submitSchedule = () => {
+    const courseSections = scheduleData?.map((course) => {
+      const users = course.professors.map(
+        (prof) =>
+          userData?.find((u) => u.displayName === prof.displayName)?.username
+      );
+      return {
+        ...course,
+        id: course.CourseID,
+        professors: users,
+      } as CourseSectionInput;
+    });
+
+    const scheduleInput = {
+      id: baseScheduleData.schedule.id,
+      courses: courseSections,
+      skipValidation: false,
+      validation: Company.COMPANY3,
+    } as UpdateScheduleInput;
+    //do mutation
   };
 
   return (
@@ -198,7 +346,7 @@ export const Schedule = () => {
       <Container mb={32} maxW="container.xl">
         <Heading mb={6}>View Schedule</Heading>
 
-        {!scheduleData || scheduleLoading ? (
+        {!scheduleData ? (
           <Container
             display="flex"
             justifyContent="center"
@@ -224,21 +372,16 @@ export const Schedule = () => {
                 <option value="table">Table View</option>
                 <option value="calendar">Calendar View</option>
               </Select>
-              <Button
-                w="200px"
-                as={Link}
-                to="/generate"
-                backgroundColor="purple.300"
-                colorScheme="purple"
-                variant="solid"
-              >
-                Regenerate
-              </Button>
             </Flex>
             <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <SearchBar
                 getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
+              />
+              <SubmitButton
+                handleSubmit={submitSchedule}
+                active={isEditing}
+                setActive={setIsEditing}
               />
             </Flex>
             <Flex
