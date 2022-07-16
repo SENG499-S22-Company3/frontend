@@ -140,7 +140,7 @@ export const CreateUser = () => {
                     <Radio value="Professor">Professor</Radio>
                   </Stack>
                 </RadioGroup> */}
-                <Button colorScheme="green" mr={3} onClick={createUser}>
+                <Button colorScheme="blue" mr={3} onClick={createUser}>
                   Create
                 </Button>
                 <Button colorScheme="red" mr={3} onClick={onClose}>

@@ -201,7 +201,7 @@ export const Survey = () => {
             <Button
               isLoading={loading}
               type="submit"
-              colorScheme="green"
+              colorScheme="blue"
               variant="solid"
               w="100%"
             >
