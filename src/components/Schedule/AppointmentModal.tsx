@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -30,6 +30,27 @@ import {
 import DateBox from "devextreme-react/date-box";
 import { Appointment } from "../../stores/schedule";
 import { ViewTypes } from "../../pages/Schedule";
+import { gql, useQuery } from "@apollo/client";
+import {
+  Select,
+  OptionBase,
+  GroupBase,
+  MultiValue,
+  ActionMeta,
+} from "chakra-react-select";
+
+const USERS = gql`
+  query getUsers {
+    allUsers {
+      displayName
+    }
+  }
+`;
+
+interface ProfessorOption extends OptionBase {
+  label: string;
+  value: string;
+}
 
 export interface ModalItem extends Appointment {
   days: string[];
@@ -45,12 +66,40 @@ interface AppointmentModalProps {
 }
 export const AppointmentModal = (props: AppointmentModalProps) => {
   const { isOpen, onClose, onSubmit, courseData, viewState } = props;
+
+  const { data, loading, error } = useQuery(USERS);
+  const [professorOptions, setProfessorOptions] = useState<ProfessorOption[]>();
   const [courseUpdate, setCourseUpdate] = useState(courseData);
   const [timeError, setTimeError] = useState(false);
   const [dayError, setDayError] = useState(false);
 
+  const defaultProfessors: ProfessorOption[] = courseUpdate.professors.map(
+    (prof) => {
+      return {
+        label: prof,
+        value: prof,
+      };
+    }
+  );
   const initialRef = useRef(null);
   const days = courseUpdate.days;
+
+  useEffect(() => {
+    if (!loading) {
+      if (!error && data) {
+        const profNames = data.allUsers.map((prof: { displayName: string }) => {
+          return {
+            label: prof.displayName,
+            value: prof.displayName,
+          };
+        });
+        console.log(profNames);
+        setProfessorOptions(profNames);
+      } else {
+        console.log(error);
+      }
+    }
+  }, [data, error, loading]);
 
   const handleCheck = (weekDay: string, isChecked?: boolean) => {
     //handles the radio button case
@@ -94,6 +143,29 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
     onClose();
   };
 
+  const handleProfessorChange = (
+    professors: MultiValue<ProfessorOption>,
+    actionMeta: ActionMeta<ProfessorOption>
+  ) => {
+    const newProfName = actionMeta.option?.value || "";
+    const removedProfName = actionMeta.removedValue?.value || "";
+    if (actionMeta.action === "select-option") {
+      if (actionMeta.option) {
+        const newProfessors = [...courseUpdate.professors, newProfName];
+        setCourseUpdate({ ...courseUpdate, professors: newProfessors });
+      }
+    } else if (actionMeta.action === "remove-value") {
+      if (actionMeta.removedValue) {
+        const newProfessors = courseUpdate.professors.filter((prof) => {
+          return prof !== removedProfName;
+        });
+        setCourseUpdate({ ...courseUpdate, professors: newProfessors });
+      }
+    } else if (actionMeta.action === "clear") {
+      setCourseUpdate({ ...courseUpdate, professors: [] });
+    }
+  };
+
   return (
     <>
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
@@ -130,16 +202,13 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
               <FormLabel htmlFor="professors" marginTop={"0.75rem"}>
                 Professors
               </FormLabel>
-              <Input
-                id="professors"
+              <Select<ProfessorOption, true, GroupBase<ProfessorOption>>
+                isMulti
+                name="professors"
+                options={professorOptions}
                 placeholder="Professors"
-                value={courseUpdate.professors.join(" ")}
-                onChange={(e) =>
-                  setCourseUpdate({
-                    ...courseUpdate,
-                    professors: [e.target.value],
-                  })
-                }
+                onChange={handleProfessorChange}
+                value={defaultProfessors}
               />
               <FormLabel htmlFor="capacity" marginTop={"0.75rem"}>
                 Capacity
@@ -177,7 +246,12 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                   <SliderTrack>
                     <SliderFilledTrack />
                   </SliderTrack>
-                  <SliderThumb fontSize="sm" color="black" boxSize="28px">
+                  <SliderThumb
+                    fontSize="sm"
+                    color="black"
+                    boxSize="28px"
+                    zIndex={0}
+                  >
                     {courseUpdate.capacity.toString()}
                   </SliderThumb>
                 </Slider>
