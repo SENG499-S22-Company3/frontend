@@ -29,7 +29,7 @@ export const PreferenceDetails = (details: UserInfo) => {
         <>No Preferences Set</>
       ) : (
         <>
-          <Button onClick={onOpen} colorScheme="green">
+          <Button onClick={onOpen} colorScheme="blue">
             Show Preferences
           </Button>
           <Modal isOpen={isOpen} size="4xl" onClose={onClose}>

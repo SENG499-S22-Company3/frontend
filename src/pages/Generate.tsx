@@ -380,7 +380,7 @@ export const Generate = () => {
             <Button
               mt={5}
               w="300px"
-              colorScheme="purple"
+              colorScheme="blue"
               variant="solid"
               type="submit"
               isLoading={loading}

@@ -86,7 +86,7 @@ export const CreateUser = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create User</ModalHeader>
-          <ModalCloseButton colorScheme="green" />
+          <ModalCloseButton colorScheme="red" />
           <ModalBody>
             <Flex
               p={10}

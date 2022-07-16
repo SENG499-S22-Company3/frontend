@@ -227,8 +227,7 @@ export const Schedule = () => {
                 w="200px"
                 as={Link}
                 to="/generate"
-                backgroundColor="purple.300"
-                colorScheme="purple"
+                colorScheme="blue"
                 variant="solid"
               >
                 Regenerate

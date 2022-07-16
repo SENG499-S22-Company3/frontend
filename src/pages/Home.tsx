@@ -13,13 +13,13 @@ export const Home = () => {
       flexDirection="column"
     >
       <Text fontSize="6xl">Welcome to Schedulater</Text>
-      <Text fontSize="xl">We should probably update this page later</Text>
+      {/* <Text fontSize="xl">We should probably update this page later</Text> */}
       <Button
         mt={5}
         w="300px"
         as={Link}
         to="/login"
-        colorScheme="green"
+        colorScheme="blue"
         variant="solid"
       >
         Log in
