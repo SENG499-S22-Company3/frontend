@@ -331,7 +331,8 @@ export const Schedule = () => {
       skipValidation: false,
       validation: Company.COMPANY3,
     } as UpdateScheduleInput;
-    //do mutation
+
+    return scheduleInput;
   };
 
   return (
