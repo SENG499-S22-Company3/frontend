@@ -144,9 +144,9 @@ export const NavHeader = () => {
       alignItems="center"
       justifyContent="space-between"
       px={3}
-      borderBottom= "2px solid #F5AA1C"     //uvic colours yellow
-      outline = "3px solid #C63527"         //red
-      boxShadow =  "0 6px 0px 0px #005493"  //blue
+      borderBottom="2px solid #F5AA1C" //uvic colours yellow
+      outline="3px solid #C63527" //red
+      boxShadow="0 6px 0px 0px #005493" //blue
     >
       <Flex alignItems="center">
         <Box mr="15px" bg="gray.100" h="40px" w="40px" borderRadius="50%">

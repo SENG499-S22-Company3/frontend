@@ -23,7 +23,6 @@ export const Profile = () => {
       justifyContent="center"
       flexDirection="column"
     >
-      
       <Heading mb={10}>My Profile</Heading>
       <Container
         w="500px"
