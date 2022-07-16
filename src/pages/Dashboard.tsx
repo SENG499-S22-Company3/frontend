@@ -69,7 +69,7 @@ export const Dashboard = () => {
           </Link>
         </Box>
         <Box p="1vw">
-          <Link to="/profileManagement">
+          <Link to="/professors">
             <Box
               w="15vw"
               minW="150px"
