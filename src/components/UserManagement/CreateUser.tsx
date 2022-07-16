@@ -79,7 +79,7 @@ export const CreateUser = () => {
 
   return (
     <>
-      <Button colorScheme="green" w="150px" mb={5} onClick={onOpen}>
+      <Button colorScheme="blue" w="150px" mb={5} onClick={onOpen}>
         Create User
       </Button>
       <Modal isOpen={isOpen} size="xl" onClose={onClose} isCentered>

@@ -36,7 +36,7 @@ export const PreferenceDetails = (details: UserInfo) => {
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>{details.displayName}</ModalHeader>
-              <ModalCloseButton colorScheme="green" />
+              <ModalCloseButton colorScheme="blue" />
               <ModalBody>
                 <Flex
                   bg={bg}
