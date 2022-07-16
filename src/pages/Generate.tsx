@@ -238,7 +238,6 @@ export const Generate = () => {
       justifyContent="center"
       flexDirection="column"
     >
-      
       <Heading mb={10}>Generate Schedule</Heading>
       <Container
         minW="900px"
@@ -249,7 +248,6 @@ export const Generate = () => {
         textAlign="center"
         centerContent
       >
-
         <form onSubmit={onSubmit}>
           <FormControl isRequired>
             <Grid templateColumns="repeat(2, 1fr)" gap={10}>
@@ -264,8 +262,8 @@ export const Generate = () => {
                 <Heading mb={4} size="md">
                   Options
                 </Heading>
-                <hr/>
-                <br/>
+                <hr />
+                <br />
                 <FormLabel htmlFor="year">Year</FormLabel>
                 <Select
                   placeholder="Select Year"
@@ -335,8 +333,8 @@ export const Generate = () => {
                 <Heading mb={4} size="md">
                   Course Sections
                 </Heading>
-                <hr/>
-                <br/>
+                <hr />
+                <br />
                 <Table variant="striped" size="sm">
                   <Thead>
                     <Tr>
