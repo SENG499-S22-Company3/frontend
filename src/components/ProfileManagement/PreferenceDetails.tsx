@@ -29,14 +29,14 @@ export const PreferenceDetails = (details: UserInfo) => {
         <>No Preferences Set</>
       ) : (
         <>
-          <Button onClick={onOpen} colorScheme="green">
+          <Button onClick={onOpen} colorScheme="blue">
             Show Preferences
           </Button>
           <Modal isOpen={isOpen} size="4xl" onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>{details.displayName}</ModalHeader>
-              <ModalCloseButton colorScheme="green" />
+              <ModalCloseButton colorScheme="blue" />
               <ModalBody>
                 <Flex
                   bg={bg}
