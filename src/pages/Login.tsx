@@ -21,6 +21,7 @@ const LOGIN = gql`
     login(password: $password, username: $username) {
       message
       success
+      token
     }
   }
 `;
