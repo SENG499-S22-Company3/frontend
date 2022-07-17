@@ -21,7 +21,6 @@ interface ChildProps {
   handleSubmit(
     hasRelief: boolean,
     hasTopic: boolean,
-    nonTeachingTerm: string,
     reliefExplaination: string,
     topicDescription: string,
     numFallCourses: number,
@@ -36,7 +35,6 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
   const [numSpringCourses, setNumSpringCourses] = useState(0);
   const [numSummerCourses, setNumSummerCourses] = useState(0);
   const [courseAmountError, setCourseAmountError] = useState("");
-  const [nonTeachingTerm, setNonTeachingTerm] = useState("");
   const [hasRelief, setHasRelief] = useState(false);
   const [reliefExplaination, setReliefExplaination] = useState("");
   const [hasTopic, setHasTopic] = useState(false);
@@ -54,7 +52,6 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
     props.handleSubmit(
       hasRelief,
       hasTopic,
-      nonTeachingTerm,
       reliefExplaination,
       topicDescription,
       numFallCourses,
@@ -127,19 +124,6 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
         <Text mt={1} mb={5} color="red.500">
           {courseAmountError}
         </Text>
-        <FormLabel htmlFor="nonTeachingTerm">Non-Teaching Term</FormLabel>
-        <RadioGroup
-          id="nonTeachingTerm"
-          name="nonTeachingTerm"
-          onChange={setNonTeachingTerm}
-          value={nonTeachingTerm}
-        >
-          <Stack direction="row">
-            <Radio value="FALL">Fall</Radio>
-            <Radio value="SPRING">Spring</Radio>
-            <Radio value="SUMMER">Summer</Radio>
-          </Stack>
-        </RadioGroup>
       </FormControl>
       <Divider mt={2} mb={2} />
       <FormLabel htmlFor="hasRelief">Relief</FormLabel>

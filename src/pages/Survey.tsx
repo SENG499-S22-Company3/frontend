@@ -43,7 +43,6 @@ export const Survey = () => {
   const onSubmit = (
     hasRelief: boolean,
     hasTopic: boolean,
-    nonTeachingTerm: string,
     reliefExplaination: string,
     topicDescription: string,
     numFallCourses: number,
@@ -62,7 +61,7 @@ export const Survey = () => {
       courses: courses,
       hasRelief: hasRelief,
       hasTopic: hasTopic,
-      nonTeachingTerm: nonTeachingTerm,
+      nonTeachingTerm: "FALL",
       peng: false,
       reliefReason: reliefExplaination,
       topicDescription: topicDescription,
