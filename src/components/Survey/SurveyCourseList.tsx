@@ -12,6 +12,8 @@ import {
   Box,
   useToast,
   Text,
+  Button,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { calculateCourseRating } from "../../utils/calculateCourseRating";
@@ -60,10 +62,10 @@ interface ChildProps {
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES);
-  const [courseList, setCourseList] = useState<Array<CourseOption>>();
-  const [selectedCourses, setSelectedCourses] = useState<
-    Array<PreferenceInterface>
-  >([]);
+  const [courseList, setCourseList] = useState<Array<CourseOption>>([]);
+  const [selectedCourses, setSelectedCourses] = useState<Array<CourseOption>>(
+    []
+  );
 
   const toast = useToast();
 
@@ -74,10 +76,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   ) => {
     if (changeType === "Able") {
       const newSelected = selectedCourses.map(
-        (selectedCourse: PreferenceInterface) => {
+        (selectedCourse: CourseOption) => {
           if (
-            course.code === selectedCourse.code &&
-            course.subject === selectedCourse.subject
+            course.code === selectedCourse.value.code &&
+            course.subject === selectedCourse.value.subject
           ) {
             props.handlePreferenceChange(
               {
@@ -86,7 +88,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
                 term: course.term,
                 preference: 0,
               },
-              calculateCourseRating(value, selectedCourse.willing)
+              calculateCourseRating(value, selectedCourse.value.willing)
             );
             return {
               ...selectedCourse,
@@ -98,10 +100,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       setSelectedCourses(newSelected);
     } else {
       const newSelected = selectedCourses.map(
-        (selectedCourse: PreferenceInterface) => {
+        (selectedCourse: CourseOption) => {
           if (
-            course.code === selectedCourse.code &&
-            course.subject === selectedCourse.subject
+            course.code === selectedCourse.value.code &&
+            course.subject === selectedCourse.value.subject
           ) {
             props.handlePreferenceChange(
               {
@@ -110,7 +112,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
                 term: course.term,
                 preference: 0,
               },
-              calculateCourseRating(selectedCourse.able, value)
+              calculateCourseRating(selectedCourse.value.able, value)
             );
             return {
               ...selectedCourse,
@@ -142,7 +144,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   ) => {
     if (actionMeta.action === "select-option") {
       if (actionMeta.option) {
-        const newSelected = [...selectedCourses, actionMeta.option.value];
+        const newSelected = [...selectedCourses, actionMeta.option];
         setSelectedCourses(newSelected);
       } else {
         toast({
@@ -155,7 +157,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       if (actionMeta.removedValue) {
         setSelectedCourses(
           selectedCourses.filter((course) => {
-            const courseId = course.subject + course.code;
+            const courseId = course.value.subject + course.value.code;
             const removedId =
               actionMeta.removedValue.value.subject +
               actionMeta.removedValue.value.code;
@@ -186,6 +188,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     }
   };
 
+  const selectAllCourses = () => {
+    setSelectedCourses(courseList);
+  };
+
   useEffect(() => {
     if (!loading) {
       if (data && !error) {
@@ -210,9 +216,11 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     }
   }, [loading, data, error]);
 
+  const bg = useColorModeValue("gray.50", "gray.800");
+
   return (
     <Box
-      bg="gray.800"
+      bg={bg}
       p={5}
       mt={5}
       mb={5}
@@ -225,12 +233,16 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       <Text mb={2}>
         Note that courses without a preference set will be given a default value
       </Text>
+      <Button colorScheme="blue" onClick={selectAllCourses} mb={2}>
+        Select All
+      </Button>
       <SelectPlus<CourseOption, true, GroupBase<CourseOption>>
         isMulti
         name="courses"
         options={courseList}
         placeholder="Select courses"
         onChange={handleCourseChange}
+        value={selectedCourses}
       />
       <Table variant="striped" size="sm" mt={5}>
         <Thead>
@@ -242,42 +254,42 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
         </Thead>
         <Tbody>
           {selectedCourses ? (
-            selectedCourses.map(
-              (course: PreferenceInterface, index: number) => {
-                return (
-                  <Tr key={"preference-" + index}>
-                    <Td>
-                      {course.subject} {course.code}
-                    </Td>
-                    <Td>
-                      <RadioGroup
-                        id="canTeach"
-                        onChange={(v) => handleChange(course, "Able", v)}
-                        value={course.able}
-                      >
-                        <Stack direction="row">
-                          <Radio value="With Effort">With Effort</Radio>
-                          <Radio value="Able">Able</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Td>
-                    <Td>
-                      <RadioGroup
-                        id="willingTeach"
-                        onChange={(v) => handleChange(course, "Willingness", v)}
-                        value={course.willing}
-                      >
-                        <Stack direction="row">
-                          <Radio value="Unwilling">Unwilling</Radio>
-                          <Radio value="Willing">Willing</Radio>
-                          <Radio value="Very Willing">Very Willing</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Td>
-                  </Tr>
-                );
-              }
-            )
+            selectedCourses.map((course: CourseOption) => {
+              return (
+                <Tr key={course.value.subject + course.value.code}>
+                  <Td>
+                    {course.value.subject} {course.value.code}
+                  </Td>
+                  <Td>
+                    <RadioGroup
+                      id="canTeach"
+                      onChange={(v) => handleChange(course.value, "Able", v)}
+                      value={course.value.able}
+                    >
+                      <Stack direction="row">
+                        <Radio value="With Effort">With Effort</Radio>
+                        <Radio value="Able">Able</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Td>
+                  <Td>
+                    <RadioGroup
+                      id="willingTeach"
+                      onChange={(v) =>
+                        handleChange(course.value, "Willingness", v)
+                      }
+                      value={course.value.willing}
+                    >
+                      <Stack direction="row">
+                        <Radio value="Unwilling">Unwilling</Radio>
+                        <Radio value="Willing">Willing</Radio>
+                        <Radio value="Very Willing">Very Willing</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Td>
+                </Tr>
+              );
+            })
           ) : (
             <Tr>
               <Td>No options selected</Td>

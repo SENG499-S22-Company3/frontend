@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -93,9 +94,11 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
     }
   }, [professorType, numFallCourses, numSpringCourses, numSummerCourses]);
 
+  const bg = useColorModeValue("gray.50", "gray.800");
+
   return (
     <Box
-      bg="gray.800"
+      bg={bg}
       p={5}
       mt={5}
       mb={5}
