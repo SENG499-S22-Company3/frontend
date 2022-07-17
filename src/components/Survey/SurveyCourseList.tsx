@@ -12,7 +12,7 @@ import {
   Td,
   Box,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CourseInterface } from "../../pages/Survey";
 import { calculateCourseRating } from "../../utils/calculateCourseRating";
 
@@ -47,6 +47,7 @@ interface ChildProps {
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES);
   const [preferences, setPreferences] = useState<PreferenceListInterface>({});
+  const [courseList, setCourseList] = useState<Array<PreferenceInterface>>();
 
   const handleChange = (
     course: PreferenceInterface,
@@ -101,72 +102,109 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     );
   };
 
-  if (loading) {
-    return <>Loading</>;
-  } else if (!data || error) {
-    return (
-      <Text color="red.400" mb={3}>
-        Failed to course fetch data
-      </Text>
-    );
-  } else {
-    return (
-      <Box
-        bg="gray.800"
-        p={5}
-        mt={5}
-        mb={5}
-        borderRadius={10}
-        style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
-      >
-        <Table variant="striped" size="sm">
-          <Thead>
-            <Tr>
-              <Th>Course</Th>
-              <Th>Ability to Teach</Th>
-              <Th>Willingness to Teach</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.survey.courses
-              .filter((course: PreferenceInterface) => {
-                return course.term === "SUMMER";
-              })
-              .map((course: PreferenceInterface, index: number) => {
-                return (
-                  <Tr key={"preference-" + index}>
-                    <Td>
-                      {course.subject} {course.code}
-                    </Td>
-                    <Td>
-                      <RadioGroup
-                        id="canTeach"
-                        onChange={(v) => handleChange(course, "Able", v)}
-                      >
-                        <Stack direction="row">
-                          <Radio value="Able">Able</Radio>
-                          <Radio value="With Effort">With Effort</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Td>
-                    <Td>
-                      <RadioGroup
-                        id="willingTeach"
-                        onChange={(v) => handleChange(course, "Willingness", v)}
-                      >
-                        <Stack direction="row">
-                          <Radio value="Unwilling">Unwilling</Radio>
-                          <Radio value="Willing">Willing</Radio>
-                          <Radio value="Very Willing">Very Willing</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Td>
-                  </Tr>
-                );
-              })}
-          </Tbody>
-        </Table>
-      </Box>
-    );
-  }
+  const containsCourse = (
+    courses: PreferenceInterface[],
+    courseToFind: PreferenceInterface
+  ) => {
+    const filtered = courses.filter((course) => {
+      return (
+        course.subject === courseToFind.subject &&
+        course.code === courseToFind.code
+      );
+    });
+    return filtered.length > 0;
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      if (data && !error) {
+        if (data.survey && data.survey.courses) {
+          let uniqueCourses: PreferenceInterface[] = [];
+          data.survey.courses.map((course: PreferenceInterface) => {
+            if (!containsCourse(uniqueCourses, course)) {
+              uniqueCourses.push(course);
+            }
+          });
+
+          uniqueCourses.sort(
+            (a: PreferenceInterface, b: PreferenceInterface) => {
+              const course_a = a.subject + a.code;
+              const course_b = b.subject + b.code;
+              return course_a.localeCompare(course_b);
+            }
+          );
+          console.log(uniqueCourses);
+          setCourseList(uniqueCourses);
+        }
+      }
+    }
+  }, [loading, data, error]);
+
+  // if (loading) {
+  //   return <>Loading</>;
+  // } else if (!data || error) {
+  //   return (
+  //     <Text color="red.400" mb={3}>
+  //       Failed to course fetch data
+  //     </Text>
+  //   );
+  // } else {
+  return (
+    <Box
+      bg="gray.800"
+      p={5}
+      mt={5}
+      mb={5}
+      borderRadius={10}
+      style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+    >
+      <Table variant="striped" size="sm">
+        <Thead>
+          <Tr>
+            <Th>Course</Th>
+            <Th>Ability to Teach</Th>
+            <Th>Willingness to Teach</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {courseList ? (
+            courseList.map((course: PreferenceInterface, index: number) => {
+              return (
+                <Tr key={"preference-" + index}>
+                  <Td>
+                    {course.subject} {course.code}
+                  </Td>
+                  <Td>
+                    <RadioGroup
+                      id="canTeach"
+                      onChange={(v) => handleChange(course, "Able", v)}
+                    >
+                      <Stack direction="row">
+                        <Radio value="With Effort">With Effort</Radio>
+                        <Radio value="Able">Able</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Td>
+                  <Td>
+                    <RadioGroup
+                      id="willingTeach"
+                      onChange={(v) => handleChange(course, "Willingness", v)}
+                    >
+                      <Stack direction="row">
+                        <Radio value="Unwilling">Unwilling</Radio>
+                        <Radio value="Willing">Willing</Radio>
+                        <Radio value="Very Willing">Very Willing</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Td>
+                </Tr>
+              );
+            })
+          ) : (
+            <>Loading</>
+          )}
+        </Tbody>
+      </Table>
+    </Box>
+  );
 };
