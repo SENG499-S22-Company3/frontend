@@ -197,7 +197,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       if (data && !error) {
         if (data.survey && data.survey.courses) {
           let uniqueCourses: CourseOption[] = [];
-          data.survey.courses.map((course: PreferenceInterface) => {
+          data.survey.courses.forEach((course: PreferenceInterface) => {
             if (!containsCourse(uniqueCourses, course)) {
               uniqueCourses.push({
                 label: course.subject + " " + course.code,

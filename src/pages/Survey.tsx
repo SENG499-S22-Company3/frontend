@@ -76,8 +76,8 @@ export const Survey = () => {
     let found = false;
     let newRatings = courseRatings.map((ratedCourse: CourseInterface) => {
       if (
-        course.subject == ratedCourse.subject &&
-        course.code == ratedCourse.code
+        course.subject === ratedCourse.subject &&
+        course.code === ratedCourse.code
       ) {
         found = true;
         return {
