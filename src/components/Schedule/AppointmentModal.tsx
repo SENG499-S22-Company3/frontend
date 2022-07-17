@@ -72,6 +72,7 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
   const [courseUpdate, setCourseUpdate] = useState(courseData);
   const [timeError, setTimeError] = useState(false);
   const [dayError, setDayError] = useState(false);
+  const [professorError, setProfessorError] = useState(false);
 
   const defaultProfessors: ProfessorOption[] = courseUpdate.professors.map(
     (prof) => {
@@ -121,7 +122,8 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
     setCourseUpdate({ ...courseUpdate, days: newDays });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (
       courseUpdate.startTime.getTime() > courseUpdate.endTime.getTime() ||
       (courseUpdate.startDate?.getTime() || 0) >
@@ -133,6 +135,10 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
 
     if (courseUpdate.days.length === 0) {
       setDayError(true);
+      return;
+    }
+    if (courseUpdate.professors.length === 0) {
+      setProfessorError(true);
       return;
     }
 
@@ -171,282 +177,297 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Course Section</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl>
-              <Flex>
-                <Flex flexDirection={"column"} marginRight={"1rem"}>
-                  <FormLabel htmlFor="subject">Course Subject</FormLabel>
-                  <Input
-                    id="subject"
-                    ref={initialRef}
-                    placeholder="Subject"
-                    value={courseUpdate?.subject}
-                    onChange={(e) =>
-                      setCourseUpdate({
-                        ...courseUpdate,
-                        subject: e.target.value,
-                      })
-                    }
-                  />
-                </Flex>
-                <Flex flexDirection={"column"}>
-                  <FormLabel htmlFor="code">Course Number</FormLabel>
-                  <Input
-                    id="code"
-                    placeholder="Number"
-                    value={courseUpdate.code}
-                    onChange={(e) =>
-                      setCourseUpdate({
-                        ...courseUpdate,
-                        code: e.target.value,
-                      })
-                    }
-                  />
-                </Flex>
-              </Flex>
-              <Flex marginTop={"1.5rem"}>
-                <Flex flexDirection={"column"} marginRight={"1.5rem"}>
-                  <FormLabel htmlFor="title">Course Title</FormLabel>
-                  <Input
-                    id="title"
-                    placeholder="Title"
-                    value={courseUpdate.title}
-                    onChange={(e) =>
-                      setCourseUpdate({
-                        ...courseUpdate,
-                        title: e.target.value,
-                      })
-                    }
-                  />
-                </Flex>
-                <Flex flexDirection={"column"}>
-                  <FormLabel htmlFor="sectionNumber">Section Number</FormLabel>
-                  <Input
-                    id="sectionNumber"
-                    placeholder="Section"
-                    value={courseUpdate.sectionNumber}
-                    onChange={(e) =>
-                      setCourseUpdate({
-                        ...courseUpdate,
-                        sectionNumber: e.target.value,
-                      })
-                    }
-                  />
-                </Flex>
-              </Flex>
-              <FormLabel htmlFor="professors" marginTop={"1.5rem"}>
-                Professors
-              </FormLabel>
-              <Select<ProfessorOption, true, GroupBase<ProfessorOption>>
-                isMulti
-                name="professors"
-                options={professorOptions}
-                placeholder="Professors"
-                onChange={handleProfessorChange}
-                value={defaultProfessors}
-              />
-              <FormLabel htmlFor="capacity" marginTop={"1.5rem"}>
-                Capacity
-              </FormLabel>
-              <Flex>
-                <NumberInput
-                  maxW="100px"
-                  mr="2rem"
-                  value={courseUpdate.capacity}
-                  onChange={(value) =>
-                    setCourseUpdate({
-                      ...courseUpdate,
-                      capacity: parseInt(value),
-                    })
-                  }
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                <Slider
-                  id="capacity"
-                  flex="1"
-                  focusThumbOnChange={false}
-                  value={courseUpdate.capacity}
-                  onChange={(value) =>
-                    setCourseUpdate({
-                      ...courseUpdate,
-                      capacity: value,
-                    })
-                  }
-                >
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb
-                    fontSize="sm"
-                    color="black"
-                    boxSize="28px"
-                    zIndex={0}
-                  >
-                    {courseUpdate.capacity.toString()}
-                  </SliderThumb>
-                </Slider>
-              </Flex>
-              {viewState === ViewTypes.table && (
-                <>
-                  <FormControl isInvalid={timeError} marginTop={"1.5rem"}>
-                    <FormLabel htmlFor="startDate">Start Date</FormLabel>
-                    <DateBox
-                      id="startDate"
-                      type="date"
-                      value={courseUpdate.startDate}
-                      onValueChanged={(e) => {
+          <form onSubmit={handleSubmit}>
+            <ModalHeader>Edit Course Section</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl isRequired>
+                <Flex>
+                  <Flex flexDirection={"column"} marginRight={"1rem"}>
+                    <FormLabel htmlFor="subject">Course Subject</FormLabel>
+                    <Input
+                      id="subject"
+                      ref={initialRef}
+                      placeholder="Subject"
+                      value={courseUpdate?.subject}
+                      onChange={(e) =>
                         setCourseUpdate({
                           ...courseUpdate,
-                          startDate: new Date(e.value),
-                        });
-                      }}
-                      isValid={!timeError}
+                          subject: e.target.value,
+                        })
+                      }
                     />
-                    <FormErrorMessage>
-                      End Date must come after Start Date
-                    </FormErrorMessage>
-                  </FormControl>
-                  <FormLabel htmlFor="endDate" marginTop={"0.75rem"}>
-                    End Date
+                  </Flex>
+                  <Flex flexDirection={"column"}>
+                    <FormLabel htmlFor="code">Course Number</FormLabel>
+                    <Input
+                      id="code"
+                      placeholder="Number"
+                      value={courseUpdate.code}
+                      onChange={(e) =>
+                        setCourseUpdate({
+                          ...courseUpdate,
+                          code: e.target.value,
+                        })
+                      }
+                    />
+                  </Flex>
+                </Flex>
+                <Flex marginTop={"1.5rem"}>
+                  <Flex flexDirection={"column"} marginRight={"1.5rem"}>
+                    <FormLabel htmlFor="title">Course Title</FormLabel>
+                    <Input
+                      id="title"
+                      placeholder="Title"
+                      value={courseUpdate.title}
+                      onChange={(e) =>
+                        setCourseUpdate({
+                          ...courseUpdate,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                  </Flex>
+                  <Flex flexDirection={"column"}>
+                    <FormLabel htmlFor="sectionNumber">
+                      Section Number
+                    </FormLabel>
+                    <Input
+                      id="sectionNumber"
+                      placeholder="Section"
+                      value={courseUpdate.sectionNumber}
+                      onChange={(e) =>
+                        setCourseUpdate({
+                          ...courseUpdate,
+                          sectionNumber: e.target.value,
+                        })
+                      }
+                    />
+                  </Flex>
+                </Flex>
+                <FormControl isRequired isInvalid={professorError}>
+                  <FormLabel htmlFor="professors" marginTop={"1.5rem"}>
+                    Professors
+                  </FormLabel>
+                  <Select<ProfessorOption, true, GroupBase<ProfessorOption>>
+                    isMulti
+                    id="professors"
+                    options={professorOptions}
+                    placeholder="Professors"
+                    onChange={handleProfessorChange}
+                    value={defaultProfessors}
+                  />
+                  <FormErrorMessage>
+                    Please assign at least one professor
+                  </FormErrorMessage>
+                </FormControl>
+                <FormLabel htmlFor="capacity" marginTop={"1.5rem"}>
+                  Capacity
+                </FormLabel>
+                <Flex>
+                  <NumberInput
+                    maxW="100px"
+                    mr="2rem"
+                    value={courseUpdate.capacity}
+                    onChange={(value) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        capacity: parseInt(value),
+                      })
+                    }
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <Slider
+                    id="capacity"
+                    flex="1"
+                    focusThumbOnChange={false}
+                    value={courseUpdate.capacity}
+                    onChange={(value) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        capacity: value,
+                      })
+                    }
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb
+                      fontSize="sm"
+                      color="black"
+                      boxSize="28px"
+                      zIndex={0}
+                    >
+                      {courseUpdate.capacity.toString()}
+                    </SliderThumb>
+                  </Slider>
+                </Flex>
+                {viewState === ViewTypes.table && (
+                  <>
+                    <FormControl
+                      isInvalid={timeError}
+                      marginTop={"1.5rem"}
+                      isRequired
+                    >
+                      <FormLabel htmlFor="startDate">Start Date</FormLabel>
+                      <DateBox
+                        id="startDate"
+                        type="date"
+                        value={courseUpdate.startDate}
+                        onValueChanged={(e) => {
+                          setCourseUpdate({
+                            ...courseUpdate,
+                            startDate: new Date(e.value),
+                          });
+                        }}
+                        isValid={!timeError}
+                      />
+                      <FormErrorMessage>
+                        End Date must come after Start Date
+                      </FormErrorMessage>
+                    </FormControl>
+                    <FormLabel htmlFor="endDate" marginTop={"0.75rem"}>
+                      End Date
+                    </FormLabel>
+                    <DateBox
+                      id="endDate"
+                      type="date"
+                      value={courseUpdate.endDate}
+                      onValueChanged={(e) =>
+                        setCourseUpdate({
+                          ...courseUpdate,
+                          endDate: new Date(e.value),
+                        })
+                      }
+                    />
+                  </>
+                )}
+              </FormControl>
+            </ModalBody>
+            {viewState === ViewTypes.calendar && (
+              <ModalHeader>Edit Meeting Time</ModalHeader>
+            )}
+            <ModalBody>
+              <FormControl>
+                <FormControl isInvalid={timeError} isRequired>
+                  <FormLabel htmlFor="startTime">Start Time</FormLabel>
+                  <DateBox
+                    id="startTime"
+                    type="time"
+                    value={courseUpdate.startTime}
+                    onValueChanged={(e) => {
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        startTime: new Date(e.value),
+                      });
+                    }}
+                    isValid={!timeError}
+                  />
+                  <FormErrorMessage>
+                    End Time must come after Start Time
+                  </FormErrorMessage>
+                </FormControl>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="endTime" marginTop={"0.75rem"}>
+                    End Time
                   </FormLabel>
                   <DateBox
-                    id="endDate"
-                    type="date"
-                    value={courseUpdate.endDate}
+                    id="endTime"
+                    type="time"
+                    value={courseUpdate.endTime}
                     onValueChanged={(e) =>
                       setCourseUpdate({
                         ...courseUpdate,
-                        endDate: new Date(e.value),
+                        endTime: new Date(e.value),
                       })
                     }
                   />
-                </>
-              )}
-            </FormControl>
-          </ModalBody>
-          {viewState === ViewTypes.calendar && (
-            <ModalHeader>Edit Meeting Time</ModalHeader>
-          )}
-          <ModalBody>
-            <FormControl>
-              <FormControl isInvalid={timeError}>
-                <FormLabel htmlFor="startTime">Start Time</FormLabel>
-                <DateBox
-                  id="startTime"
-                  type="time"
-                  value={courseUpdate.startTime}
-                  onValueChanged={(e) => {
-                    setCourseUpdate({
-                      ...courseUpdate,
-                      startTime: new Date(e.value),
-                    });
-                  }}
-                  isValid={!timeError}
-                />
-                <FormErrorMessage>
-                  End Time must come after Start Time
-                </FormErrorMessage>
-              </FormControl>
-              <FormLabel htmlFor="endTime" marginTop={"0.75rem"}>
-                End Time
-              </FormLabel>
-              <DateBox
-                id="endTime"
-                type="time"
-                value={courseUpdate.endTime}
-                onValueChanged={(e) =>
-                  setCourseUpdate({
-                    ...courseUpdate,
-                    endTime: new Date(e.value),
-                  })
-                }
-              />
-              {viewState === ViewTypes.table ? (
-                <FormControl isInvalid={dayError} marginTop={"0.75rem"}>
-                  <Container display="flex" justifyContent="space-between">
-                    <Checkbox
-                      isChecked={days.includes("MONDAY")}
-                      onChange={(e) =>
-                        handleCheck(e.target.value, e.target.checked)
-                      }
-                      value="MONDAY"
-                    >
-                      Mon
-                    </Checkbox>
-                    <Checkbox
-                      isChecked={days.includes("TUESDAY")}
-                      onChange={(e) =>
-                        handleCheck(e.target.value, e.target.checked)
-                      }
-                      value="TUESDAY"
-                    >
-                      Tues
-                    </Checkbox>
-                    <Checkbox
-                      isChecked={days.includes("WEDNESDAY")}
-                      onChange={(e) =>
-                        handleCheck(e.target.value, e.target.checked)
-                      }
-                      value="WEDNESDAY"
-                    >
-                      Wed
-                    </Checkbox>
-                    <Checkbox
-                      isChecked={days.includes("THURSDAY")}
-                      onChange={(e) =>
-                        handleCheck(e.target.value, e.target.checked)
-                      }
-                      value="THURSDAY"
-                    >
-                      Thurs
-                    </Checkbox>
-                    <Checkbox
-                      isChecked={days.includes("FRIDAY")}
-                      onChange={(e) =>
-                        handleCheck(e.target.value, e.target.checked)
-                      }
-                      value="FRIDAY"
-                    >
-                      Fri
-                    </Checkbox>
-                  </Container>
-                  <FormErrorMessage>
-                    Please select at least one day
-                  </FormErrorMessage>
                 </FormControl>
-              ) : (
-                <FormControl marginTop={"0.75rem"}>
-                  <RadioGroup
-                    onChange={handleCheck}
-                    value={courseUpdate.days[0]}
-                  >
+                {viewState === ViewTypes.table ? (
+                  <FormControl isInvalid={dayError} marginTop={"0.75rem"}>
                     <Container display="flex" justifyContent="space-between">
-                      <Radio value="MONDAY">Mon</Radio>
-                      <Radio value="TUESDAY">Tues</Radio>
-                      <Radio value="WEDNESDAY">Wed</Radio>
-                      <Radio value="THURSDAY">Thurs</Radio>
-                      <Radio value="FRIDAY">Fri</Radio>
+                      <Checkbox
+                        isChecked={days.includes("MONDAY")}
+                        onChange={(e) =>
+                          handleCheck(e.target.value, e.target.checked)
+                        }
+                        value="MONDAY"
+                      >
+                        Mon
+                      </Checkbox>
+                      <Checkbox
+                        isChecked={days.includes("TUESDAY")}
+                        onChange={(e) =>
+                          handleCheck(e.target.value, e.target.checked)
+                        }
+                        value="TUESDAY"
+                      >
+                        Tues
+                      </Checkbox>
+                      <Checkbox
+                        isChecked={days.includes("WEDNESDAY")}
+                        onChange={(e) =>
+                          handleCheck(e.target.value, e.target.checked)
+                        }
+                        value="WEDNESDAY"
+                      >
+                        Wed
+                      </Checkbox>
+                      <Checkbox
+                        isChecked={days.includes("THURSDAY")}
+                        onChange={(e) =>
+                          handleCheck(e.target.value, e.target.checked)
+                        }
+                        value="THURSDAY"
+                      >
+                        Thurs
+                      </Checkbox>
+                      <Checkbox
+                        isChecked={days.includes("FRIDAY")}
+                        onChange={(e) =>
+                          handleCheck(e.target.value, e.target.checked)
+                        }
+                        value="FRIDAY"
+                      >
+                        Fri
+                      </Checkbox>
                     </Container>
-                  </RadioGroup>
-                </FormControl>
-              )}
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
-              Confirm
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
+                    <FormErrorMessage>
+                      Please select at least one day
+                    </FormErrorMessage>
+                  </FormControl>
+                ) : (
+                  <FormControl marginTop={"0.75rem"}>
+                    <RadioGroup
+                      onChange={handleCheck}
+                      value={courseUpdate.days[0]}
+                    >
+                      <Container display="flex" justifyContent="space-between">
+                        <Radio value="MONDAY">Mon</Radio>
+                        <Radio value="TUESDAY">Tues</Radio>
+                        <Radio value="WEDNESDAY">Wed</Radio>
+                        <Radio value="THURSDAY">Thurs</Radio>
+                        <Radio value="FRIDAY">Fri</Radio>
+                      </Container>
+                    </RadioGroup>
+                  </FormControl>
+                )}
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} type="submit">
+                Confirm
+              </Button>
+              <Button variant="ghost" onClick={onClose}>
+                Cancel
+              </Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </>
