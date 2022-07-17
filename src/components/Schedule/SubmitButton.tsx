@@ -80,8 +80,7 @@ export const SubmitButton = (props: SubmitButtonProps) => {
       )}
       <Button
         w="200px"
-        backgroundColor="purple.300"
-        colorScheme="purple"
+        colorScheme="blue"
         variant="solid"
         disabled={!active}
         onClick={() => {

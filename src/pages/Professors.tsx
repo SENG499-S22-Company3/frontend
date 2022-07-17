@@ -77,9 +77,8 @@ export const Professors = () => {
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={30}
+      pt={100}
       alignItems="center"
-      justifyContent="center"
       flexDirection="column"
     >
       <Heading mb={10}>Professors</Heading>

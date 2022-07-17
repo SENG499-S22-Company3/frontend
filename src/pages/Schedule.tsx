@@ -339,15 +339,12 @@ export const Schedule = () => {
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={30}
+      pt={100}
       alignItems="center"
-      justifyContent="center"
       flexDirection="column"
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
-        <Heading mb={6}>View Schedule</Heading>
-
         {!scheduleData ? (
           <Container
             display="flex"
