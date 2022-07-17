@@ -13,8 +13,8 @@ import {
   Box,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { CourseInterface } from "../pages/Survey";
-import { calculateCourseRating } from "../utils/calculateCourseRating";
+import { CourseInterface } from "../../pages/Survey";
+import { calculateCourseRating } from "../../utils/calculateCourseRating";
 
 const COURSES = gql`
   query GetCourses {

@@ -1,24 +1,16 @@
 import {
-  Box,
-  Button,
-  Checkbox,
   Container,
-  Divider,
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Heading,
-  Radio,
-  RadioGroup,
-  Stack,
-  Textarea,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { SurveyCourseList } from "../components/SurveyCourseList";
+import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
+import { OtherPreferences } from "../components/Survey/OtherPreferences";
 
 const SUBMIT = gql`
   mutation submit($input: CreateTeachingPreferenceInput!) {
@@ -41,11 +33,6 @@ interface CourseListInterface {
 }
 
 export const Survey = () => {
-  const [nonTeachingTerm, setNonTeachingTerm] = useState("");
-  const [hasRelief, setHasRelief] = useState(false);
-  const [reliefExplaination, setReliefExplaination] = useState("");
-  const [hasTopic, setHasTopic] = useState(false);
-  const [topicDescription, setTopicDescription] = useState("");
   const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
 
   const toast = useToast();
@@ -53,15 +40,16 @@ export const Survey = () => {
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
 
-  const toggleRelief = () => {
-    setHasRelief(!hasRelief);
-  };
-
-  const toggleTopic = () => {
-    setHasTopic(!hasTopic);
-  };
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (
+    hasRelief: boolean,
+    hasTopic: boolean,
+    nonTeachingTerm: string,
+    reliefExplaination: string,
+    topicDescription: string,
+    numFallCourses: number,
+    numSpringCourses: number,
+    numSummerCourses: number
+  ) => {
     const courses = Object.entries(courseRatings).map((course) => {
       return {
         subject: course[1].subject,
@@ -78,10 +66,13 @@ export const Survey = () => {
       peng: false,
       reliefReason: reliefExplaination,
       topicDescription: topicDescription,
+      fallTermCourses: numFallCourses,
+      springTermCourses: numSpringCourses,
+      summerTermCourses: numSummerCourses,
       userId: 0,
     };
-    submit({ variables: { input } });
-    e.preventDefault();
+    console.log(input);
+    // submit({ variables: { input } });
   };
 
   const handleCourseChange = (course: CourseInterface, value: number) => {
@@ -141,72 +132,13 @@ export const Survey = () => {
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-          <form onSubmit={onSubmit}>
-            <Heading size="lg">Course Preferences</Heading>
+          <form>
+            <Heading size="lg" mb={5}>
+              Course Preferences
+            </Heading>
             <SurveyCourseList handleCourseChange={handleCourseChange} />
             <Heading size="lg">Other Preferences</Heading>
-            <Box
-              bg="gray.800"
-              p={5}
-              mt={5}
-              mb={5}
-              borderRadius={10}
-              style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
-            >
-              <FormControl isRequired>
-                <FormLabel htmlFor="nonTeachingTerm">
-                  Non-Teaching Term
-                </FormLabel>
-                <RadioGroup
-                  id="nonTeachingTerm"
-                  name="nonTeachingTerm"
-                  onChange={setNonTeachingTerm}
-                  value={nonTeachingTerm}
-                >
-                  <Stack direction="row">
-                    <Radio value="FALL">Fall</Radio>
-                    <Radio value="SPRING">Spring</Radio>
-                    <Radio value="SUMMER">Summer</Radio>
-                  </Stack>
-                </RadioGroup>
-              </FormControl>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="hasRelief">Relief</FormLabel>
-              <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
-                Has Relief?
-              </Checkbox>
-              <Textarea
-                isDisabled={!hasRelief}
-                id="large_text"
-                value={reliefExplaination}
-                placeholder="Relief Explaination"
-                onChange={(e) => setReliefExplaination(e.target.value)}
-                size="sm"
-              />
-              <Divider mt={4} mb={2} />
-              <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
-              <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
-                Has Topic?
-              </Checkbox>
-              <Textarea
-                isDisabled={!hasTopic}
-                id="topicDescription"
-                value={topicDescription}
-                placeholder="Topics Course Description"
-                onChange={(e) => setTopicDescription(e.target.value)}
-                size="sm"
-                mb={5}
-              />
-            </Box>
-            <Button
-              isLoading={loading}
-              type="submit"
-              colorScheme="blue"
-              variant="solid"
-              w="100%"
-            >
-              Submit
-            </Button>
+            <OtherPreferences loading={loading} handleSubmit={onSubmit} />
             <FormControl isInvalid={error !== undefined}>
               {error !== undefined && (
                 <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
