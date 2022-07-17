@@ -174,7 +174,7 @@ export const Login = () => {
               <Button
                 isLoading={loginLoading}
                 type="submit"
-                colorScheme="green"
+                colorScheme="blue"
                 variant="solid"
                 w="100%"
               >

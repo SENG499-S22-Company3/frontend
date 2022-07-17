@@ -13,9 +13,9 @@ export const Dashboard = () => {
       alignItems="center"
       justifyContent="center"
       flexDirection="column"
-      mt={64}
+      mt={30}
     >
-      <Heading mb={10}>Admin Dashboard</Heading>
+      <Heading mb={40}>Admin Dashboard</Heading>
       <Flex mb={32}>
         <Box p="1vw">
           <Link to="/surveyresults">
@@ -69,7 +69,7 @@ export const Dashboard = () => {
           </Link>
         </Box>
         <Box p="1vw">
-          <Link to="/profileManagement">
+          <Link to="/professors">
             <Box
               w="15vw"
               minW="150px"

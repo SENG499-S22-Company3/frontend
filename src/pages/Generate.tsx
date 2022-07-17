@@ -234,10 +234,11 @@ export const Generate = () => {
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={30}
       alignItems="center"
       justifyContent="center"
+      flexDirection="column"
     >
+      <Heading mb={10}>Generate Schedule</Heading>
       <Container
         minW="900px"
         bg={bg}
@@ -247,8 +248,6 @@ export const Generate = () => {
         textAlign="center"
         centerContent
       >
-        <Heading mb={4}>Generate Schedule</Heading>
-
         <form onSubmit={onSubmit}>
           <FormControl isRequired>
             <Grid templateColumns="repeat(2, 1fr)" gap={10}>
@@ -258,12 +257,13 @@ export const Generate = () => {
                 p={10}
                 borderRadius={10}
                 flexDir="column"
-                style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+                textAlign="left"
               >
                 <Heading mb={4} size="md">
                   Options
                 </Heading>
-
+                <hr />
+                <br />
                 <FormLabel htmlFor="year">Year</FormLabel>
                 <Select
                   placeholder="Select Year"
@@ -328,16 +328,18 @@ export const Generate = () => {
                 p={10}
                 borderRadius={10}
                 flexDir="column"
-                style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
+                textAlign="left"
               >
                 <Heading mb={4} size="md">
-                  Course Selections
+                  Course Sections
                 </Heading>
+                <hr />
+                <br />
                 <Table variant="striped" size="sm">
                   <Thead>
                     <Tr>
                       <Th>Course</Th>
-                      <Th>Sections</Th>
+                      <Th># Sections</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -376,7 +378,7 @@ export const Generate = () => {
             <Button
               mt={5}
               w="300px"
-              colorScheme="purple"
+              colorScheme="blue"
               variant="solid"
               type="submit"
               isLoading={loading}

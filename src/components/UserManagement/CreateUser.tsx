@@ -79,14 +79,14 @@ export const CreateUser = () => {
 
   return (
     <>
-      <Button colorScheme="green" w="150px" mb={5} onClick={onOpen}>
+      <Button colorScheme="blue" w="150px" mb={5} onClick={onOpen}>
         Create User
       </Button>
       <Modal isOpen={isOpen} size="xl" onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create User</ModalHeader>
-          <ModalCloseButton colorScheme="green" />
+          <ModalCloseButton colorScheme="red" />
           <ModalBody>
             <Flex
               p={10}
@@ -140,7 +140,7 @@ export const CreateUser = () => {
                     <Radio value="Professor">Professor</Radio>
                   </Stack>
                 </RadioGroup> */}
-                <Button colorScheme="green" mr={3} onClick={createUser}>
+                <Button colorScheme="blue" mr={3} onClick={createUser}>
                   Create
                 </Button>
                 <Button colorScheme="red" mr={3} onClick={onClose}>
