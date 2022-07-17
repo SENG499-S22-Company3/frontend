@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { CourseAmountInput } from "./CourseAmountInput";
@@ -40,6 +41,8 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
   const [hasTopic, setHasTopic] = useState(false);
   const [topicDescription, setTopicDescription] = useState("");
 
+  const toast = useToast();
+
   const toggleRelief = () => {
     setHasRelief(!hasRelief);
   };
@@ -49,15 +52,24 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
   };
 
   const submitForm = () => {
-    props.handleSubmit(
-      hasRelief,
-      hasTopic,
-      reliefExplaination,
-      topicDescription,
-      numFallCourses,
-      numSpringCourses,
-      numSummerCourses
-    );
+    if (courseAmountError !== "") {
+      toast({
+        title: "Failed to submit preferences",
+        description: courseAmountError,
+        status: "error",
+        isClosable: true,
+      });
+    } else {
+      props.handleSubmit(
+        hasRelief,
+        hasTopic,
+        reliefExplaination,
+        topicDescription,
+        numFallCourses,
+        numSpringCourses,
+        numSummerCourses
+      );
+    }
   };
 
   useEffect(() => {

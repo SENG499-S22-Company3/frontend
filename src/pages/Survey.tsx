@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
 import { OtherPreferences } from "../components/Survey/OtherPreferences";
+import { CourseCodeAndSubject, CourseInterface } from "../stores/preferences";
 
 const SUBMIT = gql`
   mutation submit($input: CreateTeachingPreferenceInput!) {
@@ -21,19 +22,10 @@ const SUBMIT = gql`
   }
 `;
 
-export interface CourseInterface {
-  subject: string;
-  code: string;
-  term: string;
-  rating: number;
-}
-
-interface CourseListInterface {
-  [key: string]: CourseInterface;
-}
-
 export const Survey = () => {
-  const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
+  const [courseRatings, setCourseRatings] = useState<Array<CourseInterface>>(
+    []
+  );
 
   const toast = useToast();
 
@@ -49,16 +41,8 @@ export const Survey = () => {
     numSpringCourses: number,
     numSummerCourses: number
   ) => {
-    const courses = Object.entries(courseRatings).map((course) => {
-      return {
-        subject: course[1].subject,
-        code: course[1].code,
-        term: course[1].term,
-        preference: course[1].rating,
-      };
-    });
     const input = {
-      courses: courses,
+      courses: courseRatings,
       hasRelief: hasRelief,
       hasTopic: hasTopic,
       nonTeachingTerm: "FALL",
@@ -74,14 +58,43 @@ export const Survey = () => {
     // submit({ variables: { input } });
   };
 
+  const removePreference = (course: CourseCodeAndSubject) => {
+    setCourseRatings(
+      courseRatings.filter((ratedCourse) => {
+        const courseId = course.subject + course.code;
+        const removedId = ratedCourse.subject + ratedCourse.code;
+        return courseId !== removedId;
+      })
+    );
+  };
+
+  const removeAllPreferences = () => {
+    setCourseRatings([]);
+  };
+
   const handleCourseChange = (course: CourseInterface, value: number) => {
-    let newRating = courseRatings;
-    const unique_id = course.subject.concat(course.code);
-    newRating[unique_id] = {
-      ...course,
-      rating: value,
-    };
-    setCourseRatings(newRating);
+    let found = false;
+    let newRatings = courseRatings.map((ratedCourse: CourseInterface) => {
+      if (
+        course.subject == ratedCourse.subject &&
+        course.code == ratedCourse.code
+      ) {
+        found = true;
+        return {
+          ...ratedCourse,
+          preference: value,
+        };
+      } else return ratedCourse;
+    });
+
+    if (!found) {
+      newRatings.push({
+        ...course,
+        preference: value,
+      });
+    }
+
+    setCourseRatings(newRatings);
   };
 
   useEffect(() => {
@@ -135,7 +148,11 @@ export const Survey = () => {
             <Heading size="lg" mb={5}>
               Course Preferences
             </Heading>
-            <SurveyCourseList handleCourseChange={handleCourseChange} />
+            <SurveyCourseList
+              handlePreferenceChange={handleCourseChange}
+              removeCourse={removePreference}
+              removeAllCourse={removeAllPreferences}
+            />
             <Heading size="lg">Other Preferences</Heading>
             <OtherPreferences loading={loading} handleSubmit={onSubmit} />
             <FormControl isInvalid={error !== undefined}>

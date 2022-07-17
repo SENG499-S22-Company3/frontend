@@ -17,3 +17,15 @@ export type Preference = {
   course: CourseSection;
   preferenceNum: number;
 };
+
+export type CourseCodeAndSubject = {
+  code: string;
+  subject: string;
+};
+
+export type CourseInterface = {
+  subject: string;
+  code: string;
+  term: string;
+  preference: number;
+};

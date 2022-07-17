@@ -14,7 +14,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { CourseInterface } from "../../pages/Survey";
 import { calculateCourseRating } from "../../utils/calculateCourseRating";
 import {
   ActionMeta,
@@ -23,6 +22,10 @@ import {
   OptionBase,
   Select as SelectPlus,
 } from "chakra-react-select";
+import {
+  CourseCodeAndSubject,
+  CourseInterface,
+} from "../../stores/preferences";
 
 const COURSES = gql`
   query GetCourses {
@@ -49,17 +52,14 @@ interface PreferenceInterface {
   willing: string;
 }
 
-interface PreferenceListInterface {
-  [key: string]: PreferenceInterface;
-}
-
 interface ChildProps {
-  handleCourseChange(course: CourseInterface, value: number): void;
+  handlePreferenceChange(course: CourseInterface, value: number): void;
+  removeCourse(course: CourseCodeAndSubject): void;
+  removeAllCourse(): void;
 }
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES);
-  const [preferences, setPreferences] = useState<PreferenceListInterface>({});
   const [courseList, setCourseList] = useState<Array<CourseOption>>();
   const [selectedCourses, setSelectedCourses] = useState<
     Array<PreferenceInterface>
@@ -72,52 +72,55 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     changeType: string,
     value: string
   ) => {
-    let newPreferences = preferences;
-    let unique_id = course.subject.concat(course.code);
     if (changeType === "Able") {
-      if (unique_id in newPreferences) {
-        newPreferences[unique_id] = {
-          ...newPreferences[unique_id],
-          able: value,
-        };
-      } else {
-        newPreferences[unique_id] = {
-          subject: course.subject,
-          code: course.code,
-          term: course.term,
-          able: value,
-          willing: "",
-        };
-      }
+      const newSelected = selectedCourses.map(
+        (selectedCourse: PreferenceInterface) => {
+          if (
+            course.code === selectedCourse.code &&
+            course.subject === selectedCourse.subject
+          ) {
+            props.handlePreferenceChange(
+              {
+                subject: course.subject,
+                code: course.code,
+                term: course.term,
+                preference: 0,
+              },
+              calculateCourseRating(value, selectedCourse.willing)
+            );
+            return {
+              ...selectedCourse,
+              able: value,
+            };
+          } else return selectedCourse;
+        }
+      );
+      setSelectedCourses(newSelected);
     } else {
-      if (unique_id in newPreferences) {
-        newPreferences[unique_id] = {
-          ...newPreferences[unique_id],
-          willing: value,
-        };
-      } else {
-        newPreferences[unique_id] = {
-          subject: course.subject,
-          code: course.code,
-          term: course.term,
-          able: "",
-          willing: value,
-        };
-      }
+      const newSelected = selectedCourses.map(
+        (selectedCourse: PreferenceInterface) => {
+          if (
+            course.code === selectedCourse.code &&
+            course.subject === selectedCourse.subject
+          ) {
+            props.handlePreferenceChange(
+              {
+                subject: course.subject,
+                code: course.code,
+                term: course.term,
+                preference: 0,
+              },
+              calculateCourseRating(selectedCourse.able, value)
+            );
+            return {
+              ...selectedCourse,
+              willing: value,
+            };
+          } else return selectedCourse;
+        }
+      );
+      setSelectedCourses(newSelected);
     }
-    setPreferences(newPreferences);
-    props.handleCourseChange(
-      {
-        subject: course.subject,
-        code: course.code,
-        term: course.term,
-        rating: 0,
-      },
-      calculateCourseRating(
-        newPreferences[unique_id].able,
-        newPreferences[unique_id].willing
-      )
-    );
   };
 
   const containsCourse = (
@@ -159,6 +162,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
             return courseId !== removedId;
           })
         );
+        props.removeCourse({
+          code: actionMeta.removedValue.value.code,
+          subject: actionMeta.removedValue.value.subject,
+        });
       } else {
         toast({
           title: "Failed to remove course",
@@ -168,6 +175,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       }
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
+      props.removeAllCourse();
     } else {
       toast({
         title: "Unknown Action",
@@ -245,6 +253,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
                       <RadioGroup
                         id="canTeach"
                         onChange={(v) => handleChange(course, "Able", v)}
+                        value={course.able}
                       >
                         <Stack direction="row">
                           <Radio value="With Effort">With Effort</Radio>
@@ -256,6 +265,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
                       <RadioGroup
                         id="willingTeach"
                         onChange={(v) => handleChange(course, "Willingness", v)}
+                        value={course.willing}
                       >
                         <Stack direction="row">
                           <Radio value="Unwilling">Unwilling</Radio>
