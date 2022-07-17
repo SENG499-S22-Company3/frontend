@@ -113,7 +113,7 @@ export const Survey = () => {
         });
       }
     }
-  }, [data, loading, error]);
+  }, [data, loading, error, toast]);
   return (
     <Flex
       w="100%"

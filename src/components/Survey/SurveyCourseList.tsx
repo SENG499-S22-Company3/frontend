@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
 import {
-  Text,
   Radio,
   RadioGroup,
   Stack,
@@ -11,10 +10,19 @@ import {
   Tbody,
   Td,
   Box,
+  useToast,
+  Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { CourseInterface } from "../../pages/Survey";
 import { calculateCourseRating } from "../../utils/calculateCourseRating";
+import {
+  ActionMeta,
+  GroupBase,
+  MultiValue,
+  OptionBase,
+  Select as SelectPlus,
+} from "chakra-react-select";
 
 const COURSES = gql`
   query GetCourses {
@@ -27,6 +35,11 @@ const COURSES = gql`
     }
   }
 `;
+
+interface CourseOption extends OptionBase {
+  label: string;
+  value: PreferenceInterface;
+}
 
 interface PreferenceInterface {
   subject: string;
@@ -47,7 +60,12 @@ interface ChildProps {
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   const { loading, error, data } = useQuery(COURSES);
   const [preferences, setPreferences] = useState<PreferenceListInterface>({});
-  const [courseList, setCourseList] = useState<Array<PreferenceInterface>>();
+  const [courseList, setCourseList] = useState<Array<CourseOption>>();
+  const [selectedCourses, setSelectedCourses] = useState<
+    Array<PreferenceInterface>
+  >([]);
+
+  const toast = useToast();
 
   const handleChange = (
     course: PreferenceInterface,
@@ -103,52 +121,87 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   };
 
   const containsCourse = (
-    courses: PreferenceInterface[],
+    courses: CourseOption[],
     courseToFind: PreferenceInterface
   ) => {
     const filtered = courses.filter((course) => {
       return (
-        course.subject === courseToFind.subject &&
-        course.code === courseToFind.code
+        course.value.subject === courseToFind.subject &&
+        course.value.code === courseToFind.code
       );
     });
     return filtered.length > 0;
+  };
+
+  const handleCourseChange = (
+    courses: MultiValue<CourseOption>,
+    actionMeta: ActionMeta<CourseOption>
+  ) => {
+    if (actionMeta.action === "select-option") {
+      if (actionMeta.option) {
+        const newSelected = [...selectedCourses, actionMeta.option.value];
+        setSelectedCourses(newSelected);
+      } else {
+        toast({
+          title: "Option not defined",
+          status: "error",
+          isClosable: true,
+        });
+      }
+    } else if (actionMeta.action === "remove-value") {
+      if (actionMeta.removedValue) {
+        setSelectedCourses(
+          selectedCourses.filter((course) => {
+            const courseId = course.subject + course.code;
+            const removedId =
+              actionMeta.removedValue.value.subject +
+              actionMeta.removedValue.value.code;
+            return courseId !== removedId;
+          })
+        );
+      } else {
+        toast({
+          title: "Failed to remove course",
+          status: "error",
+          isClosable: true,
+        });
+      }
+    } else if (actionMeta.action === "clear") {
+      setSelectedCourses([]);
+    } else {
+      toast({
+        title: "Unknown Action",
+        description: actionMeta.action,
+        status: "error",
+        isClosable: true,
+      });
+    }
   };
 
   useEffect(() => {
     if (!loading) {
       if (data && !error) {
         if (data.survey && data.survey.courses) {
-          let uniqueCourses: PreferenceInterface[] = [];
+          let uniqueCourses: CourseOption[] = [];
           data.survey.courses.map((course: PreferenceInterface) => {
             if (!containsCourse(uniqueCourses, course)) {
-              uniqueCourses.push(course);
+              uniqueCourses.push({
+                label: course.subject + " " + course.code,
+                value: course,
+              });
             }
           });
-
-          uniqueCourses.sort(
-            (a: PreferenceInterface, b: PreferenceInterface) => {
-              const course_a = a.subject + a.code;
-              const course_b = b.subject + b.code;
-              return course_a.localeCompare(course_b);
-            }
-          );
-          console.log(uniqueCourses);
+          uniqueCourses.sort((a: CourseOption, b: CourseOption) => {
+            const course_a = a.value.subject + a.value.code;
+            const course_b = b.value.subject + b.value.code;
+            return course_a.localeCompare(course_b);
+          });
           setCourseList(uniqueCourses);
         }
       }
     }
   }, [loading, data, error]);
 
-  // if (loading) {
-  //   return <>Loading</>;
-  // } else if (!data || error) {
-  //   return (
-  //     <Text color="red.400" mb={3}>
-  //       Failed to course fetch data
-  //     </Text>
-  //   );
-  // } else {
   return (
     <Box
       bg="gray.800"
@@ -158,7 +211,20 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       borderRadius={10}
       style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
     >
-      <Table variant="striped" size="sm">
+      <Text>
+        Please select the courses you would like to set a preference for
+      </Text>
+      <Text mb={2}>
+        Note that courses without a preference set will be given a default value
+      </Text>
+      <SelectPlus<CourseOption, true, GroupBase<CourseOption>>
+        isMulti
+        name="courses"
+        options={courseList}
+        placeholder="Select courses"
+        onChange={handleCourseChange}
+      />
+      <Table variant="striped" size="sm" mt={5}>
         <Thead>
           <Tr>
             <Th>Course</Th>
@@ -167,41 +233,45 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           </Tr>
         </Thead>
         <Tbody>
-          {courseList ? (
-            courseList.map((course: PreferenceInterface, index: number) => {
-              return (
-                <Tr key={"preference-" + index}>
-                  <Td>
-                    {course.subject} {course.code}
-                  </Td>
-                  <Td>
-                    <RadioGroup
-                      id="canTeach"
-                      onChange={(v) => handleChange(course, "Able", v)}
-                    >
-                      <Stack direction="row">
-                        <Radio value="With Effort">With Effort</Radio>
-                        <Radio value="Able">Able</Radio>
-                      </Stack>
-                    </RadioGroup>
-                  </Td>
-                  <Td>
-                    <RadioGroup
-                      id="willingTeach"
-                      onChange={(v) => handleChange(course, "Willingness", v)}
-                    >
-                      <Stack direction="row">
-                        <Radio value="Unwilling">Unwilling</Radio>
-                        <Radio value="Willing">Willing</Radio>
-                        <Radio value="Very Willing">Very Willing</Radio>
-                      </Stack>
-                    </RadioGroup>
-                  </Td>
-                </Tr>
-              );
-            })
+          {selectedCourses ? (
+            selectedCourses.map(
+              (course: PreferenceInterface, index: number) => {
+                return (
+                  <Tr key={"preference-" + index}>
+                    <Td>
+                      {course.subject} {course.code}
+                    </Td>
+                    <Td>
+                      <RadioGroup
+                        id="canTeach"
+                        onChange={(v) => handleChange(course, "Able", v)}
+                      >
+                        <Stack direction="row">
+                          <Radio value="With Effort">With Effort</Radio>
+                          <Radio value="Able">Able</Radio>
+                        </Stack>
+                      </RadioGroup>
+                    </Td>
+                    <Td>
+                      <RadioGroup
+                        id="willingTeach"
+                        onChange={(v) => handleChange(course, "Willingness", v)}
+                      >
+                        <Stack direction="row">
+                          <Radio value="Unwilling">Unwilling</Radio>
+                          <Radio value="Willing">Willing</Radio>
+                          <Radio value="Very Willing">Very Willing</Radio>
+                        </Stack>
+                      </RadioGroup>
+                    </Td>
+                  </Tr>
+                );
+              }
+            )
           ) : (
-            <>Loading</>
+            <Tr>
+              <Td>No options selected</Td>
+            </Tr>
           )}
         </Tbody>
       </Table>
