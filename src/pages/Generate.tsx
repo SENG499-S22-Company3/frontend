@@ -235,8 +235,8 @@ export const Generate = () => {
       w="100%"
       minH="calc(100vh - 5.5rem)"
       alignItems="center"
-      justifyContent="center"
       flexDirection="column"
+      pt={50}
     >
       <Heading mb={10}>Generate Schedule</Heading>
       <Container

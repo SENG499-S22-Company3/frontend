@@ -12,7 +12,12 @@ import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
-import { Appointment, CourseSection, MeetingTime } from "../stores/schedule";
+import {
+  Appointment,
+  CourseSection,
+  MeetingTime,
+  Day,
+} from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
@@ -50,6 +55,87 @@ const COURSES = gql`
   }
 `;
 
+const mockData = [
+  {
+    CourseID: {
+      subject: "CSC",
+      code: "225",
+      term: "summer",
+      title: "hello world",
+    },
+    sectionNumber: "A01",
+    hoursPerWeek: 50,
+    professors: [
+      {
+        displayName: "Daniela Damien",
+        username: "",
+        name: "",
+        email: "",
+        roles: [""],
+      },
+    ],
+    capacity: 50,
+    startDate: new Date(),
+    endDate: new Date(),
+    meetingTimes: [
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        day: Day.TUESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        day: Day.WEDNESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
+        day: Day.FRIDAY,
+      },
+    ],
+  },
+  {
+    CourseID: {
+      subject: "ECE",
+      code: "260",
+      term: "summer",
+      title: "hello world",
+    },
+    sectionNumber: "A01",
+    hoursPerWeek: 50,
+    professors: [
+      {
+        displayName: "Joe Biden",
+        username: "",
+        name: "",
+        email: "",
+        roles: [""],
+      },
+    ],
+    capacity: 50,
+    startDate: new Date(),
+    endDate: new Date(),
+    meetingTimes: [
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        day: Day.TUESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        day: Day.WEDNESDAY,
+      },
+      {
+        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
+        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
+        day: Day.FRIDAY,
+      },
+    ],
+  },
+];
+
 export enum ViewTypes {
   table = "table",
   calendar = "calendar",
@@ -66,6 +152,17 @@ export const Schedule = () => {
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
   const baseScheduleRef = useRef(scheduleData);
 
+  // useEffect(() => {
+  //   if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
+  //     const courses = baseScheduleData.schedule.courses;
+  //     const coursesId = courses.map((course: CourseSection) => {
+  //       return { ...course, id: Math.floor(Math.random() * 10000) };
+  //     });
+  //     setScheduleData(coursesId);
+  //     baseScheduleRef.current = coursesId;
+  //   }
+  // }, [baseScheduleData, scheduleError, scheduleLoading]);
+
   useEffect(() => {
     colorMode === "light"
       ? Themes.current("generic.light")
@@ -73,15 +170,13 @@ export const Schedule = () => {
   }, [colorMode]);
 
   useEffect(() => {
-    if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
-      const courses = baseScheduleData.schedule.courses;
-      const coursesId = courses.map((course: CourseSection) => {
-        return { ...course, id: Math.floor(Math.random() * 10000) };
-      });
-      setScheduleData(coursesId);
-      baseScheduleRef.current = coursesId;
-    }
-  }, [baseScheduleData, scheduleError, scheduleLoading]);
+    const courses = mockData;
+    const coursesId = courses.map((course: any) => {
+      return { ...course, id: Math.floor(Math.random() * 10000) };
+    });
+    setScheduleData(coursesId);
+    baseScheduleRef.current = coursesId;
+  }, []);
 
   useEffect(() => {
     const onUnmount = () => {
@@ -198,14 +293,13 @@ export const Schedule = () => {
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={30}
+      pt={50}
       alignItems="center"
-      justifyContent="center"
       flexDirection="column"
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
-        {!scheduleData || scheduleLoading ? (
+        {!scheduleData ? (
           <Container
             display="flex"
             justifyContent="center"
@@ -219,7 +313,7 @@ export const Schedule = () => {
             <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <Select
                 id="select"
-                w="10rem"
+                w="16rem"
                 value={viewState}
                 onChange={(e) => {
                   refreshSchedule();
@@ -231,21 +325,20 @@ export const Schedule = () => {
                 <option value="table">Table View</option>
                 <option value="calendar">Calendar View</option>
               </Select>
-              <Button
-                w="200px"
-                as={Link}
-                to="/generate"
-                colorScheme="blue"
-                variant="solid"
-              >
-                Regenerate
-              </Button>
-            </Flex>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <SearchBar
                 getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
               />
+              <Button
+                w="300px"
+                as={Link}
+                to="/schedule"
+                backgroundColor="purple.300"
+                colorScheme="purple"
+                variant="solid"
+              >
+                Generate New Schedule
+              </Button>
             </Flex>
             <Flex
               p={10}
