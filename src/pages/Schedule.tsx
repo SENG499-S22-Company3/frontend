@@ -263,7 +263,7 @@ export const Schedule = () => {
 
     const meetingTimes = [...filteredMeetingTimes, newMeetingTime];
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
-    refreshSchedule();
+    //refreshSchedule();
   };
 
   //convert calendar appointments into course sections and update state

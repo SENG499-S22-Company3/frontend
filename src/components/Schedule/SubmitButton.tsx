@@ -64,7 +64,7 @@ export const SubmitButton = (props: SubmitButtonProps) => {
   }, [data, loading, error, toast]);
 
   return (
-    <Flex alignItems={"center"}>
+    <Flex alignItems={"center"} minWidth="3rem">
       {active && (
         <Alert
           status="warning"
