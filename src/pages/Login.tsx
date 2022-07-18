@@ -21,6 +21,7 @@ const LOGIN = gql`
     login(password: $password, username: $username) {
       message
       success
+      token
     }
   }
 `;
@@ -47,8 +48,13 @@ export const Login = () => {
 
   const toast = useToast();
 
-  const [user, loggedIn, persistUser] = useLoginStore(
-    (state) => [state.user, state.loggedIn, state.persistUser],
+  const [user, loggedIn, persistUser, persistToken] = useLoginStore(
+    (state) => [
+      state.user,
+      state.loggedIn,
+      state.persistUser,
+      state.persistToken,
+    ],
     shallow
   );
 
@@ -101,6 +107,7 @@ export const Login = () => {
           loginData.login.success ||
           loginData.login.message.toLowerCase().includes("already logged in")
         ) {
+          persistToken(loginData.login.token);
           fetchMeData();
         } else {
           console.error(loginData.login);
@@ -167,7 +174,7 @@ export const Login = () => {
               <Button
                 isLoading={loginLoading}
                 type="submit"
-                colorScheme="green"
+                colorScheme="blue"
                 variant="solid"
                 w="100%"
               >

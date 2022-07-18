@@ -10,10 +10,9 @@ import { Generate } from "./pages/Generate";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NotFound } from "./pages/NotFound";
-import { ProfileManagement } from "./pages/ProfileManagement";
+import { Professors } from "./pages/Professors";
 import { Schedule } from "./pages/Schedule";
 import { Survey } from "./pages/Survey";
-import { SurveyResults } from "./pages/SurveyResults";
 import { useLoginStore } from "./stores/login";
 import { colors } from "./theme/colors";
 
@@ -47,9 +46,8 @@ export const App = () => {
           <>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/generate" element={<Generate />} />
-            <Route path="/profileManagement" element={<ProfileManagement />} />
+            <Route path="/professors" element={<Professors />} />
             <Route path="/schedule" element={<Schedule />} />
-            <Route path="/surveyresults" element={<SurveyResults />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </>

@@ -11,6 +11,8 @@ export type User = {
 export type LoginStore = {
   loggedIn: boolean;
   user: User | undefined;
+  persistToken: (token: string) => void;
+  unPersistToken: () => void;
   persistUser: (user: User) => void;
   unPersistUser: () => void;
   fetchUser: () => void;
@@ -21,6 +23,12 @@ export type LoginStore = {
 export const useLoginStore = create<LoginStore>((set) => ({
   loggedIn: false,
   user: undefined,
+  persistToken: (token) => {
+    localStorage.setItem("schedulater-token", token);
+  },
+  unPersistToken: () => {
+    localStorage.removeItem("schedulater-token");
+  },
   persistUser: (user) => {
     localStorage.setItem("user", JSON.stringify(user));
     set({ user, loggedIn: true });

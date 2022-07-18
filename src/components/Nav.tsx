@@ -33,8 +33,13 @@ const LOGOUT = gql`
 `;
 
 const LoginStatus = () => {
-  const [user, loggedIn, unPersistUser] = useLoginStore(
-    (state) => [state.user, state.loggedIn, state.unPersistUser],
+  const [user, loggedIn, unPersistUser, unPersistToken] = useLoginStore(
+    (state) => [
+      state.user,
+      state.loggedIn,
+      state.unPersistUser,
+      state.unPersistToken,
+    ],
     shallow
   );
   const [logout, { client, data, loading, error }] = useMutation(LOGOUT);
@@ -56,6 +61,7 @@ const LoginStatus = () => {
 
         // Reset the store so that the user information isn't cached
         client.resetStore();
+        unPersistToken();
         unPersistUser();
 
         navigate("/");
@@ -138,9 +144,12 @@ export const NavHeader = () => {
       alignItems="center"
       justifyContent="space-between"
       px={3}
+      borderBottom="2px solid #F5AA1C" //uvic colours yellow
+      outline="3px solid #C63527" //red
+      boxShadow="0 6px 0px 0px #005493" //blue
     >
       <Flex alignItems="center">
-        <Box mr="15px" bg="green.200" h="40px" w="40px" borderRadius="50%">
+        <Box mr="15px" bg="gray.100" h="40px" w="40px" borderRadius="50%">
           <Image
             src={`${process.env.PUBLIC_URL}/logo.png`}
             alt="schedulator logo"
@@ -173,16 +182,10 @@ export const NavHeader = () => {
                       <NavLink to="/generate" desc="Generate Schedules" />
                     </MenuItem>
                     <MenuItem>
-                      <NavLink
-                        to="/profileManagement"
-                        desc="Profile Management"
-                      />
-                    </MenuItem>
-                    <MenuItem>
                       <NavLink to="/schedule" desc="View Schedules" />
                     </MenuItem>
                     <MenuItem>
-                      <NavLink to="/surveyresults" desc="Survey Results" />
+                      <NavLink to="/professors" desc="Professors" />
                     </MenuItem>
                     <MenuItem>
                       <NavLink to="/profile" desc="My Profile" />
@@ -210,12 +213,8 @@ export const NavHeader = () => {
               <>
                 <BoldNavLink to="/dashboard" desc="Admin Dashboard" />
                 <BoldNavLink to="/generate" desc="Generate Schedules" />
-                <BoldNavLink
-                  to="/profileManagement"
-                  desc="Profile Management"
-                />
                 <BoldNavLink to="/schedule" desc="View Schedules" />
-                <BoldNavLink to="/surveyresults" desc="Survey Results" />
+                <BoldNavLink to="/professors" desc="Professors" />
               </>
             )}
             {isUser && (

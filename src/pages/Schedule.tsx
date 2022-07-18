@@ -203,38 +203,8 @@ export const Schedule = () => {
       justifyContent="center"
       flexDirection="column"
     >
+      <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
-        <Heading mb={6}>View Schedule</Heading>
-        <Flex alignItems="center" justifyContent="space-between" mb={5}>
-          <Select
-            id="select"
-            w="16rem"
-            value={viewState}
-            onChange={(e) => {
-              refreshSchedule();
-              e.target.value === "table"
-                ? setViewState(ViewTypes.table)
-                : setViewState(ViewTypes.calendar);
-            }}
-          >
-            <option value="table">Table View</option>
-            <option value="calendar">Calendar View</option>
-          </Select>
-          <SearchBar
-            getTermData={getScheduleRef}
-            setScheduleData={setScheduleData}
-          />
-          <Button
-            w="300px"
-            as={Link}
-            to="/schedule"
-            backgroundColor="purple.300"
-            colorScheme="purple"
-            variant="solid"
-          >
-            Generate New Schedule
-          </Button>
-        </Flex>
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
@@ -246,6 +216,37 @@ export const Schedule = () => {
           </Container>
         ) : (
           <>
+            <Flex alignItems="center" justifyContent="space-between" mb={5}>
+              <Select
+                id="select"
+                w="10rem"
+                value={viewState}
+                onChange={(e) => {
+                  refreshSchedule();
+                  e.target.value === "table"
+                    ? setViewState(ViewTypes.table)
+                    : setViewState(ViewTypes.calendar);
+                }}
+              >
+                <option value="table">Table View</option>
+                <option value="calendar">Calendar View</option>
+              </Select>
+              <Button
+                w="200px"
+                as={Link}
+                to="/generate"
+                colorScheme="blue"
+                variant="solid"
+              >
+                Regenerate
+              </Button>
+            </Flex>
+            <Flex alignItems="center" justifyContent="space-between" mb={5}>
+              <SearchBar
+                getTermData={getScheduleRef}
+                setScheduleData={setScheduleData}
+              />
+            </Flex>
             <Flex
               p={10}
               borderRadius={10}
