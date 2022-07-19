@@ -1,8 +1,17 @@
 import { Flex, Container, Heading, Button, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import notFound from "../404.jpg";
+import { useLoginStore } from "../stores/login";
+import shallow from "zustand/shallow";
 
 export const NotFound = () => {
+  const [user] = useLoginStore(
+    (state) => [
+      state.user,
+    ],
+    shallow
+  );
+
   return (
     <Flex
       w="100%"
@@ -27,7 +36,11 @@ export const NotFound = () => {
           Page not found
         </Text>
         <img src={notFound} alt="logo" />
-        <Link to="/login">
+        <Link to={
+            user?.roles.includes("admin") || user?.roles.includes("user")
+              ? "/login"
+              : "/"
+          }>
           <Button
             mt={10}
             type="submit"
