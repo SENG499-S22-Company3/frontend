@@ -29,3 +29,11 @@ export type CourseInterface = {
   term: string;
   preference: number;
 };
+
+export type PreferenceInterface = {
+  subject: string;
+  code: string;
+  term: string;
+  able: string;
+  willing: string;
+};

@@ -27,6 +27,7 @@ import {
 import {
   CourseCodeAndSubject,
   CourseInterface,
+  PreferenceInterface,
 } from "../../stores/preferences";
 
 const COURSES = gql`
@@ -46,18 +47,10 @@ interface CourseOption extends OptionBase {
   value: PreferenceInterface;
 }
 
-interface PreferenceInterface {
-  subject: string;
-  code: string;
-  term: string;
-  able: string;
-  willing: string;
-}
-
 interface ChildProps {
   handlePreferenceChange(course: CourseInterface, value: number): void;
   removeCourse(course: CourseCodeAndSubject): void;
-  removeAllCourse(): void;
+  removeAllCourses(): void;
 }
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
@@ -183,7 +176,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       }
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
-      props.removeAllCourse();
+      props.removeAllCourses();
     } else {
       toast({
         title: "Unknown Action",

@@ -151,7 +151,7 @@ export const Survey = () => {
             <SurveyCourseList
               handlePreferenceChange={handleCourseChange}
               removeCourse={removePreference}
-              removeAllCourse={removeAllPreferences}
+              removeAllCourses={removeAllPreferences}
             />
             <Heading size="lg">Other Preferences</Heading>
             <OtherPreferences loading={loading} handleSubmit={onSubmit} />
