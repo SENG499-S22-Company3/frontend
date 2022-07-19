@@ -153,7 +153,13 @@ export const NavHeader = () => {
       boxShadow="0 6px 0px 0px #005493" //blue
     >
       <Flex alignItems="center">
-        <Link2 to="/login">
+        <Link2
+          to={
+            user?.roles.includes("admin") || user?.roles.includes("user")
+              ? "/login"
+              : "/"
+          }
+        >
           <Box mr="15px" bg="gray.100" h="40px" w="40px" borderRadius="50%">
             <Image
               src={`${process.env.PUBLIC_URL}/logo.png`}
