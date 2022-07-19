@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 
 export const Dashboard = () => {
-
   return (
     <Flex
       w="100%"
