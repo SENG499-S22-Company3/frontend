@@ -128,13 +128,11 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     courses: CourseOption[],
     courseToFind: PreferenceInterface
   ) => {
-    const filtered = courses.filter((course) => {
-      return (
+    return courses.some(
+      (course) =>
         course.value.subject === courseToFind.subject &&
         course.value.code === courseToFind.code
-      );
-    });
-    return filtered.length > 0;
+    );
   };
 
   const handleCourseChange = (
