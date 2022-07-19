@@ -5,12 +5,7 @@ import { useLoginStore } from "../stores/login";
 import shallow from "zustand/shallow";
 
 export const NotFound = () => {
-  const [user] = useLoginStore(
-    (state) => [
-      state.user,
-    ],
-    shallow
-  );
+  const [user] = useLoginStore((state) => [state.user], shallow);
 
   return (
     <Flex
@@ -36,11 +31,13 @@ export const NotFound = () => {
           Page not found
         </Text>
         <img src={notFound} alt="logo" />
-        <Link to={
+        <Link
+          to={
             user?.roles.includes("admin") || user?.roles.includes("user")
               ? "/login"
               : "/"
-          }>
+          }
+        >
           <Button
             mt={10}
             type="submit"
