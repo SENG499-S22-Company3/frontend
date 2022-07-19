@@ -6,6 +6,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   const bg = useColorModeValue("gray.100", "gray.700");
@@ -23,13 +24,15 @@ export const Footer = () => {
       px={5}
     >
       <Box h="40px" objectFit="contain">
-        <Image
-          src={`${process.env.PUBLIC_URL}/uviclogo.svg`}
-          alt="uvic logo"
-          padding="5px"
-          h="40px"
-          minWidth="40px"
-        ></Image>
+        <a href="https://www.uvic.ca/">
+          <Image
+            src={`${process.env.PUBLIC_URL}/uviclogo.svg`}
+            alt="uvic logo"
+            padding="5px"
+            h="40px"
+            minWidth="40px"
+          ></Image>
+        </a>
       </Box>
       {!isSmall && (
         <Text color="gray">
