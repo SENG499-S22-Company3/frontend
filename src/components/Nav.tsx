@@ -18,11 +18,7 @@ import {
 import React, { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import {
-  Link as ReactRouterLink,
-  Link as Link2,
-  useNavigate,
-} from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import { useLoginStore } from "../stores/login";
 import shallow from "zustand/shallow";
@@ -153,7 +149,7 @@ export const NavHeader = () => {
       boxShadow="0 6px 0px 0px #005493" //blue
     >
       <Flex alignItems="center">
-        <Link2
+        <ReactRouterLink
           to={
             user?.roles.includes("admin") || user?.roles.includes("user")
               ? "/login"
@@ -168,7 +164,7 @@ export const NavHeader = () => {
               padding="5px"
             ></Image>
           </Box>
-        </Link2>
+        </ReactRouterLink>
         {isSmall ? (
           <>
             <Menu>
