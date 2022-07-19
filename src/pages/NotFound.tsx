@@ -27,7 +27,7 @@ export const NotFound = () => {
           Page not found
         </Text>
         <img src={notFound} alt="logo" />
-        <Link to="/">
+        <Link to="/login">
           <Button
             mt={10}
             type="submit"
