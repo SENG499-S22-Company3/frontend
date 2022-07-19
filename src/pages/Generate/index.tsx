@@ -123,7 +123,8 @@ export const Generate = () => {
         if (!normallyOfferedTerms) {
           toast({
             status: "error",
-            description: `Failed to determine normally offered term of ${codeString}`,
+            title: "Error",
+            description: `Failed to determine which term ${codeString} is normally offered in`,
             isClosable: true,
           });
           return;
