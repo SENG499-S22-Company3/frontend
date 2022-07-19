@@ -114,7 +114,7 @@ export const Generate = () => {
       for (const course of selectedCourses) {
         const codeString = `${course.subject}${course.code}`;
 
-        // the React type checker has an aneurism when trying to deal with this imported
+        // the React type checker has an aneurysm when trying to deal with this imported
         // JSON for some reason.
         const normallyOfferedTerms = courseTerms[
           codeString as keyof typeof courseTerms
@@ -135,6 +135,9 @@ export const Generate = () => {
           });
         } else {
           const sectionAmounts = Array(normallyOfferedTerms.length).fill(0);
+
+          // distribute the requested course sections evenly across the terms
+          // where this course is normally offered
           for (let i = 0; i < course.section; i++) {
             sectionAmounts[i % sectionAmounts.length] += 1;
           }
