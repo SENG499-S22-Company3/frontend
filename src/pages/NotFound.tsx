@@ -7,6 +7,16 @@ import shallow from "zustand/shallow";
 export const NotFound = () => {
   const [user] = useLoginStore((state) => [state.user], shallow);
 
+  const getNav = () => {
+    if (user?.roles.includes("admin")) {
+      return "/dashboard";
+    } else if (user?.roles.includes("user")) {
+      return "/survey";
+    } else {
+      return "/";
+    }
+  };
+
   return (
     <Flex
       w="100%"
@@ -31,13 +41,7 @@ export const NotFound = () => {
           Page not found
         </Text>
         <img src={notFound} alt="logo" />
-        <Link
-          to={
-            user?.roles.includes("admin") || user?.roles.includes("user")
-              ? "/login"
-              : "/"
-          }
-        >
+        <Link to={getNav()}>
           <Button
             mt={10}
             type="submit"
