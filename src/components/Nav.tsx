@@ -187,9 +187,6 @@ export const NavHeader = () => {
                     <MenuItem>
                       <NavLink to="/professors" desc="Professors" />
                     </MenuItem>
-                    <MenuItem>
-                      <NavLink to="/profile" desc="My Profile" />
-                    </MenuItem>
                   </>
                 )}
                 {isUser && (
@@ -197,9 +194,6 @@ export const NavHeader = () => {
                     <MenuDivider />
                     <MenuItem>
                       <NavLink to="/survey" desc="Preferences Survey" />
-                    </MenuItem>
-                    <MenuItem>
-                      <NavLink to="/profile" desc="My Profile" />
                     </MenuItem>
                   </>
                 )}
