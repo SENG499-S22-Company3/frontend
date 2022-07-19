@@ -25,7 +25,7 @@ export const CourseAmountInput: React.FC<ChildProps> = (props) => {
       <Text>{props.title}</Text>
       <NumberInput
         w={100}
-        defaultValue={0}
+        defaultValue={2}
         max={props.max}
         min={0}
         onChange={handleChange}

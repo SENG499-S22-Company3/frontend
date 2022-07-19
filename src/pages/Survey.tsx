@@ -54,8 +54,7 @@ export const Survey = () => {
       summerTermCourses: numSummerCourses,
       userId: 0,
     };
-    console.log(input);
-    // submit({ variables: { input } });
+    submit({ variables: { input } });
   };
 
   const removePreference = (course: CourseCodeAndSubject) => {
@@ -73,6 +72,7 @@ export const Survey = () => {
   };
 
   const handleCourseChange = (course: CourseInterface, value: number) => {
+    console.log(value);
     let found = false;
     let newRatings = courseRatings.map((ratedCourse: CourseInterface) => {
       if (

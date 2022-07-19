@@ -92,7 +92,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
             );
             return {
               ...selectedCourse,
-              able: value,
+              value: {
+                ...selectedCourse.value,
+                able: value,
+              },
             };
           } else return selectedCourse;
         }
@@ -116,7 +119,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
             );
             return {
               ...selectedCourse,
-              willing: value,
+              value: {
+                ...selectedCourse.value,
+                willing: value,
+              },
             };
           } else return selectedCourse;
         }

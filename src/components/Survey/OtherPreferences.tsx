@@ -30,9 +30,9 @@ interface ChildProps {
 
 export const OtherPreferences: React.FC<ChildProps> = (props) => {
   const [professorType, setProfessorType] = useState("Teaching");
-  const [numFallCourses, setNumFallCourses] = useState(0);
-  const [numSpringCourses, setNumSpringCourses] = useState(0);
-  const [numSummerCourses, setNumSummerCourses] = useState(0);
+  const [numFallCourses, setNumFallCourses] = useState(2);
+  const [numSpringCourses, setNumSpringCourses] = useState(2);
+  const [numSummerCourses, setNumSummerCourses] = useState(2);
   const [courseAmountError, setCourseAmountError] = useState("");
   const [hasRelief, setHasRelief] = useState(false);
   const [reliefExplaination, setReliefExplaination] = useState("");
