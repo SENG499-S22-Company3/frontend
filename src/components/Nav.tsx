@@ -136,6 +136,16 @@ export const NavHeader = () => {
   // const isAdmin = true;
   // const isUser = true;
 
+  const getNav = () => {
+    if (user?.roles.includes("admin")) {
+      return "/dashboard";
+    } else if (user?.roles.includes("user")) {
+      return "/survey";
+    } else {
+      return "/";
+    }
+  };
+
   return (
     <Flex
       w="100vw"
@@ -149,13 +159,7 @@ export const NavHeader = () => {
       boxShadow="0 6px 0px 0px #005493" //blue
     >
       <Flex alignItems="center">
-        <ReactRouterLink
-          to={
-            user?.roles.includes("admin") || user?.roles.includes("user")
-              ? "/login"
-              : "/"
-          }
-        >
+        <ReactRouterLink to={getNav()}>
           <Box mr="15px" bg="gray.100" h="40px" w="40px" borderRadius="50%">
             <Image
               src={`${process.env.PUBLIC_URL}/logo.png`}
