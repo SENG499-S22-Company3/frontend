@@ -133,7 +133,6 @@ export const Survey = () => {
     <>
       {user != null && user.preferences.length > 0 ? (
         <>
-          {" "}
           <Flex
             w="100%"
             minH="calc(100vh - 5.5rem)"
