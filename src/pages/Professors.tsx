@@ -48,7 +48,9 @@ export const Professors = () => {
           const sortedData = data.allUsers
             .slice()
             .sort((a: UserInfo, b: UserInfo) => {
-              return a.displayName.localeCompare(b.displayName);
+              if (a.displayName && b.displayName) {
+                return a.displayName.localeCompare(b.displayName);
+              } else return 0;
             });
           setAllUsers(sortedData);
           setFilteredUsers(sortedData);
