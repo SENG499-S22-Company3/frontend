@@ -101,6 +101,7 @@ export const Survey = () => {
           toast({
             title: "Submitted preferences successfully",
             status: "success",
+            duration: 3000,
             isClosable: true,
           });
         } else {
@@ -109,6 +110,7 @@ export const Survey = () => {
             title: "Failed to submit preferences",
             description: data.createTeachingPreference.message,
             status: "error",
+            duration: null,
             isClosable: true,
           });
         }
@@ -118,6 +120,7 @@ export const Survey = () => {
           title: "Failed to submit preferences",
           description: error.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }

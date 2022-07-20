@@ -92,6 +92,7 @@ export const Login = () => {
           title: "Failed to fetch user data",
           description: meError.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }
@@ -115,6 +116,7 @@ export const Login = () => {
             title: "Failed to login",
             description: loginData.login.message,
             status: "error",
+            duration: null,
             isClosable: true,
           });
         }
@@ -123,6 +125,7 @@ export const Login = () => {
           title: "Failed to login",
           description: loginError.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }

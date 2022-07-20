@@ -62,6 +62,7 @@ export const CreateUser = () => {
             title: "Failed to create user",
             description: data.createUser.message,
             status: "error",
+            duration: null,
             isClosable: true,
           });
         }
@@ -71,6 +72,7 @@ export const CreateUser = () => {
           title: "Failed to create user",
           description: error?.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }

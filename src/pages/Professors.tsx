@@ -57,6 +57,7 @@ export const Professors = () => {
           toast({
             title: "Failed to get professor info",
             status: "error",
+            duration: null,
             isClosable: true,
           });
           console.log(data);
@@ -66,6 +67,7 @@ export const Professors = () => {
           title: "Failed to get professor info",
           description: error.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
         console.log(error);
