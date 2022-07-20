@@ -125,7 +125,9 @@ export const Survey = () => {
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loading, error]);
+
   return (
     <Flex
       w="100%"

@@ -306,7 +306,8 @@ export const Generate = () => {
         }
       }
     }
-  }, [data, loading, error, navigate, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, loading, error]);
 
   return (
     <Flex
