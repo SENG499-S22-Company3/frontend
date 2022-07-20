@@ -105,7 +105,10 @@ export const CalendarView = (props: CalendarProps) => {
     }  
     .dx-scheduler-navigator {
       visibility: ${viewState === "workWeek" ? "hidden" : "visible"}
-     }
+    }
+    .dx-scheduler-cell-sizes-vertical {
+      height: 60px;
+    }
   `;
 
   const handleDragStart = (appointment: Appointment) => {
@@ -142,7 +145,8 @@ export const CalendarView = (props: CalendarProps) => {
         defaultCurrentView={viewState}
         showAllDayPanel={false}
         startDayHour={8}
-        endDayHour={22}
+        endDayHour={20}
+        cellDuration={60}
         textExpr="courseTitle"
         onCurrentViewChange={(value) => {
           setViewState(value);
