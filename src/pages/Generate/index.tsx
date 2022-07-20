@@ -124,7 +124,9 @@ export const Generate = () => {
           toast({
             status: "error",
             title: "Error",
+            duration: null,
             description: `Failed to determine which term ${codeString} is normally offered in`,
+
             isClosable: true,
           });
           return;
@@ -137,8 +139,8 @@ export const Generate = () => {
         } else {
           const sectionAmounts = Array(normallyOfferedTerms.length).fill(0);
 
-          // distribute the requested course sections evenly across the terms
-          // where this course is normally offered
+          // distribute the requested number of course sections evenly
+          // across the terms where this course is normally offered
           for (let i = 0; i < course.section; i++) {
             sectionAmounts[i % sectionAmounts.length] += 1;
           }
@@ -178,6 +180,7 @@ export const Generate = () => {
         toast({
           title: "Option not defined",
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }
@@ -193,6 +196,7 @@ export const Generate = () => {
         toast({
           title: "Failed to remove course",
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }
@@ -203,6 +207,7 @@ export const Generate = () => {
         title: "Unknown Action",
         description: actionMeta.action,
         status: "error",
+        duration: null,
         isClosable: true,
       });
     }
@@ -277,6 +282,7 @@ export const Generate = () => {
             title: "Failed to generate Schedule",
             description: data.generateSchedule.message,
             status: "error",
+            duration: null,
             isClosable: true,
           });
         }
@@ -285,6 +291,7 @@ export const Generate = () => {
         toast({
           title: "Failed to generate Schedule",
           description: error.message,
+          duration: null,
           status: "error",
           isClosable: true,
         });
