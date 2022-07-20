@@ -5,6 +5,15 @@ export type User = {
   name: string;
   email: string;
   roles: string[];
+  preferences: {
+    id: {
+      subject: string;
+      title: string;
+      code: string;
+      term: "FALL" | "SPRING" | "SUMMER";
+    };
+    preference: number;
+  }[];
   displayName: string;
 };
 
