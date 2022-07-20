@@ -6,14 +6,18 @@ import {
   Heading,
   useColorModeValue,
   useToast,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
 import { OtherPreferences } from "../components/Survey/OtherPreferences";
 import { CourseCodeAndSubject, CourseInterface } from "../stores/preferences";
 import shallow from "zustand/shallow";
 import { useLoginStore } from "../stores/login";
+import { CourseID } from "../stores/schedule";
+
 const SUBMIT = gql`
   mutation submit($input: CreateTeachingPreferenceInput!) {
     createTeachingPreference(input: $input) {
@@ -23,16 +27,34 @@ const SUBMIT = gql`
   }
 `;
 
+const COURSES = gql`
+  query GetCourses {
+    survey {
+      courses {
+        subject
+        code
+        term
+      }
+    }
+  }
+`;
+
 export const Survey = () => {
-  const [courseRatings, setCourseRatings] = useState<Array<CourseInterface>>(
-    []
-  );
+  const [courseRatings, setCourseRatings] = useState<
+    Record<string, CourseInterface>
+  >({});
 
   const toast = useToast();
 
   const [user] = useLoginStore((state) => [state.user], shallow);
 
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
+  const {
+    loading: coursesLoading,
+    error: coursesError,
+    data: coursesData,
+  } = useQuery(COURSES);
+
   const bg = useColorModeValue("gray.50", "gray.700");
 
   const onSubmit = (
@@ -44,8 +66,18 @@ export const Survey = () => {
     numSpringCourses: number,
     numSummerCourses: number
   ) => {
+    // set a preference of 0 for any courses that the user didn't explicity
+    // specify a preference for
+    const finalRatings = coursesData.survey.courses!.map(
+      (course: CourseID) =>
+        courseRatings[`${course.subject}${course.code}`] ?? {
+          ...course,
+          preference: 0,
+        }
+    );
+
     const input = {
-      courses: courseRatings,
+      courses: finalRatings,
       hasRelief: hasRelief,
       hasTopic: hasTopic,
       nonTeachingTerm: "FALL",
@@ -61,43 +93,32 @@ export const Survey = () => {
   };
 
   const removePreference = (course: CourseCodeAndSubject) => {
-    setCourseRatings(
-      courseRatings.filter((ratedCourse) => {
-        const courseId = course.subject + course.code;
-        const removedId = ratedCourse.subject + ratedCourse.code;
-        return courseId !== removedId;
-      })
-    );
+    setCourseRatings((prev) => {
+      const key = `${course.subject}${course.code}`;
+      delete prev[key];
+      return prev;
+    });
   };
 
   const removeAllPreferences = () => {
-    setCourseRatings([]);
+    setCourseRatings({});
   };
 
   const handleCourseChange = (course: CourseInterface, value: number) => {
-    console.log(value);
-    let found = false;
-    let newRatings = courseRatings.map((ratedCourse: CourseInterface) => {
-      if (
-        course.subject === ratedCourse.subject &&
-        course.code === ratedCourse.code
-      ) {
-        found = true;
-        return {
-          ...ratedCourse,
+    const key = `${course.subject}${course.code}`;
+
+    setCourseRatings((prev) => {
+      if (prev[key] === undefined) {
+        prev[key] = {
+          ...course,
           preference: value,
         };
-      } else return ratedCourse;
+      } else {
+        prev[key].preference = value;
+      }
+
+      return prev;
     });
-
-    if (!found) {
-      newRatings.push({
-        ...course,
-        preference: value,
-      });
-    }
-
-    setCourseRatings(newRatings);
   };
 
   useEffect(() => {
@@ -110,81 +131,115 @@ export const Survey = () => {
             isClosable: true,
           });
         } else {
-          console.log(data);
           toast({
             title: "Failed to submit preferences",
             description: data.createTeachingPreference.message,
             status: "error",
+            duration: null,
             isClosable: true,
           });
         }
       } else if (error) {
-        console.log(error);
         toast({
           title: "Failed to submit preferences",
           description: error.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }
     }
-  }, [data, loading, error, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, loading, error]);
+
+  if (coursesLoading) {
+    return (
+      <Flex
+        w="100%"
+        minH="calc(100vh - 5.5rem)"
+        pt={30}
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+      >
+        <Spinner />
+      </Flex>
+    );
+  }
+
+  if (coursesError) {
+    return (
+      <Flex
+        w="100%"
+        minH="calc(100vh - 5.5rem)"
+        pt={30}
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+      >
+        <Heading fontSize="xl">
+          Error: Failed to retrieve list of courses
+        </Heading>
+        <Text>{coursesError.message}</Text>
+      </Flex>
+    );
+  }
+
+  if (user != null && user.preferences.length > 0) {
+    return (
+      <Flex
+        w="100%"
+        minH="calc(100vh - 5.5rem)"
+        pt={30}
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+      >
+        <Heading>
+          You have completed the preference survey already! Thank you.
+        </Heading>
+      </Flex>
+    );
+  }
+
   return (
-    <>
-      {user != null && user.preferences.length > 0 ? (
-        <>
-          <Flex
-            w="100%"
-            minH="calc(100vh - 5.5rem)"
-            pt={30}
-            alignItems="center"
-            justifyContent="center"
-            flexDirection="column"
-          >
-            <Heading>
-              You have completed the preference survey already! Thank you.
-            </Heading>
-          </Flex>
-        </>
-      ) : (
+    <Flex
+      w="100%"
+      minH="calc(100vh - 5.5rem)"
+      pt={30}
+      alignItems="center"
+      justifyContent="center"
+      flexDirection="column"
+    >
+      <Container mb={32} maxW="container.lg">
+        <Heading mb={6}>Professor Preferences Survey</Heading>
         <Flex
-          w="100%"
-          minH="calc(100vh - 5.5rem)"
-          pt={30}
-          alignItems="center"
-          justifyContent="center"
-          flexDirection="column"
+          bg={bg}
+          p={10}
+          borderRadius={10}
+          flexDir="column"
+          style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-          <Container mb={32} maxW="container.lg">
-            <Heading mb={6}>Professor Preferences Survey</Heading>
-            <Flex
-              bg={bg}
-              p={10}
-              borderRadius={10}
-              flexDir="column"
-              style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
-            >
-              <form>
-                <Heading size="lg" mb={5}>
-                  Course Preferences
-                </Heading>
-                <SurveyCourseList
-                  handlePreferenceChange={handleCourseChange}
-                  removeCourse={removePreference}
-                  removeAllCourses={removeAllPreferences}
-                />
-                <Heading size="lg">Other Preferences</Heading>
-                <OtherPreferences loading={loading} handleSubmit={onSubmit} />
-                <FormControl isInvalid={error !== undefined}>
-                  {error !== undefined && (
-                    <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
-                  )}
-                </FormControl>
-              </form>
-            </Flex>
-          </Container>
+          <form>
+            <Heading size="lg" mb={5}>
+              Course Preferences
+            </Heading>
+            <SurveyCourseList
+              handlePreferenceChange={handleCourseChange}
+              courses={coursesData.survey.courses}
+              removeCourse={removePreference}
+              removeAllCourses={removeAllPreferences}
+            />
+            <Heading size="lg">Other Preferences</Heading>
+            <OtherPreferences loading={loading} handleSubmit={onSubmit} />
+            <FormControl isInvalid={error !== undefined}>
+              {error !== undefined && (
+                <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
+              )}
+            </FormControl>
+          </form>
         </Flex>
-      )}
-    </>
+      </Container>
+    </Flex>
   );
 };

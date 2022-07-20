@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import {
   Radio,
   RadioGroup,
@@ -14,6 +13,7 @@ import {
   Text,
   Button,
   useColorModeValue,
+  Flex,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { calculateCourseRating } from "../../utils/calculateCourseRating";
@@ -29,18 +29,7 @@ import {
   CourseInterface,
   PreferenceInterface,
 } from "../../stores/preferences";
-
-const COURSES = gql`
-  query GetCourses {
-    survey {
-      courses {
-        subject
-        code
-        term
-      }
-    }
-  }
-`;
+import { CourseID } from "../../stores/schedule";
 
 interface CourseOption extends OptionBase {
   label: string;
@@ -48,13 +37,13 @@ interface CourseOption extends OptionBase {
 }
 
 interface ChildProps {
+  courses: CourseID[];
   handlePreferenceChange(course: CourseInterface, value: number): void;
   removeCourse(course: CourseCodeAndSubject): void;
   removeAllCourses(): void;
 }
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
-  const { loading, error, data } = useQuery(COURSES);
   const [courseList, setCourseList] = useState<Array<CourseOption>>([]);
   const [selectedCourses, setSelectedCourses] = useState<Array<CourseOption>>(
     []
@@ -124,19 +113,8 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     }
   };
 
-  const containsCourse = (
-    courses: CourseOption[],
-    courseToFind: PreferenceInterface
-  ) => {
-    return courses.some(
-      (course) =>
-        course.value.subject === courseToFind.subject &&
-        course.value.code === courseToFind.code
-    );
-  };
-
   const handleCourseChange = (
-    courses: MultiValue<CourseOption>,
+    _courses: MultiValue<CourseOption>,
     actionMeta: ActionMeta<CourseOption>
   ) => {
     if (actionMeta.action === "select-option") {
@@ -190,28 +168,26 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!loading) {
-      if (data && !error) {
-        if (data.survey && data.survey.courses) {
-          let uniqueCourses: CourseOption[] = [];
-          data.survey.courses.forEach((course: PreferenceInterface) => {
-            if (!containsCourse(uniqueCourses, course)) {
-              uniqueCourses.push({
-                label: course.subject + " " + course.code,
-                value: course,
-              });
-            }
-          });
-          uniqueCourses.sort((a: CourseOption, b: CourseOption) => {
-            const course_a = a.value.subject + a.value.code;
-            const course_b = b.value.subject + b.value.code;
-            return course_a.localeCompare(course_b);
-          });
-          setCourseList(uniqueCourses);
-        }
+    let uniqueCourses: CourseOption[] = [];
+    const seenCourses = new Set<string>();
+    props.courses.forEach((course) => {
+      const key = `${course.subject} ${course.code}`;
+      if (!seenCourses.has(key)) {
+        uniqueCourses.push({
+          label: key,
+          value: { ...course, able: "", willing: "" },
+        });
       }
-    }
-  }, [loading, data, error]);
+      seenCourses.add(key);
+    });
+
+    uniqueCourses.sort((a: CourseOption, b: CourseOption) => {
+      const course_a = a.value.subject + a.value.code;
+      const course_b = b.value.subject + b.value.code;
+      return course_a.localeCompare(course_b);
+    });
+    setCourseList(uniqueCourses);
+  }, [props.courses]);
 
   const bg = useColorModeValue("gray.50", "gray.800");
 
@@ -229,29 +205,40 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
       </Text>
       <Text mb={2}>
         Note that courses without a preference set will be given a default value
+        of 0 (Not willing to teach).
       </Text>
-      <Button colorScheme="blue" onClick={selectAllCourses} mb={2}>
-        Select All
-      </Button>
-      <SelectPlus<CourseOption, true, GroupBase<CourseOption>>
-        isMulti
-        name="courses"
-        options={courseList}
-        placeholder="Select courses"
-        onChange={handleCourseChange}
-        value={selectedCourses}
-      />
-      <Table variant="striped" size="sm" mt={5}>
-        <Thead>
-          <Tr>
-            <Th>Course</Th>
-            <Th>Ability to Teach</Th>
-            <Th>Willingness to Teach</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {selectedCourses ? (
-            selectedCourses.map((course: CourseOption) => {
+      <Flex w="100%">
+        <Box flexGrow={1}>
+          <SelectPlus<CourseOption, true, GroupBase<CourseOption>>
+            isMulti
+            name="courses"
+            options={courseList}
+            placeholder="Select courses"
+            onChange={handleCourseChange}
+            value={selectedCourses}
+          />
+        </Box>
+        <Button
+          flexShrink={0}
+          colorScheme="blue"
+          onClick={selectAllCourses}
+          mb={2}
+          ml={2}
+        >
+          Select All
+        </Button>
+      </Flex>
+      {selectedCourses.length > 0 && (
+        <Table variant="striped" size="sm" mt={5}>
+          <Thead>
+            <Tr>
+              <Th>Course</Th>
+              <Th>Ability to Teach</Th>
+              <Th>Willingness to Teach</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {selectedCourses.map((course: CourseOption) => {
               return (
                 <Tr key={course.value.subject + course.value.code}>
                   <Td>
@@ -286,14 +273,10 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
                   </Td>
                 </Tr>
               );
-            })
-          ) : (
-            <Tr>
-              <Td>No options selected</Td>
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
+            })}
+          </Tbody>
+        </Table>
+      )}
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { CourseSection } from "./schedule";
+import { CourseSection, CourseID } from "./schedule";
 
 //This is pretty deprecated and not very useful, the GraphQL schema is completely different than this.
 export type Professor = {
@@ -23,10 +23,7 @@ export type CourseCodeAndSubject = {
   subject: string;
 };
 
-export type CourseInterface = {
-  subject: string;
-  code: string;
-  term: string;
+export type CourseInterface = CourseID & {
   preference: number;
 };
 
