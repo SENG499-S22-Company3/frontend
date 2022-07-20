@@ -28,11 +28,10 @@ export const Survey = () => {
     []
   );
 
-  
-
   const toast = useToast();
 
   const [user] = useLoginStore((state) => [state.user], shallow);
+
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
 
@@ -76,9 +75,7 @@ export const Survey = () => {
   };
 
   const checkSubmit = () => {
-    if (user){
-      
-    }
+    console.log(user);
   };
 
   checkSubmit();
@@ -140,9 +137,22 @@ export const Survey = () => {
   }, [data, loading, error, toast]);
   return (
     <>
-    {/* user.perferences.length */}
-      { 0 > 1 ? (
-        <>Preference survey already complete! Good job.</>
+      {user != null && user.preferences.length > 0 ? (
+        <>
+          {" "}
+          <Flex
+            w="100%"
+            minH="calc(100vh - 5.5rem)"
+            pt={30}
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+          >
+            <Heading>
+              You have completed the preference survey already! Thank you.
+            </Heading>
+          </Flex>
+        </>
       ) : (
         <Flex
           w="100%"
