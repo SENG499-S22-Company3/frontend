@@ -31,13 +31,7 @@ import DateBox from "devextreme-react/date-box";
 import { Appointment } from "../../stores/schedule";
 import { ViewTypes } from "../../pages/Schedule";
 import { gql, useQuery } from "@apollo/client";
-import {
-  Select,
-  OptionBase,
-  GroupBase,
-  MultiValue,
-  ActionMeta,
-} from "chakra-react-select";
+import { OptionBase, Select } from "chakra-react-select";
 
 const USERS = gql`
   query getUsers {
@@ -74,14 +68,11 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
   const [dayError, setDayError] = useState(false);
   const [professorError, setProfessorError] = useState(false);
 
-  const defaultProfessors: ProfessorOption[] = courseUpdate.professors.map(
-    (prof) => {
-      return {
-        label: prof,
-        value: prof,
-      };
-    }
-  );
+  const defaultProfessors = {
+    value: courseUpdate.professors[0],
+    label: courseUpdate.professors[0],
+  };
+
   const initialRef = useRef(null);
   const days = courseUpdate.days;
 
@@ -147,29 +138,6 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
     );
     onSubmit({ ...courseUpdate, removedDays: removedDays });
     onClose();
-  };
-
-  const handleProfessorChange = (
-    professors: MultiValue<ProfessorOption>,
-    actionMeta: ActionMeta<ProfessorOption>
-  ) => {
-    const newProfName = actionMeta.option?.value || "";
-    const removedProfName = actionMeta.removedValue?.value || "";
-    if (actionMeta.action === "select-option") {
-      if (actionMeta.option) {
-        const newProfessors = [...courseUpdate.professors, newProfName];
-        setCourseUpdate({ ...courseUpdate, professors: newProfessors });
-      }
-    } else if (actionMeta.action === "remove-value") {
-      if (actionMeta.removedValue) {
-        const newProfessors = courseUpdate.professors.filter((prof) => {
-          return prof !== removedProfName;
-        });
-        setCourseUpdate({ ...courseUpdate, professors: newProfessors });
-      }
-    } else if (actionMeta.action === "clear") {
-      setCourseUpdate({ ...courseUpdate, professors: [] });
-    }
   };
 
   return (
@@ -249,12 +217,16 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                   <FormLabel htmlFor="professors" marginTop={"1.5rem"}>
                     Professors
                   </FormLabel>
-                  <Select<ProfessorOption, true, GroupBase<ProfessorOption>>
-                    isMulti
+                  <Select
                     id="professors"
                     options={professorOptions}
                     placeholder="Professors"
-                    onChange={handleProfessorChange}
+                    onChange={(e) =>
+                      setCourseUpdate({
+                        ...courseUpdate,
+                        professors: e ? [e.value] : [],
+                      })
+                    }
                     value={defaultProfessors}
                   />
                   <FormErrorMessage>

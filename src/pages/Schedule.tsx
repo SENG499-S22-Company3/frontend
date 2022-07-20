@@ -59,87 +59,6 @@ const USERS = gql`
   }
 `;
 
-const mockData = [
-  {
-    CourseID: {
-      subject: "CSC",
-      code: "225",
-      term: "summer",
-      title: "hello world",
-    },
-    sectionNumber: "A01",
-    hoursPerWeek: 50,
-    professors: [
-      {
-        displayName: "Daniela Damien",
-        username: "",
-        name: "",
-        email: "",
-        roles: [""],
-      },
-    ],
-    capacity: 50,
-    startDate: new Date(),
-    endDate: new Date(),
-    meetingTimes: [
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
-        day: Day.TUESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
-        day: Day.WEDNESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 7)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 6)),
-        day: Day.FRIDAY,
-      },
-    ],
-  },
-  {
-    CourseID: {
-      subject: "ECE",
-      code: "260",
-      term: "summer",
-      title: "hello world",
-    },
-    sectionNumber: "A01",
-    hoursPerWeek: 50,
-    professors: [
-      {
-        displayName: "Joe Biden",
-        username: "",
-        name: "",
-        email: "",
-        roles: [""],
-      },
-    ],
-    capacity: 50,
-    startDate: new Date(),
-    endDate: new Date(),
-    meetingTimes: [
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
-        day: Day.TUESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
-        day: Day.WEDNESDAY,
-      },
-      {
-        startTime: new Date(new Date().setHours(new Date().getHours() - 9)),
-        endTime: new Date(new Date().setHours(new Date().getHours() - 8)),
-        day: Day.FRIDAY,
-      },
-    ],
-  },
-];
-
 interface User {
   displayName: string;
   username: string;
@@ -165,16 +84,16 @@ export const Schedule = () => {
 
   const baseScheduleRef = useRef(scheduleData);
 
-  // useEffect(() => {
-  //   if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
-  //     const courses = baseScheduleData.schedule.courses;
-  //     const coursesId = courses.map((course: CourseSection) => {
-  //       return { ...course, id: Math.floor(Math.random() * 10000) };
-  //     });
-  //     setScheduleData(coursesId);
-  //     baseScheduleRef.current = coursesId;
-  //   }
-  // }, [baseScheduleData, scheduleError, scheduleLoading]);
+  useEffect(() => {
+    if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
+      const courses = baseScheduleData.schedule.courses;
+      const coursesId = courses.map((course: CourseSection) => {
+        return { ...course, id: Math.floor(Math.random() * 10000) };
+      });
+      setScheduleData(coursesId);
+      baseScheduleRef.current = coursesId;
+    }
+  }, [baseScheduleData, scheduleError, scheduleLoading]);
 
   useEffect(() => {
     if (!loading) {
@@ -186,23 +105,6 @@ export const Schedule = () => {
       }
     }
   }, [data, error, loading]);
-
-  useEffect(() => {
-    //assign courses an id so that they can be referenced if they're edited
-    const courses = mockData;
-    const coursesId = courses.map((course) => {
-      return { ...course, id: Math.floor(Math.random() * 10000) };
-    });
-    setScheduleData(coursesId);
-    baseScheduleRef.current = coursesId;
-  }, []);
-
-  useEffect(() => {
-    const onUnmount = () => {
-      //do graphQL mutation to store new schedule before unmount
-    };
-    return onUnmount;
-  }, []);
 
   //called after submitting from edit modal
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
@@ -345,7 +247,7 @@ export const Schedule = () => {
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
-        {!scheduleData ? (
+        {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
             justifyContent="center"
