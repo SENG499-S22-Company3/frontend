@@ -1,4 +1,9 @@
-import { ChakraProvider, extendTheme, ThemeConfig } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  extendTheme,
+  ThemeConfig,
+} from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import shallow from "zustand/shallow";
@@ -38,29 +43,31 @@ export const App = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <NavHeader />
-      <Routes>
-        {!loggedIn && <Route path="/" element={<Home />} />}
-        <Route path="/login" element={<Login />} />
-        {user && user["roles"] && user["roles"].includes("admin") && (
-          <>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/generate" element={<Generate />} />
-            <Route path="/professors" element={<Professors />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </>
-        )}
-        {user && user["roles"] && user["roles"].includes("user") && (
-          <>
-            <Route path="/survey" element={<Survey />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </>
-        )}
-      </Routes>
-      <Footer />
+      <Box position="relative" minHeight={"100vh"}>
+        <NavHeader />
+        <Routes>
+          {!loggedIn && <Route path="/" element={<Home />} />}
+          <Route path="/login" element={<Login />} />
+          {user && user["roles"] && user["roles"].includes("admin") && (
+            <>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/generate" element={<Generate />} />
+              <Route path="/professors" element={<Professors />} />
+              <Route path="/schedule" element={<Schedule />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </>
+          )}
+          {user && user["roles"] && user["roles"].includes("user") && (
+            <>
+              <Route path="/survey" element={<Survey />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </>
+          )}
+        </Routes>
+        <Footer />
+      </Box>
     </ChakraProvider>
   );
 };
