@@ -7,6 +7,8 @@ import {
   Heading,
   Spinner,
   useColorMode,
+  IconButton,
+  Text,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
@@ -23,6 +25,7 @@ import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
 import Themes from "devextreme/ui/themes";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -69,6 +72,11 @@ export const Schedule = () => {
   const { colorMode } = useColorMode();
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
+  const [calendarView, setCalendarView] = useState<"workWeek" | "day">(
+    "workWeek"
+  );
+  const [dayViewCount, setDayViewCount] = useState(1);
+
   const baseScheduleRef = useRef(scheduleData);
 
   useEffect(() => {
@@ -223,7 +231,7 @@ export const Schedule = () => {
             <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <Select
                 id="select"
-                w="16rem"
+                w="12rem"
                 value={viewState}
                 onChange={(e) => {
                   refreshSchedule();
@@ -240,23 +248,70 @@ export const Schedule = () => {
                 setScheduleData={setScheduleData}
               />
               <Button
-                w="300px"
+                w="200px"
                 as={Link}
                 to="/schedule"
-                backgroundColor="purple.300"
-                colorScheme="purple"
+                backgroundColor="blue.300"
+                colorScheme="blue"
                 variant="solid"
               >
-                Generate New Schedule
+                Submit Changes
               </Button>
             </Flex>
             <Flex
               p={10}
+              paddingTop={"0.5rem"}
               borderRadius={10}
               flexDir="column"
               style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
             >
               <>
+                {viewState === ViewTypes.calendar && (
+                  <Flex
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                    marginBottom="0.5rem"
+                  >
+                    <Flex
+                      alignItems={"center"}
+                      visibility={calendarView === "day" ? "visible" : "hidden"}
+                    >
+                      {dayViewCount > 1 && (
+                        <IconButton
+                          aria-label="Day backward"
+                          icon={<ChevronLeftIcon />}
+                          variant={"ghost"}
+                          size="lg"
+                          onClick={() => setDayViewCount(dayViewCount - 1)}
+                        />
+                      )}
+                      <Text>{weekdayToString(dayViewCount)}</Text>
+                      {dayViewCount < 5 && (
+                        <IconButton
+                          aria-label="Day forward"
+                          icon={<ChevronRightIcon />}
+                          variant={"ghost"}
+                          size="lg"
+                          onClick={() => setDayViewCount(dayViewCount + 1)}
+                        />
+                      )}
+                    </Flex>
+                    <Select
+                      id="select"
+                      w="6rem"
+                      value={calendarView}
+                      onChange={(e) => {
+                        refreshSchedule();
+                        e.target.value === "day"
+                          ? setCalendarView("day")
+                          : setCalendarView("workWeek");
+                      }}
+                    >
+                      <option value="day">DAY</option>
+                      <option value="workWeek">WEEK</option>
+                    </Select>
+                  </Flex>
+                )}
                 {viewState === ViewTypes.table && scheduleData && (
                   <TableView
                     data={scheduleData}
@@ -268,7 +323,8 @@ export const Schedule = () => {
                     data={scheduleData}
                     onUpdateSubmit={handleUpdateSubmit}
                     onDragSubmit={handleDrag}
-                    refreshSchedule={refreshSchedule}
+                    viewState={calendarView}
+                    dayCount={dayViewCount}
                   />
                 )}
               </>
