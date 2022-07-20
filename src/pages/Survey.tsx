@@ -74,12 +74,6 @@ export const Survey = () => {
     setCourseRatings([]);
   };
 
-  const checkSubmit = () => {
-    console.log(user);
-  };
-
-  checkSubmit();
-
   const handleCourseChange = (course: CourseInterface, value: number) => {
     console.log(value);
     let found = false;
