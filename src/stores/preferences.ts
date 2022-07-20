@@ -23,7 +23,7 @@ export type CourseCodeAndSubject = {
   subject: string;
 };
 
-export type CourseInterface = CourseID & {
+export type CoursePreference = CourseID & {
   preference: number;
 };
 

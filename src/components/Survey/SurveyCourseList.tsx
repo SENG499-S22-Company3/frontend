@@ -1,22 +1,20 @@
 import {
+  Box,
+  Button,
+  Flex,
   Radio,
   RadioGroup,
   Stack,
   Table,
-  Tr,
-  Thead,
-  Th,
   Tbody,
   Td,
-  Box,
-  useToast,
   Text,
-  Button,
+  Th,
+  Thead,
+  Tr,
   useColorModeValue,
-  Flex,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { calculateCourseRating } from "../../utils/calculateCourseRating";
 import {
   ActionMeta,
   GroupBase,
@@ -24,27 +22,27 @@ import {
   OptionBase,
   Select as SelectPlus,
 } from "chakra-react-select";
+import React, { useState } from "react";
 import {
-  CourseCodeAndSubject,
-  CourseInterface,
+  CoursePreference,
   PreferenceInterface,
 } from "../../stores/preferences";
 import { CourseID } from "../../stores/schedule";
+import { calculateCourseRating } from "../../utils/calculateCourseRating";
 
-interface CourseOption extends OptionBase {
+export interface CourseOption extends OptionBase {
   label: string;
   value: PreferenceInterface;
 }
 
 interface ChildProps {
-  courses: CourseID[];
-  handlePreferenceChange(course: CourseInterface, value: number): void;
-  removeCourse(course: CourseCodeAndSubject): void;
+  courses: CourseOption[];
+  handlePreferenceChange(course: CoursePreference, value: number): void;
+  removeCourse(course: CourseID): void;
   removeAllCourses(): void;
 }
 
 export const SurveyCourseList: React.FC<ChildProps> = (props) => {
-  const [courseList, setCourseList] = useState<Array<CourseOption>>([]);
   const [selectedCourses, setSelectedCourses] = useState<Array<CourseOption>>(
     []
   );
@@ -142,6 +140,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
         props.removeCourse({
           code: actionMeta.removedValue.value.code,
           subject: actionMeta.removedValue.value.subject,
+          term: actionMeta.removedValue.value.term,
         });
       } else {
         toast({
@@ -164,30 +163,8 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
   };
 
   const selectAllCourses = () => {
-    setSelectedCourses(courseList);
+    setSelectedCourses(props.courses);
   };
-
-  useEffect(() => {
-    let uniqueCourses: CourseOption[] = [];
-    const seenCourses = new Set<string>();
-    props.courses.forEach((course) => {
-      const key = `${course.subject} ${course.code}`;
-      if (!seenCourses.has(key)) {
-        uniqueCourses.push({
-          label: key,
-          value: { ...course, able: "", willing: "" },
-        });
-      }
-      seenCourses.add(key);
-    });
-
-    uniqueCourses.sort((a: CourseOption, b: CourseOption) => {
-      const course_a = a.value.subject + a.value.code;
-      const course_b = b.value.subject + b.value.code;
-      return course_a.localeCompare(course_b);
-    });
-    setCourseList(uniqueCourses);
-  }, [props.courses]);
 
   const bg = useColorModeValue("gray.50", "gray.800");
 
@@ -212,7 +189,7 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           <SelectPlus<CourseOption, true, GroupBase<CourseOption>>
             isMulti
             name="courses"
-            options={courseList}
+            options={props.courses}
             placeholder="Select courses"
             onChange={handleCourseChange}
             value={selectedCourses}
@@ -240,10 +217,8 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
           <Tbody>
             {selectedCourses.map((course: CourseOption) => {
               return (
-                <Tr key={course.value.subject + course.value.code}>
-                  <Td>
-                    {course.value.subject} {course.value.code}
-                  </Td>
+                <Tr key={course.label}>
+                  <Td>{course.label}</Td>
                   <Td>
                     <RadioGroup
                       id="canTeach"

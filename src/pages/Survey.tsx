@@ -1,21 +1,21 @@
+import { gql, useMutation, useQuery } from "@apollo/client";
 import {
   Container,
   Flex,
   FormControl,
   FormErrorMessage,
   Heading,
-  useColorModeValue,
-  useToast,
   Spinner,
   Text,
+  useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
-import { OtherPreferences } from "../components/Survey/OtherPreferences";
-import { CourseCodeAndSubject, CourseInterface } from "../stores/preferences";
+import { useEffect, useState } from "react";
 import shallow from "zustand/shallow";
+import { OtherPreferences } from "../components/Survey/OtherPreferences";
+import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
 import { useLoginStore } from "../stores/login";
+import { CoursePreference } from "../stores/preferences";
 import { CourseID } from "../stores/schedule";
 
 const SUBMIT = gql`
@@ -41,7 +41,7 @@ const COURSES = gql`
 
 export const Survey = () => {
   const [courseRatings, setCourseRatings] = useState<
-    Record<string, CourseInterface>
+    Record<string, CoursePreference>
   >({});
 
   const toast = useToast();
@@ -68,10 +68,12 @@ export const Survey = () => {
   ) => {
     // set a preference of 0 for any courses that the user didn't explicity
     // specify a preference for
-    const finalRatings = coursesData.survey.courses!.map(
+    const finalRatings: CoursePreference[] = coursesData.survey.courses!.map(
       (course: CourseID) =>
-        courseRatings[`${course.subject}${course.code}`] ?? {
-          ...course,
+        courseRatings[`${course.subject}${course.code}${course.term}`] ?? {
+          code: course.code,
+          subject: course.subject,
+          term: course.term,
           preference: 0,
         }
     );
@@ -80,7 +82,7 @@ export const Survey = () => {
       courses: finalRatings,
       hasRelief: hasRelief,
       hasTopic: hasTopic,
-      nonTeachingTerm: "FALL",
+      nonTeachingTerm: null,
       peng: false,
       reliefReason: reliefExplaination,
       topicDescription: topicDescription,
@@ -89,12 +91,13 @@ export const Survey = () => {
       summerTermCourses: numSummerCourses,
       userId: 0,
     };
+
     submit({ variables: { input } });
   };
 
-  const removePreference = (course: CourseCodeAndSubject) => {
+  const removePreference = (course: CourseID) => {
     setCourseRatings((prev) => {
-      const key = `${course.subject}${course.code}`;
+      const key = `${course.subject}${course.code}${course.term}`;
       delete prev[key];
       return prev;
     });
@@ -104,8 +107,8 @@ export const Survey = () => {
     setCourseRatings({});
   };
 
-  const handleCourseChange = (course: CourseInterface, value: number) => {
-    const key = `${course.subject}${course.code}`;
+  const handleCourseChange = (course: CoursePreference, value: number) => {
+    const key = `${course.subject}${course.code}${course.term}`;
 
     setCourseRatings((prev) => {
       if (prev[key] === undefined) {
@@ -226,7 +229,16 @@ export const Survey = () => {
             </Heading>
             <SurveyCourseList
               handlePreferenceChange={handleCourseChange}
-              courses={coursesData.survey.courses}
+              courses={coursesData.survey.courses.map((c: CourseID) => ({
+                label: `${c.subject} ${c.code} (${c.term})`,
+                value: {
+                  subject: c.subject,
+                  code: c.code,
+                  term: c.term,
+                  able: "",
+                  willing: "",
+                },
+              }))}
               removeCourse={removePreference}
               removeAllCourses={removeAllPreferences}
             />
