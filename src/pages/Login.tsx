@@ -32,6 +32,15 @@ const ME = gql`
       id
       username
       role
+      preferences {
+        id {
+          subject
+          title
+          code
+          term
+        }
+        preference
+      }
     }
   }
 `;
@@ -79,6 +88,7 @@ export const Login = () => {
         const usr = {
           username: meData.me.username,
           roles: [meData.me.role.toLowerCase()],
+          preferences: meData.me.preferences,
           // None of these three fields are part of the schema yet
           displayName: meData.me.username,
           name: meData.me.username,
