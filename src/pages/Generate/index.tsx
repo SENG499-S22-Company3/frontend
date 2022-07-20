@@ -102,6 +102,16 @@ export const Generate = () => {
 
   const toast = useToast();
 
+  const genFailToast = (description: string) => {
+    toast({
+      title: "Failed to generate schedule",
+      description,
+      status: "error",
+      duration: null,
+      isClosable: true,
+    });
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const courses = {
@@ -126,7 +136,6 @@ export const Generate = () => {
             title: "Error",
             duration: null,
             description: `Failed to determine which term ${codeString} is normally offered in`,
-
             isClosable: true,
           });
           return;
@@ -278,23 +287,23 @@ export const Generate = () => {
           navigate("/schedule");
         } else {
           console.log(data);
-          toast({
-            title: "Failed to generate Schedule",
-            description: data.generateSchedule.message,
-            status: "error",
-            duration: null,
-            isClosable: true,
-          });
+          try {
+            const messageJson = JSON.parse(data.generateSchedule.message);
+            console.error(messageJson);
+            genFailToast(messageJson.message);
+          } catch (_e) {
+            genFailToast(data.generateSchedule.message);
+          }
         }
       } else if (error) {
         console.log(error);
-        toast({
-          title: "Failed to generate Schedule",
-          description: error.message,
-          duration: null,
-          status: "error",
-          isClosable: true,
-        });
+        try {
+          const messageJson = JSON.parse(error.message);
+          console.error(messageJson);
+          genFailToast(messageJson.message);
+        } catch (_e) {
+          genFailToast(error.message);
+        }
       }
     }
   }, [data, loading, error, navigate, toast]);
