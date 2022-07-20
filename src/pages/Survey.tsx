@@ -12,7 +12,8 @@ import { gql, useMutation } from "@apollo/client";
 import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
 import { OtherPreferences } from "../components/Survey/OtherPreferences";
 import { CourseCodeAndSubject, CourseInterface } from "../stores/preferences";
-
+import shallow from "zustand/shallow";
+import { useLoginStore } from "../stores/login";
 const SUBMIT = gql`
   mutation submit($input: CreateTeachingPreferenceInput!) {
     createTeachingPreference(input: $input) {
@@ -27,8 +28,11 @@ export const Survey = () => {
     []
   );
 
+  
+
   const toast = useToast();
 
+  const [user] = useLoginStore((state) => [state.user], shallow);
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
   const bg = useColorModeValue("gray.50", "gray.700");
 
@@ -70,6 +74,14 @@ export const Survey = () => {
   const removeAllPreferences = () => {
     setCourseRatings([]);
   };
+
+  const checkSubmit = () => {
+    if (user){
+      
+    }
+  };
+
+  checkSubmit();
 
   const handleCourseChange = (course: CourseInterface, value: number) => {
     console.log(value);
@@ -127,42 +139,49 @@ export const Survey = () => {
     }
   }, [data, loading, error, toast]);
   return (
-    <Flex
-      w="100%"
-      minH="calc(100vh - 5.5rem)"
-      pt={30}
-      alignItems="center"
-      justifyContent="center"
-      flexDirection="column"
-    >
-      <Container mb={32} maxW="container.lg">
-        <Heading mb={6}>Professor Preferences Survey</Heading>
+    <>
+    {/* user.perferences.length */}
+      { 0 > 1 ? (
+        <>Preference survey already complete! Good job.</>
+      ) : (
         <Flex
-          bg={bg}
-          p={10}
-          borderRadius={10}
-          flexDir="column"
-          style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+          w="100%"
+          minH="calc(100vh - 5.5rem)"
+          pt={30}
+          alignItems="center"
+          justifyContent="center"
+          flexDirection="column"
         >
-          <form>
-            <Heading size="lg" mb={5}>
-              Course Preferences
-            </Heading>
-            <SurveyCourseList
-              handlePreferenceChange={handleCourseChange}
-              removeCourse={removePreference}
-              removeAllCourses={removeAllPreferences}
-            />
-            <Heading size="lg">Other Preferences</Heading>
-            <OtherPreferences loading={loading} handleSubmit={onSubmit} />
-            <FormControl isInvalid={error !== undefined}>
-              {error !== undefined && (
-                <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
-              )}
-            </FormControl>
-          </form>
+          <Container mb={32} maxW="container.lg">
+            <Heading mb={6}>Professor Preferences Survey</Heading>
+            <Flex
+              bg={bg}
+              p={10}
+              borderRadius={10}
+              flexDir="column"
+              style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+            >
+              <form>
+                <Heading size="lg" mb={5}>
+                  Course Preferences
+                </Heading>
+                <SurveyCourseList
+                  handlePreferenceChange={handleCourseChange}
+                  removeCourse={removePreference}
+                  removeAllCourses={removeAllPreferences}
+                />
+                <Heading size="lg">Other Preferences</Heading>
+                <OtherPreferences loading={loading} handleSubmit={onSubmit} />
+                <FormControl isInvalid={error !== undefined}>
+                  {error !== undefined && (
+                    <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>
+                  )}
+                </FormControl>
+              </form>
+            </Flex>
+          </Container>
         </Flex>
-      </Container>
-    </Flex>
+      )}
+    </>
   );
 };
