@@ -165,7 +165,7 @@ export const Schedule = () => {
 
     const meetingTimes = [...filteredMeetingTimes, newMeetingTime];
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
-    //refreshSchedule();
+    refreshSchedule();
   };
 
   //convert calendar appointments into course sections and update state
@@ -214,6 +214,7 @@ export const Schedule = () => {
     return baseScheduleRef.current;
   };
 
+  //used in SubmitButton component
   const submitSchedule = () => {
     const courseSections = scheduleData?.map((course) => {
       const users = course.professors.map(
