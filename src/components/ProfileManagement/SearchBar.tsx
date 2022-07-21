@@ -26,7 +26,7 @@ export const SearchBar = (props: SearchBarProps) => {
 
     setProfessors(
       professors.filter((prof) =>
-        prof.displayName.toLowerCase().includes(searchInput.toLowerCase())
+        prof.displayName?.toLowerCase().includes(searchInput.toLowerCase())
       )
     );
   };

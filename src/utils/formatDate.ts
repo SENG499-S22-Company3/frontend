@@ -30,7 +30,7 @@ export const getScheduleTime = (date: Date | string) => {
   }
   const [hours, minutes] = formatTimeString(tempDate);
 
-  const timeString = "2022-05-31T" + hours + ":" + minutes + ":00.000";
+  const timeString = "2022-05-24T" + hours + ":" + minutes + ":00.000";
 
   return new Date(timeString);
 };

@@ -90,9 +90,6 @@ export const SearchBar = (props: SearchBarProps) => {
 
   return (
     <Flex alignItems="center" justifyContent="space-between">
-      <FormLabel htmlFor="course_type" mt={1}>
-        Course:
-      </FormLabel>
       <RadioGroup id="course_type" colorScheme="blue" defaultValue={"all"}>
         <Stack direction="row">
           <Radio onChange={(e) => setFilter(e.target.value)} value="all">

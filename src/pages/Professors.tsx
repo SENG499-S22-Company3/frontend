@@ -49,7 +49,9 @@ export const Professors = () => {
           const sortedData = data.allUsers
             .slice()
             .sort((a: UserInfo, b: UserInfo) => {
-              return a.displayName.localeCompare(b.displayName);
+              if (a.displayName && b.displayName) {
+                return a.displayName.localeCompare(b.displayName);
+              } else return 0;
             });
           setAllUsers(sortedData);
           setFilteredUsers(sortedData);
@@ -77,7 +79,7 @@ export const Professors = () => {
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={100}
+      pt={50}
       alignItems="center"
       flexDirection="column"
     >

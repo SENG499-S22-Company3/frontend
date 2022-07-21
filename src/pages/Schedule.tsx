@@ -1,5 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Flex, Select, Heading, Spinner } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Select,
+  Heading,
+  Spinner,
+  useColorMode,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
@@ -11,12 +22,15 @@ import {
   UpdateScheduleInput,
   Company,
   MeetingTimeInput,
+  Day,
 } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToInt, weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
 import { SubmitButton } from "../components/Schedule/SubmitButton";
+import Themes from "devextreme/ui/themes";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
@@ -77,10 +91,15 @@ export const Schedule = () => {
   } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
   const { data, loading, error } = useQuery(USERS);
 
+  const { colorMode } = useColorMode();
   const [userData, setUserData] = useState<User[]>();
+  const [isEditing, setIsEditing] = useState(false);
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
-  const [isEditing, setIsEditing] = useState(false);
+  const [calendarView, setCalendarView] = useState<"workWeek" | "day">(
+    "workWeek"
+  );
+  const [dayViewCount, setDayViewCount] = useState(1);
 
   const baseScheduleRef = useRef(scheduleData);
 
@@ -105,6 +124,19 @@ export const Schedule = () => {
       }
     }
   }, [data, error, loading]);
+
+  useEffect(() => {
+    colorMode === "light"
+      ? Themes.current("generic.light")
+      : Themes.current("generic.dark");
+  }, [colorMode]);
+
+  useEffect(() => {
+    const onUnmount = () => {
+      //do graphQL mutation to store new schedule before unmount
+    };
+    return onUnmount;
+  }, []);
 
   //called after submitting from edit modal
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
@@ -259,33 +291,6 @@ export const Schedule = () => {
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
-        <Flex alignItems="center" justifyContent="space-between" mb={5}>
-          <Select
-            id="select"
-            w="10rem"
-            value={viewState}
-            onChange={(e) => {
-              refreshSchedule();
-              e.target.value === "table"
-                ? setViewState(ViewTypes.table)
-                : setViewState(ViewTypes.calendar);
-            }}
-          >
-            <option value="table">Table View</option>
-            <option value="calendar">Calendar View</option>
-          </Select>
-        </Flex>
-        <Flex alignItems="center" justifyContent="space-between" mb={5}>
-          <SearchBar
-            getTermData={getScheduleRef}
-            setScheduleData={setScheduleData}
-          />
-          <SubmitButton
-            handleSubmit={submitSchedule}
-            active={isEditing}
-            setActive={setIsEditing}
-          />
-        </Flex>
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
@@ -296,29 +301,104 @@ export const Schedule = () => {
             <Spinner size="xl" />
           </Container>
         ) : (
-          <Flex
-            p={10}
-            borderRadius={10}
-            flexDir="column"
-            style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
-          >
-            <>
-              {viewState === ViewTypes.table && scheduleData && (
-                <TableView
-                  data={scheduleData}
-                  onUpdateSubmit={handleUpdateSubmit}
-                />
-              )}
-              {viewState === ViewTypes.calendar && scheduleData && (
-                <CalendarView
-                  data={scheduleData}
-                  onUpdateSubmit={handleUpdateSubmit}
-                  onDragSubmit={handleDrag}
-                  refreshSchedule={refreshSchedule}
-                />
-              )}
-            </>
-          </Flex>
+          <>
+            <Flex alignItems="center" justifyContent="space-between" mb={5}>
+              <Select
+                id="select"
+                w="12rem"
+                value={viewState}
+                onChange={(e) => {
+                  refreshSchedule();
+                  e.target.value === "table"
+                    ? setViewState(ViewTypes.table)
+                    : setViewState(ViewTypes.calendar);
+                }}
+              >
+                <option value="table">Table View</option>
+                <option value="calendar">Calendar View</option>
+              </Select>
+              <SearchBar
+                getTermData={getScheduleRef}
+                setScheduleData={setScheduleData}
+              />
+              <SubmitButton
+                handleSubmit={submitSchedule}
+                active={isEditing}
+                setActive={setIsEditing}
+              />
+            </Flex>
+            <Flex
+              p={10}
+              paddingTop={"0.5rem"}
+              borderRadius={10}
+              flexDir="column"
+              style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+            >
+              <>
+                {viewState === ViewTypes.calendar && (
+                  <Flex
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                    marginBottom="0.5rem"
+                  >
+                    <Flex
+                      alignItems={"center"}
+                      visibility={calendarView === "day" ? "visible" : "hidden"}
+                    >
+                      {dayViewCount > 1 && (
+                        <IconButton
+                          aria-label="Day backward"
+                          icon={<ChevronLeftIcon />}
+                          variant={"ghost"}
+                          size="lg"
+                          onClick={() => setDayViewCount(dayViewCount - 1)}
+                        />
+                      )}
+                      <Text>{weekdayToString(dayViewCount)}</Text>
+                      {dayViewCount < 5 && (
+                        <IconButton
+                          aria-label="Day forward"
+                          icon={<ChevronRightIcon />}
+                          variant={"ghost"}
+                          size="lg"
+                          onClick={() => setDayViewCount(dayViewCount + 1)}
+                        />
+                      )}
+                    </Flex>
+                    <Select
+                      id="select"
+                      w="6rem"
+                      value={calendarView}
+                      onChange={(e) => {
+                        refreshSchedule();
+                        e.target.value === "day"
+                          ? setCalendarView("day")
+                          : setCalendarView("workWeek");
+                      }}
+                    >
+                      <option value="day">DAY</option>
+                      <option value="workWeek">WEEK</option>
+                    </Select>
+                  </Flex>
+                )}
+                {viewState === ViewTypes.table && scheduleData && (
+                  <TableView
+                    data={scheduleData}
+                    onUpdateSubmit={handleUpdateSubmit}
+                  />
+                )}
+                {viewState === ViewTypes.calendar && scheduleData && (
+                  <CalendarView
+                    data={scheduleData}
+                    onUpdateSubmit={handleUpdateSubmit}
+                    onDragSubmit={handleDrag}
+                    viewState={calendarView}
+                    dayCount={dayViewCount}
+                  />
+                )}
+              </>
+            </Flex>
+          </>
         )}
       </Container>
     </Flex>

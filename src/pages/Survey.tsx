@@ -1,24 +1,22 @@
+import { gql, useMutation, useQuery } from "@apollo/client";
 import {
-  Box,
-  Button,
-  Checkbox,
   Container,
-  Divider,
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Heading,
-  Radio,
-  RadioGroup,
-  Stack,
-  Textarea,
+  Spinner,
+  Text,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import { SurveyCourseList } from "../components/SurveyCourseList";
+import { useEffect, useState } from "react";
+import shallow from "zustand/shallow";
+import { OtherPreferences } from "../components/Survey/OtherPreferences";
+import { SurveyCourseList } from "../components/Survey/SurveyCourseList";
+import { useLoginStore } from "../stores/login";
+import { CoursePreference } from "../stores/preferences";
+import { CourseID } from "../stores/schedule";
 
 const SUBMIT = gql`
   mutation submit($input: CreateTeachingPreferenceInput!) {
@@ -29,69 +27,101 @@ const SUBMIT = gql`
   }
 `;
 
-export interface CourseInterface {
-  subject: string;
-  code: string;
-  term: string;
-  rating: number;
-}
-
-interface CourseListInterface {
-  [key: string]: CourseInterface;
-}
+const COURSES = gql`
+  query GetCourses {
+    survey {
+      courses {
+        subject
+        code
+        term
+      }
+    }
+  }
+`;
 
 export const Survey = () => {
-  const [nonTeachingTerm, setNonTeachingTerm] = useState("");
-  const [hasRelief, setHasRelief] = useState(false);
-  const [reliefExplaination, setReliefExplaination] = useState("");
-  const [hasTopic, setHasTopic] = useState(false);
-  const [topicDescription, setTopicDescription] = useState("");
-  const [courseRatings, setCourseRatings] = useState<CourseListInterface>({});
+  const [courseRatings, setCourseRatings] = useState<
+    Record<string, CoursePreference>
+  >({});
 
   const toast = useToast();
 
+  const [user] = useLoginStore((state) => [state.user], shallow);
+
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
+  const {
+    loading: coursesLoading,
+    error: coursesError,
+    data: coursesData,
+  } = useQuery(COURSES);
+
   const bg = useColorModeValue("gray.50", "gray.700");
 
-  const toggleRelief = () => {
-    setHasRelief(!hasRelief);
-  };
+  const onSubmit = (
+    hasRelief: boolean,
+    hasTopic: boolean,
+    reliefExplaination: string,
+    topicDescription: string,
+    numFallCourses: number,
+    numSpringCourses: number,
+    numSummerCourses: number
+  ) => {
+    // set a preference of 0 for any courses that the user didn't explicity
+    // specify a preference for
+    const finalRatings: CoursePreference[] = coursesData.survey.courses!.map(
+      (course: CourseID) =>
+        courseRatings[`${course.subject}${course.code}${course.term}`] ?? {
+          code: course.code,
+          subject: course.subject,
+          term: course.term,
+          preference: 0,
+        }
+    );
 
-  const toggleTopic = () => {
-    setHasTopic(!hasTopic);
-  };
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    const courses = Object.entries(courseRatings).map((course) => {
-      return {
-        subject: course[1].subject,
-        code: course[1].code,
-        term: course[1].term,
-        preference: course[1].rating,
-      };
-    });
     const input = {
-      courses: courses,
+      courses: finalRatings,
       hasRelief: hasRelief,
       hasTopic: hasTopic,
-      nonTeachingTerm: nonTeachingTerm,
+      nonTeachingTerm: null,
       peng: false,
       reliefReason: reliefExplaination,
       topicDescription: topicDescription,
+      fallTermCourses: numFallCourses,
+      springTermCourses: numSpringCourses,
+      summerTermCourses: numSummerCourses,
       userId: 0,
     };
+
     submit({ variables: { input } });
-    e.preventDefault();
   };
 
-  const handleCourseChange = (course: CourseInterface, value: number) => {
-    let newRating = courseRatings;
-    const unique_id = course.subject.concat(course.code);
-    newRating[unique_id] = {
-      ...course,
-      rating: value,
-    };
-    setCourseRatings(newRating);
+  const removePreference = (course: CourseID) => {
+    setCourseRatings((prev) => {
+      const key = `${course.subject}${course.code}${course.term}`;
+      delete prev[key];
+      return prev;
+    });
+  };
+
+  const removeAllPreferences = () => {
+    setCourseRatings({});
+  };
+
+  const handleCourseChange = (course: CoursePreference, value: number) => {
+    const key = `${course.subject}${course.code}${course.term}`;
+
+    setCourseRatings((prev) => {
+      if (prev[key] === undefined) {
+        prev[key] = {
+          ...course,
+          preference: value,
+        };
+      } else {
+        prev[key].preference = value;
+      }
+
+      return prev;
+    });
   };
 
   useEffect(() => {
@@ -104,25 +134,77 @@ export const Survey = () => {
             isClosable: true,
           });
         } else {
-          console.log(data);
           toast({
             title: "Failed to submit preferences",
             description: data.createTeachingPreference.message,
             status: "error",
+            duration: null,
             isClosable: true,
           });
         }
       } else if (error) {
-        console.log(error);
         toast({
           title: "Failed to submit preferences",
           description: error.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loading, error]);
+
+  if (coursesLoading) {
+    return (
+      <Flex
+        w="100%"
+        minH="calc(100vh - 5.5rem)"
+        pt={30}
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+      >
+        <Spinner />
+      </Flex>
+    );
+  }
+
+  if (coursesError) {
+    return (
+      <Flex
+        w="100%"
+        minH="calc(100vh - 5.5rem)"
+        pt={30}
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+      >
+        <Heading fontSize="xl">
+          Error: Failed to retrieve list of courses
+        </Heading>
+        <Text>{coursesError.message}</Text>
+      </Flex>
+    );
+  }
+
+  if (user != null && user.preferences.length > 0) {
+    return (
+      <Flex
+        w="100%"
+        minH="calc(100vh - 5.5rem)"
+        pt={30}
+        alignItems="center"
+        justifyContent="center"
+        flexDirection="column"
+      >
+        <Heading>
+          You have completed the preference survey already! Thank you.
+        </Heading>
+      </Flex>
+    );
+  }
+
   return (
     <Flex
       w="100%"
@@ -141,72 +223,27 @@ export const Survey = () => {
           flexDir="column"
           style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
         >
-          <form onSubmit={onSubmit}>
-            <Heading size="lg">Course Preferences</Heading>
-            <SurveyCourseList handleCourseChange={handleCourseChange} />
+          <form>
+            <Heading size="lg" mb={5}>
+              Course Preferences
+            </Heading>
+            <SurveyCourseList
+              handlePreferenceChange={handleCourseChange}
+              courses={coursesData.survey.courses.map((c: CourseID) => ({
+                label: `${c.subject} ${c.code} (${c.term})`,
+                value: {
+                  subject: c.subject,
+                  code: c.code,
+                  term: c.term,
+                  able: "",
+                  willing: "",
+                },
+              }))}
+              removeCourse={removePreference}
+              removeAllCourses={removeAllPreferences}
+            />
             <Heading size="lg">Other Preferences</Heading>
-            <Box
-              bg="gray.800"
-              p={5}
-              mt={5}
-              mb={5}
-              borderRadius={10}
-              style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.40)" }}
-            >
-              <FormControl isRequired>
-                <FormLabel htmlFor="nonTeachingTerm">
-                  Non-Teaching Term
-                </FormLabel>
-                <RadioGroup
-                  id="nonTeachingTerm"
-                  name="nonTeachingTerm"
-                  onChange={setNonTeachingTerm}
-                  value={nonTeachingTerm}
-                >
-                  <Stack direction="row">
-                    <Radio value="FALL">Fall</Radio>
-                    <Radio value="SPRING">Spring</Radio>
-                    <Radio value="SUMMER">Summer</Radio>
-                  </Stack>
-                </RadioGroup>
-              </FormControl>
-              <Divider mt={2} mb={2} />
-              <FormLabel htmlFor="hasRelief">Relief</FormLabel>
-              <Checkbox id="hasRelief" mb={2} onChange={toggleRelief}>
-                Has Relief?
-              </Checkbox>
-              <Textarea
-                isDisabled={!hasRelief}
-                id="large_text"
-                value={reliefExplaination}
-                placeholder="Relief Explaination"
-                onChange={(e) => setReliefExplaination(e.target.value)}
-                size="sm"
-              />
-              <Divider mt={4} mb={2} />
-              <FormLabel htmlFor="hasRelief">Topics Course</FormLabel>
-              <Checkbox id="hasTopic" mb={2} onChange={toggleTopic}>
-                Has Topic?
-              </Checkbox>
-              <Textarea
-                isDisabled={!hasTopic}
-                id="topicDescription"
-                value={topicDescription}
-                placeholder="Topics Course Description"
-                onChange={(e) => setTopicDescription(e.target.value)}
-                size="sm"
-                mb={5}
-              />
-            </Box>
-            <Button
-              isLoading={loading}
-              type="submit"
-              colorScheme="blue"
-              variant="solid"
-              w="100%"
-            >
-              Submit
-            </Button>
+            <OtherPreferences loading={loading} handleSubmit={onSubmit} />
             <FormControl isInvalid={error !== undefined}>
               {error !== undefined && (
                 <FormErrorMessage mt={5}>{error.message}</FormErrorMessage>

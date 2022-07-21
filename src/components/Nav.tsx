@@ -136,6 +136,16 @@ export const NavHeader = () => {
   // const isAdmin = true;
   // const isUser = true;
 
+  const getNav = () => {
+    if (user?.roles.includes("admin")) {
+      return "/dashboard";
+    } else if (user?.roles.includes("user")) {
+      return "/survey";
+    } else {
+      return "/";
+    }
+  };
+
   return (
     <Flex
       w="100vw"
@@ -144,19 +154,21 @@ export const NavHeader = () => {
       alignItems="center"
       justifyContent="space-between"
       px={3}
-      borderBottom="2px solid #F5AA1C" //uvic colours yellow
-      outline="3px solid #C63527" //red
-      boxShadow="0 6px 0px 0px #005493" //blue
+      // borderBottom="2px solid #F5AA1C" //uvic colours yellow
+      // outline="3px solid #C63527" //red
+      // boxShadow="0 6px 0px 0px #005493" //blue
     >
       <Flex alignItems="center">
-        <Box mr="15px" bg="gray.100" h="40px" w="40px" borderRadius="50%">
-          <Image
-            src={`${process.env.PUBLIC_URL}/logo.png`}
-            alt="schedulator logo"
-            minWidth="40px"
-            padding="5px"
-          ></Image>
-        </Box>
+        <ReactRouterLink to={getNav()}>
+          <Box mr="15px" bg="gray.100" h="40px" w="40px" borderRadius="50%">
+            <Image
+              src={`${process.env.PUBLIC_URL}/logo.png`}
+              alt="schedulator logo"
+              minWidth="40px"
+              padding="5px"
+            ></Image>
+          </Box>
+        </ReactRouterLink>
         {isSmall ? (
           <>
             <Menu>
@@ -187,9 +199,6 @@ export const NavHeader = () => {
                     <MenuItem>
                       <NavLink to="/professors" desc="Professors" />
                     </MenuItem>
-                    <MenuItem>
-                      <NavLink to="/profile" desc="My Profile" />
-                    </MenuItem>
                   </>
                 )}
                 {isUser && (
@@ -197,9 +206,6 @@ export const NavHeader = () => {
                     <MenuDivider />
                     <MenuItem>
                       <NavLink to="/survey" desc="Preferences Survey" />
-                    </MenuItem>
-                    <MenuItem>
-                      <NavLink to="/profile" desc="My Profile" />
                     </MenuItem>
                   </>
                 )}
