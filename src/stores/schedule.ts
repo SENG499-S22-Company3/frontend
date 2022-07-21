@@ -7,7 +7,7 @@ export type Appointment = {
   term: string;
   subject: string;
   sectionNumber: string;
-  professors: string[];
+  professors: string[]; //usually assumed to be one max
   capacity: number; //from algo2
   startTime: Date; //for table view
   endTime: Date; //for table view

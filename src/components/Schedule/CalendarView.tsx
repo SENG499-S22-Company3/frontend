@@ -1,4 +1,4 @@
-import React, { createRef, useState } from "react";
+import React, { createRef } from "react";
 import {
   Scheduler,
   Editing,
@@ -6,11 +6,11 @@ import {
 } from "devextreme-react/scheduler";
 import { AppointmentCard } from "./AppointmentCard";
 import { Appointment, CourseSection } from "../../stores/schedule";
-import "devextreme/dist/css/dx.dark.css";
 import { weekdayToInt } from "../../utils/weekdayConversion";
 import { AppointmentTooltip } from "./AppointmentTooltip";
 import { getScheduleTime } from "../../utils/formatDate";
 import { ModalItem } from "./AppointmentModal";
+import { userToColour } from "../../utils/userToColor";
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -74,39 +74,32 @@ const buildAppointments = (courses: CourseSection[]) => {
 
 interface CalendarProps {
   data: CourseSection[];
+  viewState: "day" | "workWeek";
+  dayCount: number;
   onUpdateSubmit: (updatedCourse: ModalItem) => void;
   onDragSubmit: (updatedCourse: Appointment, oldDate: Date) => void;
-  refreshSchedule: () => void;
 }
 
 export const CalendarView = (props: CalendarProps) => {
-  const { data, onUpdateSubmit, onDragSubmit, refreshSchedule } = props;
+  const { data, viewState, dayCount, onUpdateSubmit, onDragSubmit } = props;
   const scheduleRef = createRef<Scheduler>();
 
-  const [currentDate, setCurrentDate] = useState(new Date("2022-05-31"));
-  const [viewState, setViewState] = useState("workWeek");
+  const currentDate = new Date(`2022-05-${23 + dayCount}`);
+
   const dragStartDate = new Set<Date>();
 
-  const weekDay = getWeekDay(currentDate);
-
-  //for now just mock one semesters data
   const appointments = buildAppointments(data);
 
   //custom stylings to override the DevExtreme stylings
   const css = `
-    .dx-scheduler-navigator-previous {  
-      visibility: ${
-        viewState === "workWeek" || weekDay === "Monday" ? "hidden" : "visible"
-      }
-    }  
-    .dx-scheduler-navigator-next {  
-      visibility: ${
-        viewState === "workWeek" || weekDay === "Friday" ? "hidden" : "visible"
-      } 
-    }  
-    .dx-scheduler-navigator {
-      visibility: ${viewState === "workWeek" ? "hidden" : "visible"}
-     }
+    .dx-scheduler-header.dx-widget {
+      height: 0.5rem;
+      visibility: hidden;
+    }
+
+    .dx-scheduler-cell-sizes-vertical {
+      height: 60px;
+    }
   `;
 
   const handleDragStart = (appointment: Appointment) => {
@@ -140,19 +133,21 @@ export const CalendarView = (props: CalendarProps) => {
         timeZone="America/Vancouver"
         currentDate={currentDate}
         views={["day", "workWeek"]}
-        defaultCurrentView={viewState}
+        currentView={viewState}
         showAllDayPanel={false}
         startDayHour={8}
-        endDayHour={22}
+        endDayHour={20}
+        cellDuration={60}
         textExpr="courseTitle"
-        onCurrentViewChange={(value) => {
-          setViewState(value);
-          refreshSchedule();
-        }}
-        onCurrentDateChange={setCurrentDate}
         onAppointmentDblClick={(e) => (e.cancel = true)}
         startDateExpr={"startTime"}
         endDateExpr={"endTime"}
+        onAppointmentRendered={(e) => {
+          e.appointmentElement.style.backgroundColor = userToColour(
+            (e.appointmentData as Appointment).professors[0]
+          );
+          e.appointmentElement.style.borderRadius = "0.5rem";
+        }}
       >
         <Editing
           allowAdding={false}
