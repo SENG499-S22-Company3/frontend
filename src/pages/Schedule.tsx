@@ -7,14 +7,14 @@ import {
   Appointment,
   CourseSection,
   MeetingTime,
-  Day,
   CourseSectionInput,
   UpdateScheduleInput,
   Company,
+  MeetingTimeInput,
 } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
-import { weekdayToString } from "../utils/weekdayConversion";
+import { weekdayToInt, weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
 import { SubmitButton } from "../components/Schedule/SubmitButton";
 
@@ -222,9 +222,19 @@ export const Schedule = () => {
           userData?.find((u) => u.displayName === prof.displayName)?.username
       );
       const { CourseID, ...restCourse } = course;
+      const meetingTimes = course.meetingTimes.map((time) => {
+        return {
+          day: weekdayToInt(time.day),
+          startTime: new Date(time.startTime),
+          endTime: new Date(time.endTime),
+        } as MeetingTimeInput;
+      });
       return {
         ...restCourse,
         id: course.CourseID,
+        startDate: new Date(course.startDate),
+        endDate: new Date(course.endDate),
+        meetingTimes: meetingTimes,
         professors: users,
       } as CourseSectionInput;
     });
@@ -249,6 +259,33 @@ export const Schedule = () => {
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="10rem"
+            value={viewState}
+            onChange={(e) => {
+              refreshSchedule();
+              e.target.value === "table"
+                ? setViewState(ViewTypes.table)
+                : setViewState(ViewTypes.calendar);
+            }}
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+        </Flex>
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <SearchBar
+            getTermData={getScheduleRef}
+            setScheduleData={setScheduleData}
+          />
+          <SubmitButton
+            handleSubmit={submitSchedule}
+            active={isEditing}
+            setActive={setIsEditing}
+          />
+        </Flex>
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
@@ -259,58 +296,29 @@ export const Schedule = () => {
             <Spinner size="xl" />
           </Container>
         ) : (
-          <>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
-              <Select
-                id="select"
-                w="10rem"
-                value={viewState}
-                onChange={(e) => {
-                  refreshSchedule();
-                  e.target.value === "table"
-                    ? setViewState(ViewTypes.table)
-                    : setViewState(ViewTypes.calendar);
-                }}
-              >
-                <option value="table">Table View</option>
-                <option value="calendar">Calendar View</option>
-              </Select>
-            </Flex>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
-              <SearchBar
-                getTermData={getScheduleRef}
-                setScheduleData={setScheduleData}
-              />
-              <SubmitButton
-                handleSubmit={submitSchedule}
-                active={isEditing}
-                setActive={setIsEditing}
-              />
-            </Flex>
-            <Flex
-              p={10}
-              borderRadius={10}
-              flexDir="column"
-              style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
-            >
-              <>
-                {viewState === ViewTypes.table && scheduleData && (
-                  <TableView
-                    data={scheduleData}
-                    onUpdateSubmit={handleUpdateSubmit}
-                  />
-                )}
-                {viewState === ViewTypes.calendar && scheduleData && (
-                  <CalendarView
-                    data={scheduleData}
-                    onUpdateSubmit={handleUpdateSubmit}
-                    onDragSubmit={handleDrag}
-                    refreshSchedule={refreshSchedule}
-                  />
-                )}
-              </>
-            </Flex>
-          </>
+          <Flex
+            p={10}
+            borderRadius={10}
+            flexDir="column"
+            style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+          >
+            <>
+              {viewState === ViewTypes.table && scheduleData && (
+                <TableView
+                  data={scheduleData}
+                  onUpdateSubmit={handleUpdateSubmit}
+                />
+              )}
+              {viewState === ViewTypes.calendar && scheduleData && (
+                <CalendarView
+                  data={scheduleData}
+                  onUpdateSubmit={handleUpdateSubmit}
+                  onDragSubmit={handleDrag}
+                  refreshSchedule={refreshSchedule}
+                />
+              )}
+            </>
+          </Flex>
         )}
       </Container>
     </Flex>

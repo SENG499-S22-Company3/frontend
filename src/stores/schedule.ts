@@ -78,8 +78,24 @@ export type CourseSectionInput = {
   professors: String[]; //usernames
   startDate: Date;
   endDate: Date;
-  meetingTimes: MeetingTime[];
+  meetingTimes: MeetingTimeInput[];
 };
+
+export type MeetingTimeInput = {
+  day: DayInput;
+  startTime: Date;
+  endTime: Date;
+};
+
+export enum DayInput {
+  MONDAY,
+  TUESDAY,
+  WEDNESDAY,
+  THURSDAY,
+  FRIDAY,
+  SATURDAY,
+  SUNDAY,
+}
 
 export enum Company {
   COMPANY3,
