@@ -50,17 +50,23 @@ export const PreferenceDetails = (details: UserInfo) => {
                     <Thead>
                       <Tr>
                         <Th>Course</Th>
+                        <Th>Term</Th>
                         <Th>Preference</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
                       {details.preferences.map((preference) => (
                         <Tr
-                          key={preference.id.subject + " " + preference.id.code}
+                          key={
+                            preference.id.subject +
+                            preference.id.code +
+                            preference.id.term
+                          }
                         >
                           <Td>
-                            {preference.id.subject + " " + preference.id.code}
+                            {`${preference.id.subject} ${preference.id.code}`}
                           </Td>
+                          <Td>{preference.id.term}</Td>
                           <Td>{preference.preference}</Td>
                         </Tr>
                       ))}

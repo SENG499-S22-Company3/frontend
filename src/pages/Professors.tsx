@@ -12,7 +12,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { CreateUser } from "../components/UserManagement/CreateUser";
+import { CreateUser } from "../components/ProfileManagement/CreateUser";
 import { SearchBar } from "../components/ProfileManagement/SearchBar";
 import { UserInfo } from "../stores/profileManagement";
 import { gql, useQuery } from "@apollo/client";
@@ -28,6 +28,7 @@ const USERS = gql`
         id {
           subject
           code
+          term
         }
         preference
       }
