@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Button,
   Container,
   Flex,
@@ -439,43 +440,45 @@ export const Generate = () => {
                 </Heading>
                 <hr />
                 <br />
-                <Table variant="striped" size="sm">
-                  <Thead>
-                    <Tr>
-                      <Th>Course</Th>
-                      <Th># of Sections</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {selectedCourses
-                      ? selectedCourses.map((course) => (
-                          <Tr key={course.subject + course.code}>
-                            <Td>{course.subject + " " + course.code}</Td>
-                            <Td>
-                              <Select
-                                onChange={(e) =>
-                                  handleSectionChange(course, e.target.value)
-                                }
-                                defaultValue="0"
-                              >
-                                <option value="0">Auto</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                              </Select>
-                            </Td>
-                          </Tr>
-                        ))
-                      : null}
-                  </Tbody>
-                </Table>
+                <Box overflowY="auto" maxH="100vh">
+                  <Table variant="striped" size="sm">
+                    <Thead>
+                      <Tr>
+                        <Th>Course</Th>
+                        <Th># of Sections</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {selectedCourses
+                        ? selectedCourses.map((course) => (
+                            <Tr key={course.subject + course.code}>
+                              <Td>{course.subject + " " + course.code}</Td>
+                              <Td>
+                                <Select
+                                  onChange={(e) =>
+                                    handleSectionChange(course, e.target.value)
+                                  }
+                                  defaultValue="0"
+                                >
+                                  <option value="0">Auto</option>
+                                  <option value="1">1</option>
+                                  <option value="2">2</option>
+                                  <option value="3">3</option>
+                                  <option value="4">4</option>
+                                  <option value="5">5</option>
+                                  <option value="6">6</option>
+                                  <option value="7">7</option>
+                                  <option value="8">8</option>
+                                  <option value="9">9</option>
+                                  <option value="10">10</option>
+                                </Select>
+                              </Td>
+                            </Tr>
+                          ))
+                        : null}
+                    </Tbody>
+                  </Table>
+                </Box>
               </GridItem>
             </Grid>
           </FormControl>
