@@ -221,15 +221,16 @@ export const Schedule = () => {
         (prof) =>
           userData?.find((u) => u.displayName === prof.displayName)?.username
       );
+      const { CourseID, ...restCourse } = course;
       return {
-        ...course,
+        ...restCourse,
         id: course.CourseID,
         professors: users,
       } as CourseSectionInput;
     });
 
     const scheduleInput = {
-      id: baseScheduleData.schedule.id,
+      id: parseInt(baseScheduleData.schedule.id),
       courses: courseSections,
       skipValidation: false,
       validation: Company.COMPANY3,
