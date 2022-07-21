@@ -1,4 +1,4 @@
-import React, { createRef, useState } from "react";
+import React, { createRef } from "react";
 import {
   Scheduler,
   Editing,
@@ -10,6 +10,7 @@ import { weekdayToInt } from "../../utils/weekdayConversion";
 import { AppointmentTooltip } from "./AppointmentTooltip";
 import { getScheduleTime } from "../../utils/formatDate";
 import { ModalItem } from "./AppointmentModal";
+import { userToColour } from "../../utils/userToColor";
 
 //make column headers only the weekday
 const dateCell = ({ text }: { text: String }) => {
@@ -141,6 +142,12 @@ export const CalendarView = (props: CalendarProps) => {
         onAppointmentDblClick={(e) => (e.cancel = true)}
         startDateExpr={"startTime"}
         endDateExpr={"endTime"}
+        onAppointmentRendered={(e) => {
+          e.appointmentElement.style.backgroundColor = userToColour(
+            (e.appointmentData as Appointment).professors[0]
+          );
+          e.appointmentElement.style.borderRadius = "0.5rem";
+        }}
       >
         <Editing
           allowAdding={false}

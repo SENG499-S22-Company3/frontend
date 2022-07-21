@@ -1,8 +1,6 @@
 import React from "react";
-import { formatDate } from "devextreme/localization";
 import { Flex, Text } from "@chakra-ui/react";
 import { Appointment } from "../../stores/schedule";
-
 interface appointmentModel {
   appointmentData: Appointment;
   targetedAppointmentData: Appointment;
