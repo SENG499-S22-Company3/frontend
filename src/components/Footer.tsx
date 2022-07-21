@@ -16,8 +16,8 @@ export const Footer = () => {
     <Flex
       w="100vw"
       h="40px"
-      position="fixed"
-      bottom="0px"
+      position="absolute"
+      bottom={"0"}
       bg={bg}
       alignItems="center"
       justifyContent="space-between"
