@@ -9,6 +9,7 @@ import {
   useColorMode,
   IconButton,
   Text,
+  FormLabel,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
@@ -77,6 +78,8 @@ export const Schedule = () => {
   );
   const [dayViewCount, setDayViewCount] = useState(1);
 
+  const [year, setYear] = useState("");
+
   const baseScheduleRef = useRef(scheduleData);
 
   useEffect(() => {
@@ -85,6 +88,7 @@ export const Schedule = () => {
       const coursesId = courses.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
       });
+      setYear(baseScheduleData.schedule.year);
       setScheduleData(coursesId);
       baseScheduleRef.current = coursesId;
     }
@@ -215,7 +219,7 @@ export const Schedule = () => {
       alignItems="center"
       flexDirection="column"
     >
-      <Heading mb={10}>View Schedule</Heading>
+      <Heading>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
         {!scheduleData || scheduleLoading ? (
           <Container
@@ -228,11 +232,24 @@ export const Schedule = () => {
           </Container>
         ) : (
           <>
+            <FormLabel htmlFor="year">Schedule for Year:</FormLabel>
+            <Select
+              placeholder="Select Year"
+              defaultValue={year}
+              // onChange={(e) => setYear(e.target.value)}
+              mb={5}
+              w="10rem"
+            >
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+            </Select>
             <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <Select
                 id="select"
                 w="12rem"
                 value={viewState}
+                title="Switch between Table and Calender views"
                 onChange={(e) => {
                   refreshSchedule();
                   e.target.value === "table"
@@ -247,6 +264,18 @@ export const Schedule = () => {
                 getTermData={getScheduleRef}
                 setScheduleData={setScheduleData}
               />
+
+              {/* <Select
+                placeholder="Select Term"
+                defaultValue={term}
+                onChange={(e) => setTerm(e.target.value)}
+                w="10rem"
+              >
+                <option value="SPRING">Spring</option>
+                <option value="SUMMER">Summer</option>
+                <option value="FALL">Fall</option>
+              </Select> */}
+
               <Button
                 w="200px"
                 as={Link}
@@ -254,6 +283,7 @@ export const Schedule = () => {
                 backgroundColor="blue.300"
                 colorScheme="blue"
                 variant="solid"
+                title="Save your schedule edits"
               >
                 Submit Changes
               </Button>
