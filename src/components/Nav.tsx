@@ -67,9 +67,10 @@ const LoginStatus = () => {
         navigate("/");
       } else {
         toast({
-          title: "Failed to logged out",
+          title: "Failed to log out",
           description: data.logout.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
       }
@@ -80,8 +81,10 @@ const LoginStatus = () => {
   useEffect(() => {
     if (error) {
       toast({
-        title: `Error: failed to logout: ${error.message}`,
+        title: "Failed to log out",
+        description: error.message,
         status: "error",
+        duration: null,
         isClosable: true,
       });
     }
