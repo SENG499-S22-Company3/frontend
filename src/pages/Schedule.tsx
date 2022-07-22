@@ -265,17 +265,6 @@ export const Schedule = () => {
                 setScheduleData={setScheduleData}
               />
 
-              {/* <Select
-                placeholder="Select Term"
-                defaultValue={term}
-                onChange={(e) => setTerm(e.target.value)}
-                w="10rem"
-              >
-                <option value="SPRING">Spring</option>
-                <option value="SUMMER">Summer</option>
-                <option value="FALL">Fall</option>
-              </Select> */}
-
               <Button
                 w="200px"
                 as={Link}
