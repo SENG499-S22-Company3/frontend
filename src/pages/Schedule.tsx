@@ -21,12 +21,10 @@ import {
   CourseSectionInput,
   UpdateScheduleInput,
   Company,
-  MeetingTimeInput,
-  Day,
 } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
-import { weekdayToInt, weekdayToString } from "../utils/weekdayConversion";
+import { weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
 import { SubmitButton } from "../components/Schedule/SubmitButton";
 import Themes from "devextreme/ui/themes";
@@ -105,8 +103,16 @@ export const Schedule = () => {
 
   useEffect(() => {
     if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
-      const courses = baseScheduleData.schedule.courses;
-      const coursesId = courses.map((course: CourseSection) => {
+      const cleanPayload = JSON.parse(
+        JSON.stringify(baseScheduleData.schedule.courses, (name, val) => {
+          if (name === "__typename") {
+            delete val[name];
+          } else {
+            return val;
+          }
+        })
+      );
+      const coursesId = cleanPayload.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
       });
       setScheduleData(coursesId);
@@ -253,26 +259,18 @@ export const Schedule = () => {
         (prof) =>
           userData?.find((u) => u.displayName === prof.displayName)?.username
       );
+
       const { CourseID, ...restCourse } = course;
-      const meetingTimes = course.meetingTimes.map((time) => {
-        return {
-          day: weekdayToInt(time.day),
-          startTime: new Date(time.startTime),
-          endTime: new Date(time.endTime),
-        } as MeetingTimeInput;
-      });
+
       return {
         ...restCourse,
-        id: course.CourseID,
-        startDate: new Date(course.startDate),
-        endDate: new Date(course.endDate),
-        meetingTimes: meetingTimes,
+        id: CourseID,
         professors: users,
       } as CourseSectionInput;
     });
 
     const scheduleInput = {
-      id: parseInt(baseScheduleData.schedule.id),
+      id: baseScheduleData.schedule.id,
       courses: courseSections,
       skipValidation: false,
       validation: Company.COMPANY3,

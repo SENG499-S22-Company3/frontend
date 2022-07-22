@@ -40,9 +40,9 @@ export type CourseSection = {
 
 export type CourseID = {
   code: string;
-  title: string;
   subject: string;
   term: string;
+  title?: string;
 };
 
 export type MeetingTime = {
@@ -64,7 +64,7 @@ export enum Day {
 //types for schedule editing
 
 export type UpdateScheduleInput = {
-  id: Number;
+  id: Number | null;
   courses: CourseSectionInput[];
   skipValidation: Boolean;
   validation: Company;
@@ -78,26 +78,10 @@ export type CourseSectionInput = {
   professors: String[]; //usernames
   startDate: Date;
   endDate: Date;
-  meetingTimes: MeetingTimeInput[];
+  meetingTimes: MeetingTime[];
 };
-
-export type MeetingTimeInput = {
-  day: DayInput;
-  startTime: Date;
-  endTime: Date;
-};
-
-export enum DayInput {
-  MONDAY,
-  TUESDAY,
-  WEDNESDAY,
-  THURSDAY,
-  FRIDAY,
-  SATURDAY,
-  SUNDAY,
-}
 
 export enum Company {
-  COMPANY3,
-  COMPANY4,
+  COMPANY3 = "COMPANY3",
+  COMPANY4 = "COMPANY4",
 }
