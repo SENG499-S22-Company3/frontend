@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
 import {
   Container,
   Flex,
   Heading,
   Table,
-  Thead,
   Tbody,
-  Tr,
-  Th,
   Td,
-  Text,
+  Th,
+  Thead,
+  Tr,
   useToast,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { CreateUser } from "../components/ProfileManagement/CreateUser";
+import { PreferenceDetails } from "../components/ProfileManagement/PreferenceDetails";
 import { SearchBar } from "../components/ProfileManagement/SearchBar";
 import { UserInfo } from "../stores/profileManagement";
-import { gql, useQuery } from "@apollo/client";
-import { PreferenceDetails } from "../components/ProfileManagement/PreferenceDetails";
 
 const USERS = gql`
   query getUsers {
@@ -60,6 +59,7 @@ export const Professors = () => {
           toast({
             title: "Failed to get professor info",
             status: "error",
+            duration: null,
             isClosable: true,
           });
           console.log(data);
@@ -69,11 +69,13 @@ export const Professors = () => {
           title: "Failed to get professor info",
           description: error.message,
           status: "error",
+          duration: null,
           isClosable: true,
         });
         console.log(error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loading, error]);
 
   return (

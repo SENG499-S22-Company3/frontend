@@ -131,6 +131,7 @@ export const Survey = () => {
           toast({
             title: "Submitted preferences successfully",
             status: "success",
+            duration: 3000,
             isClosable: true,
           });
         } else {
