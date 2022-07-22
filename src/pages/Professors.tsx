@@ -12,9 +12,9 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { CreateUser } from "../components/ProfileManagement/CreateUser";
 import { PreferenceDetails } from "../components/ProfileManagement/PreferenceDetails";
 import { SearchBar } from "../components/ProfileManagement/SearchBar";
-import { CreateUser } from "../components/UserManagement/CreateUser";
 import { UserInfo } from "../stores/profileManagement";
 
 const USERS = gql`
@@ -27,6 +27,7 @@ const USERS = gql`
         id {
           subject
           code
+          term
         }
         preference
       }
@@ -81,9 +82,8 @@ export const Professors = () => {
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={30}
+      pt={50}
       alignItems="center"
-      justifyContent="center"
       flexDirection="column"
     >
       <Heading mb={10}>Professors</Heading>

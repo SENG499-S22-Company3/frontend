@@ -1,8 +1,6 @@
 import React from "react";
-import { formatDate } from "devextreme/localization";
 import { Flex, Text } from "@chakra-ui/react";
 import { Appointment } from "../../stores/schedule";
-
 interface appointmentModel {
   appointmentData: Appointment;
   targetedAppointmentData: Appointment;
@@ -13,7 +11,7 @@ export const AppointmentCard = (model: appointmentModel) => {
   return (
     <div>
       <Flex justifyContent={"space-between"}>
-        <Text fontWeight="bold">
+        <Text fontWeight="bold" marginRight={"1.5rem"}>
           {courseData.subject} {courseData.code}
         </Text>
         <Text>{courseData.sectionNumber}</Text>
@@ -21,11 +19,6 @@ export const AppointmentCard = (model: appointmentModel) => {
       {courseData.professors.map((prof, idx) => (
         <Text key={idx}>{prof}</Text>
       ))}
-      <Text>
-        {formatDate(courseData.startTime, "shortTime")}
-        {" - "}
-        {formatDate(courseData.endTime, "shortTime")}
-      </Text>
     </div>
   );
 };

@@ -13,4 +13,5 @@ export type Preference = {
 type CourseID = {
   subject: string;
   code: string;
+  term: "FALL" | "SPRING" | "SUMMER";
 };
