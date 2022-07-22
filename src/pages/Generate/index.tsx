@@ -212,14 +212,6 @@ export const Generate = () => {
       }
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
-    } else {
-      toast({
-        title: "Unknown Action",
-        description: actionMeta.action,
-        status: "error",
-        duration: null,
-        isClosable: true,
-      });
     }
   };
 
