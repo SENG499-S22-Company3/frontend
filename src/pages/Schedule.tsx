@@ -254,19 +254,9 @@ export const Schedule = () => {
             >
               {baseScheduleData && !baseScheduleData.schedule ? (
                 <>
-                  <Text m={5} textAlign="right">
+                  <Text m={5} textAlign="center">
                     No schedules generated for year: {year}
                   </Text>
-                  <Button
-                    w="200px"
-                    as={Link}
-                    to="/generate"
-                    backgroundColor="blue.300"
-                    colorScheme="blue"
-                    variant="solid"
-                  >
-                    Generate
-                  </Button>
                 </>
               ) : (
                 <Spinner size="xl" />
