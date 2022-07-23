@@ -253,15 +253,17 @@ export const Schedule = () => {
             >
               {!baseScheduleData.schedule ? (
                 <>
-                  <Text m={5} textAlign="right">No schedules generated for year: {year}</Text>
+                  <Text m={5} textAlign="right">
+                    No schedules generated for year: {year}
+                  </Text>
                   <Button
-                   w="200px"
-                   as={Link}
-                   to="/generate"
-                   backgroundColor="blue.300"
-                   colorScheme="blue"
-                   variant="solid"
-                   >
+                    w="200px"
+                    as={Link}
+                    to="/generate"
+                    backgroundColor="blue.300"
+                    colorScheme="blue"
+                    variant="solid"
+                  >
                     Generate
                   </Button>
                 </>
