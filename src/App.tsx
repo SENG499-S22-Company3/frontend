@@ -5,7 +5,7 @@ import {
   ThemeConfig,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import shallow from "zustand/shallow";
 import { Footer } from "./components/Footer";
 import { NavHeader } from "./components/Nav";
@@ -31,6 +31,14 @@ const theme = extendTheme({
   config,
 });
 
+const Redirect = (props: { to: string }) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(props.to);
+  }, []);
+  return <></>;
+};
+
 export const App = () => {
   const [user, loggedIn, fetchUser] = useLoginStore(
     (state) => [state.user, state.loggedIn, state.fetchUser],
@@ -50,6 +58,7 @@ export const App = () => {
           <Route path="/login" element={<Login />} />
           {user && user["roles"] && user["roles"].includes("admin") && (
             <>
+              <Route path="/" element={<Redirect to="/dashboard" />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/generate" element={<Generate />} />
               <Route path="/professors" element={<Professors />} />
@@ -60,6 +69,7 @@ export const App = () => {
           )}
           {user && user["roles"] && user["roles"].includes("user") && (
             <>
+              <Route path="/" element={<Redirect to="/survey" />} />
               <Route path="/survey" element={<Survey />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
