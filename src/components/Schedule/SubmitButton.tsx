@@ -82,7 +82,6 @@ export const SubmitButton = (props: SubmitButtonProps) => {
         w="200px"
         colorScheme="blue"
         variant="solid"
-        disabled={!active}
         onClick={() => {
           setActive(false);
           const input = handleSubmit();

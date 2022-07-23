@@ -172,6 +172,7 @@ export const Schedule = () => {
 
     const { days, removedDays, ...appointment } = updatedCourse;
     updateSchedule(appointment, meetingTimes, oldCourse);
+    setIsEditing(true);
     refreshSchedule();
   };
 
@@ -203,7 +204,6 @@ export const Schedule = () => {
 
     const meetingTimes = [...filteredMeetingTimes, newMeetingTime];
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
-    refreshSchedule();
   };
 
   //convert calendar appointments into course sections and update state
@@ -241,7 +241,6 @@ export const Schedule = () => {
     );
     const newSchedule = [courseSection, ...(filteredSchedule || [])];
     baseScheduleRef.current = newSchedule;
-    setIsEditing(true);
   };
 
   const refreshSchedule = () => {
@@ -254,7 +253,8 @@ export const Schedule = () => {
 
   //used in SubmitButton component
   const submitSchedule = () => {
-    const courseSections = scheduleData?.map((course) => {
+    const newSchedule = baseScheduleRef.current;
+    const courseSections = newSchedule?.map((course) => {
       const users = course.professors.map(
         (prof) =>
           userData?.find((u) => u.displayName === prof.displayName)?.username
@@ -276,6 +276,7 @@ export const Schedule = () => {
       validation: Company.COMPANY3,
     } as UpdateScheduleInput;
 
+    refreshSchedule();
     return scheduleInput;
   };
 
