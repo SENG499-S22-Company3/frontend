@@ -5,7 +5,9 @@ export type Appointment = {
   id: number;
   code: string;
   term: string;
+  title: string;
   subject: string;
+  hoursPerWeek: number;
   sectionNumber: string;
   professors: string[]; //usually assumed to be one max
   capacity: number; //from algo2
@@ -40,6 +42,7 @@ export type CourseID = {
   code: string;
   subject: string;
   term: string;
+  title?: string;
 };
 
 export type MeetingTime = {
@@ -56,4 +59,29 @@ export enum Day {
   FRIDAY = "FRIDAY",
   SATURDAY = "SATURDAY",
   SUNDAY = "SUNDAY",
+}
+
+//types for schedule editing
+
+export type UpdateScheduleInput = {
+  id: Number | null;
+  courses: CourseSectionInput[];
+  skipValidation: Boolean;
+  validation: Company;
+};
+
+export type CourseSectionInput = {
+  id: CourseID;
+  sectionNumber: string;
+  hoursPerWeek: number;
+  capacity: number;
+  professors: String[]; //usernames
+  startDate: Date;
+  endDate: Date;
+  meetingTimes: MeetingTime[];
+};
+
+export enum Company {
+  COMPANY3 = "COMPANY3",
+  COMPANY4 = "COMPANY4",
 }

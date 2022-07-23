@@ -65,6 +65,7 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
           </Flex>
         </Flex>
         <Flex flexDirection={"column"} textAlign={"left"}>
+          <Text marginBottom={"0.5rem"}>{courseData.title}</Text>
           <Flex>
             <Text fontWeight={"bold"} marginRight={"0.25rem"}>
               {courseData.capacity}

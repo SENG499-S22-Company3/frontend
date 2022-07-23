@@ -18,12 +18,15 @@ import {
   Appointment,
   CourseSection,
   MeetingTime,
-  Day,
+  CourseSectionInput,
+  UpdateScheduleInput,
+  Company,
 } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
+import { SubmitButton } from "../components/Schedule/SubmitButton";
 import Themes from "devextreme/ui/themes";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
@@ -37,6 +40,7 @@ const COURSES = gql`
       courses(term: SUMMER) {
         CourseID {
           subject
+          title
           code
           term
         }
@@ -58,6 +62,20 @@ const COURSES = gql`
   }
 `;
 
+const USERS = gql`
+  query getUsers {
+    allUsers {
+      username
+      displayName
+    }
+  }
+`;
+
+interface User {
+  displayName: string;
+  username: string;
+}
+
 export enum ViewTypes {
   table = "table",
   calendar = "calendar",
@@ -69,7 +87,11 @@ export const Schedule = () => {
     loading: scheduleLoading,
     error: scheduleError,
   } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
+  const { data, loading, error } = useQuery(USERS);
+
   const { colorMode } = useColorMode();
+  const [userData, setUserData] = useState<User[]>();
+  const [isEditing, setIsEditing] = useState(false);
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
   const [calendarView, setCalendarView] = useState<"workWeek" | "day">(
@@ -81,14 +103,33 @@ export const Schedule = () => {
 
   useEffect(() => {
     if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
-      const courses = baseScheduleData.schedule.courses;
-      const coursesId = courses.map((course: CourseSection) => {
+      const cleanPayload = JSON.parse(
+        JSON.stringify(baseScheduleData.schedule.courses, (name, val) => {
+          if (name === "__typename") {
+            delete val[name];
+          } else {
+            return val;
+          }
+        })
+      );
+      const coursesId = cleanPayload.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
       });
       setScheduleData(coursesId);
       baseScheduleRef.current = coursesId;
     }
   }, [baseScheduleData, scheduleError, scheduleLoading]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!error && data) {
+        const userData = data.allUsers;
+        setUserData(userData);
+      } else {
+        console.log(error);
+      }
+    }
+  }, [data, error, loading]);
 
   useEffect(() => {
     colorMode === "light"
@@ -131,6 +172,7 @@ export const Schedule = () => {
 
     const { days, removedDays, ...appointment } = updatedCourse;
     updateSchedule(appointment, meetingTimes, oldCourse);
+    setIsEditing(true);
     refreshSchedule();
   };
 
@@ -164,7 +206,7 @@ export const Schedule = () => {
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
   };
 
-  //convert calendar appointments into CourseSection object and update state
+  //convert calendar appointments into course sections and update state
   const updateSchedule = (
     updatedCourse: Appointment,
     meetingTimes: MeetingTime[],
@@ -183,7 +225,9 @@ export const Schedule = () => {
         code: updatedCourse.code,
         subject: updatedCourse.subject,
         term: updatedCourse.term,
+        title: updatedCourse.title,
       },
+      hoursPerWeek: updatedCourse.hoursPerWeek,
       sectionNumber: updatedCourse.sectionNumber,
       capacity: updatedCourse.capacity,
       professors: professors,
@@ -207,16 +251,70 @@ export const Schedule = () => {
     return baseScheduleRef.current;
   };
 
+  //used in SubmitButton component
+  const submitSchedule = () => {
+    const newSchedule = baseScheduleRef.current;
+    const courseSections = newSchedule?.map((course) => {
+      const users = course.professors.map(
+        (prof) =>
+          userData?.find((u) => u.displayName === prof.displayName)?.username
+      );
+
+      const { CourseID, ...restCourse } = course;
+
+      return {
+        ...restCourse,
+        id: CourseID,
+        professors: users,
+      } as CourseSectionInput;
+    });
+
+    const scheduleInput = {
+      id: baseScheduleData.schedule.id,
+      courses: courseSections,
+      skipValidation: false,
+      validation: Company.COMPANY3,
+    } as UpdateScheduleInput;
+
+    refreshSchedule();
+    return scheduleInput;
+  };
+
   return (
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={50}
+      pt={100}
       alignItems="center"
       flexDirection="column"
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="12rem"
+            value={viewState}
+            onChange={(e) => {
+              refreshSchedule();
+              e.target.value === "table"
+                ? setViewState(ViewTypes.table)
+                : setViewState(ViewTypes.calendar);
+            }}
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+          <SearchBar
+            getTermData={getScheduleRef}
+            setScheduleData={setScheduleData}
+          />
+          <SubmitButton
+            handleSubmit={submitSchedule}
+            active={isEditing}
+            setActive={setIsEditing}
+          />
+        </Flex>
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
@@ -228,36 +326,6 @@ export const Schedule = () => {
           </Container>
         ) : (
           <>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
-              <Select
-                id="select"
-                w="12rem"
-                value={viewState}
-                onChange={(e) => {
-                  refreshSchedule();
-                  e.target.value === "table"
-                    ? setViewState(ViewTypes.table)
-                    : setViewState(ViewTypes.calendar);
-                }}
-              >
-                <option value="table">Table View</option>
-                <option value="calendar">Calendar View</option>
-              </Select>
-              <SearchBar
-                getTermData={getScheduleRef}
-                setScheduleData={setScheduleData}
-              />
-              <Button
-                w="200px"
-                as={Link}
-                to="/schedule"
-                backgroundColor="blue.300"
-                colorScheme="blue"
-                variant="solid"
-              >
-                Submit Changes
-              </Button>
-            </Flex>
             <Flex
               p={10}
               paddingTop={"0.5rem"}
