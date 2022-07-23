@@ -111,7 +111,7 @@ export const Schedule = () => {
   }, []);
 
   const changeYear = (newYear: string) => {
-    if (newYear != null && newYear != "") {
+    if (newYear !== null && newYear !== "") {
       console.log(newYear);
       setYear(parseInt(newYear));
     }
