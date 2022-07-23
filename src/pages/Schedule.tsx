@@ -251,7 +251,7 @@ export const Schedule = () => {
               alignItems="center"
               marginTop="4rem"
             >
-              {!baseScheduleData.schedule ? (
+              {baseScheduleData && !baseScheduleData.schedule ? (
                 <>
                   <Text m={5} textAlign="right">
                     No schedules generated for year: {year}
