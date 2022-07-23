@@ -9,6 +9,7 @@ import {
   useColorMode,
   IconButton,
   Text,
+  FormLabel,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
@@ -32,8 +33,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
-  query s {
-    schedule(year: 2022) {
+  query s($year: Int!) {
+    schedule(year: $year) {
       id
       year
       createdAt
@@ -82,11 +83,16 @@ export enum ViewTypes {
 }
 
 export const Schedule = () => {
+  const [year, setYear] = useState(2022);
+
   const {
     data: baseScheduleData,
     loading: scheduleLoading,
     error: scheduleError,
-  } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
+  } = useQuery(COURSES, {
+    variables: { year },
+    fetchPolicy: "cache-and-network",
+  });
   const { data, loading, error } = useQuery(USERS);
 
   const { colorMode } = useColorMode();
@@ -115,6 +121,7 @@ export const Schedule = () => {
       const coursesId = cleanPayload.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
       });
+      setYear(baseScheduleData.schedule.year);
       setScheduleData(coursesId);
       baseScheduleRef.current = coursesId;
     }
@@ -144,6 +151,12 @@ export const Schedule = () => {
     return onUnmount;
   }, []);
 
+  const changeYear = (newYear: string) => {
+    if (newYear !== null && newYear !== "") {
+      console.log(newYear);
+      setYear(parseInt(newYear));
+    }
+  };
   //called after submitting from edit modal
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
     if (!scheduleData) {
@@ -288,7 +301,21 @@ export const Schedule = () => {
       alignItems="center"
       flexDirection="column"
     >
-      <Heading mb={10}>View Schedule</Heading>
+      <Heading>View Schedule</Heading>
+      <FormLabel htmlFor="year">For Year:</FormLabel>
+      <Select
+        placeholder="Select Year"
+        disabled={scheduleLoading}
+        defaultValue={year}
+        onChange={(e) => changeYear(e.target.value)}
+        mb={5}
+        w="10rem"
+      >
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </Select>
+
       <Container mb={32} maxW="container.xl">
         <Flex alignItems="center" justifyContent="space-between" mb={5}>
           <Select
@@ -315,7 +342,7 @@ export const Schedule = () => {
             setActive={setIsEditing}
           />
         </Flex>
-        {!scheduleData || scheduleLoading ? (
+        {scheduleLoading ? (
           <Container
             display="flex"
             justifyContent="center"
@@ -326,14 +353,18 @@ export const Schedule = () => {
           </Container>
         ) : (
           <>
-            <Flex
-              p={10}
-              paddingTop={"0.5rem"}
-              borderRadius={10}
-              flexDir="column"
-              style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
-            >
-              <>
+            {baseScheduleData && !baseScheduleData.schedule ? (
+              <Text m={5} textAlign="center">
+                No schedules generated for year: {year}
+              </Text>
+            ) : (
+              <Flex
+                p={10}
+                paddingTop={"0.5rem"}
+                borderRadius={10}
+                flexDir="column"
+                style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+              >
                 {viewState === ViewTypes.calendar && (
                   <Flex
                     justifyContent={"space-between"}
@@ -395,8 +426,8 @@ export const Schedule = () => {
                     dayCount={dayViewCount}
                   />
                 )}
-              </>
-            </Flex>
+              </Flex>
+            )}
           </>
         )}
       </Container>
