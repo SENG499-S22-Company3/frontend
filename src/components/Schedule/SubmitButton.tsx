@@ -85,9 +85,8 @@ export const SubmitButton = (props: SubmitButtonProps) => {
         disabled={!active}
         onClick={() => {
           setActive(false);
-          const updateInput = handleSubmit();
-          console.log(updateInput);
-          generate({ variables: { updateInput } });
+          const input = handleSubmit();
+          generate({ variables: { input } });
         }}
         isLoading={loading}
       >

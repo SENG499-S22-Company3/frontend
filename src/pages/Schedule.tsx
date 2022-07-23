@@ -289,6 +289,31 @@ export const Schedule = () => {
     >
       <Heading mb={10}>View Schedule</Heading>
       <Container mb={32} maxW="container.xl">
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="12rem"
+            value={viewState}
+            onChange={(e) => {
+              refreshSchedule();
+              e.target.value === "table"
+                ? setViewState(ViewTypes.table)
+                : setViewState(ViewTypes.calendar);
+            }}
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+          <SearchBar
+            getTermData={getScheduleRef}
+            setScheduleData={setScheduleData}
+          />
+          <SubmitButton
+            handleSubmit={submitSchedule}
+            active={isEditing}
+            setActive={setIsEditing}
+          />
+        </Flex>
         {!scheduleData || scheduleLoading ? (
           <Container
             display="flex"
@@ -300,31 +325,6 @@ export const Schedule = () => {
           </Container>
         ) : (
           <>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
-              <Select
-                id="select"
-                w="12rem"
-                value={viewState}
-                onChange={(e) => {
-                  refreshSchedule();
-                  e.target.value === "table"
-                    ? setViewState(ViewTypes.table)
-                    : setViewState(ViewTypes.calendar);
-                }}
-              >
-                <option value="table">Table View</option>
-                <option value="calendar">Calendar View</option>
-              </Select>
-              <SearchBar
-                getTermData={getScheduleRef}
-                setScheduleData={setScheduleData}
-              />
-              <SubmitButton
-                handleSubmit={submitSchedule}
-                active={isEditing}
-                setActive={setIsEditing}
-              />
-            </Flex>
             <Flex
               p={10}
               paddingTop={"0.5rem"}
