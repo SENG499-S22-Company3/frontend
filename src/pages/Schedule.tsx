@@ -233,6 +233,7 @@ export const Schedule = () => {
         <FormLabel htmlFor="year">For Year:</FormLabel>
         <Select
           placeholder="Select Year"
+          disabled={scheduleLoading}
           defaultValue={year}
           onChange={(e) => changeYear(e.target.value)}
           mb={5}
