@@ -228,141 +228,159 @@ export const Schedule = () => {
       alignItems="center"
       flexDirection="column"
     >
-      <Heading>View Schedule</Heading>
-      <FormLabel htmlFor="year">
-        For Year:
-      </FormLabel>
-      <Select
-        placeholder="Select Year"
-        defaultValue={year}
-        onChange={(e) => changeYear(e.target.value)}
-        mb={5}
-        w="10rem"
-      >
-        <option value="2022">2022</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-      </Select>
-      <Container mb={32} maxW="container.xl">
-        {!scheduleData || scheduleLoading || !baseScheduleData.schedule ? (
-          <Container
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            marginTop="4rem"
-          >
-            <Spinner size="xl" />
-            
-          </Container>
-        ) : (
-          <>
-            <Flex alignItems="center" justifyContent="space-between" mb={5}>
-              <Select
-                id="select"
-                w="12rem"
-                value={viewState}
-                title="Switch between Table and Calender views"
-                onChange={(e) => {
-                  refreshSchedule();
-                  e.target.value === "table"
-                    ? setViewState(ViewTypes.table)
-                    : setViewState(ViewTypes.calendar);
-                }}
-              >
-                <option value="table">Table View</option>
-                <option value="calendar">Calendar View</option>
-              </Select>
-              <SearchBar
-                getTermData={getScheduleRef}
-                setScheduleData={setScheduleData}
-              />
+      <>
+        <Heading>View Schedule</Heading>
+        <FormLabel htmlFor="year">For Year:</FormLabel>
+        <Select
+          placeholder="Select Year"
+          defaultValue={year}
+          onChange={(e) => changeYear(e.target.value)}
+          mb={5}
+          w="10rem"
+        >
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </Select>
 
-              <Button
-                w="200px"
-                as={Link}
-                to="/schedule"
-                backgroundColor="blue.300"
-                colorScheme="blue"
-                variant="solid"
-                title="Save your schedule edits"
-              >
-                Submit Changes
-              </Button>
-            </Flex>
-            <Flex
-              p={10}
-              paddingTop={"0.5rem"}
-              borderRadius={10}
-              flexDir="column"
-              style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+        <Container mb={32} maxW="container.xl">
+          {!scheduleData || scheduleLoading || !baseScheduleData.schedule ? (
+            <Container
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              marginTop="4rem"
             >
-              <>
-                {viewState === ViewTypes.calendar && (
-                  <Flex
-                    justifyContent={"space-between"}
-                    alignItems="center"
-                    marginBottom="0.5rem"
-                  >
+              {!baseScheduleData.schedule ? (
+                <>
+                  <Text m={5} textAlign="right">No schedules generated for year: {year}</Text>
+                  <Button
+                   w="200px"
+                   as={Link}
+                   to="/generate"
+                   backgroundColor="blue.300"
+                   colorScheme="blue"
+                   variant="solid"
+                   >
+                    Generate
+                  </Button>
+                </>
+              ) : (
+                <Spinner size="xl" />
+              )}
+            </Container>
+          ) : (
+            <>
+              <Flex alignItems="center" justifyContent="space-between" mb={5}>
+                <Select
+                  id="select"
+                  w="12rem"
+                  value={viewState}
+                  title="Switch between Table and Calender views"
+                  onChange={(e) => {
+                    refreshSchedule();
+                    e.target.value === "table"
+                      ? setViewState(ViewTypes.table)
+                      : setViewState(ViewTypes.calendar);
+                  }}
+                >
+                  <option value="table">Table View</option>
+                  <option value="calendar">Calendar View</option>
+                </Select>
+                <SearchBar
+                  getTermData={getScheduleRef}
+                  setScheduleData={setScheduleData}
+                />
+
+                <Button
+                  w="200px"
+                  as={Link}
+                  to="/schedule"
+                  backgroundColor="blue.300"
+                  colorScheme="blue"
+                  variant="solid"
+                  title="Save your schedule edits"
+                >
+                  Submit Changes
+                </Button>
+              </Flex>
+              <Flex
+                p={10}
+                paddingTop={"0.5rem"}
+                borderRadius={10}
+                flexDir="column"
+                style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
+              >
+                <>
+                  {viewState === ViewTypes.calendar && (
                     <Flex
-                      alignItems={"center"}
-                      visibility={calendarView === "day" ? "visible" : "hidden"}
+                      justifyContent={"space-between"}
+                      alignItems="center"
+                      marginBottom="0.5rem"
                     >
-                      {dayViewCount > 1 && (
-                        <IconButton
-                          aria-label="Day backward"
-                          icon={<ChevronLeftIcon />}
-                          variant={"ghost"}
-                          size="lg"
-                          onClick={() => setDayViewCount(dayViewCount - 1)}
-                        />
-                      )}
-                      <Text>{weekdayToString(dayViewCount)}</Text>
-                      {dayViewCount < 5 && (
-                        <IconButton
-                          aria-label="Day forward"
-                          icon={<ChevronRightIcon />}
-                          variant={"ghost"}
-                          size="lg"
-                          onClick={() => setDayViewCount(dayViewCount + 1)}
-                        />
-                      )}
+                      <Flex
+                        alignItems={"center"}
+                        visibility={
+                          calendarView === "day" ? "visible" : "hidden"
+                        }
+                      >
+                        {dayViewCount > 1 && (
+                          <IconButton
+                            aria-label="Day backward"
+                            icon={<ChevronLeftIcon />}
+                            variant={"ghost"}
+                            size="lg"
+                            onClick={() => setDayViewCount(dayViewCount - 1)}
+                          />
+                        )}
+                        <Text>{weekdayToString(dayViewCount)}</Text>
+                        {dayViewCount < 5 && (
+                          <IconButton
+                            aria-label="Day forward"
+                            icon={<ChevronRightIcon />}
+                            variant={"ghost"}
+                            size="lg"
+                            onClick={() => setDayViewCount(dayViewCount + 1)}
+                          />
+                        )}
+                      </Flex>
+                      <Select
+                        id="select"
+                        w="6rem"
+                        value={calendarView}
+                        onChange={(e) => {
+                          refreshSchedule();
+                          e.target.value === "day"
+                            ? setCalendarView("day")
+                            : setCalendarView("workWeek");
+                        }}
+                      >
+                        <option value="day">DAY</option>
+                        <option value="workWeek">WEEK</option>
+                      </Select>
                     </Flex>
-                    <Select
-                      id="select"
-                      w="6rem"
-                      value={calendarView}
-                      onChange={(e) => {
-                        refreshSchedule();
-                        e.target.value === "day"
-                          ? setCalendarView("day")
-                          : setCalendarView("workWeek");
-                      }}
-                    >
-                      <option value="day">DAY</option>
-                      <option value="workWeek">WEEK</option>
-                    </Select>
-                  </Flex>
-                )}
-                {viewState === ViewTypes.table && scheduleData && (
-                  <TableView
-                    data={scheduleData}
-                    onUpdateSubmit={handleUpdateSubmit}
-                  />
-                )}
-                {viewState === ViewTypes.calendar && scheduleData && (
-                  <CalendarView
-                    data={scheduleData}
-                    onUpdateSubmit={handleUpdateSubmit}
-                    onDragSubmit={handleDrag}
-                    viewState={calendarView}
-                    dayCount={dayViewCount}
-                  />
-                )}
-              </>
-            </Flex>
-          </>
-        )}
-      </Container>
+                  )}
+                  {viewState === ViewTypes.table && scheduleData && (
+                    <TableView
+                      data={scheduleData}
+                      onUpdateSubmit={handleUpdateSubmit}
+                    />
+                  )}
+                  {viewState === ViewTypes.calendar && scheduleData && (
+                    <CalendarView
+                      data={scheduleData}
+                      onUpdateSubmit={handleUpdateSubmit}
+                      onDragSubmit={handleDrag}
+                      viewState={calendarView}
+                      dayCount={dayViewCount}
+                    />
+                  )}
+                </>
+              </Flex>
+            </>
+          )}
+        </Container>
+      </>
     </Flex>
   );
 };
