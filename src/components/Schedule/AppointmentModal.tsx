@@ -310,6 +310,7 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                     flex="1"
                     focusThumbOnChange={false}
                     value={courseUpdate.capacity}
+                    max={300}
                     onChange={(value) =>
                       setCourseUpdate({
                         ...courseUpdate,
