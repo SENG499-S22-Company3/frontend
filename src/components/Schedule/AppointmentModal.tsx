@@ -147,8 +147,6 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
           };
         });
         setCoursesOptions(courses);
-      } else {
-        console.log(coursesError);
       }
     }
   }, [coursesData, coursesError, coursesLoading, courseData.term]);

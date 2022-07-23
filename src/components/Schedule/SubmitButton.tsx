@@ -42,26 +42,27 @@ export const SubmitButton = (props: SubmitButtonProps) => {
             duration: 3000,
             isClosable: true,
           });
+          setActive(false);
         } else {
-          console.log(data);
           toast({
             title: "Failed to Update Schedule",
             description: data.updateSchedule.message,
             status: "error",
             isClosable: true,
+            duration: null,
           });
         }
       } else if (error) {
-        console.log(error);
         toast({
           title: "Failed to Update Schedule",
           description: error.message,
           status: "error",
           isClosable: true,
+          duration: null,
         });
       }
     }
-  }, [data, loading, error, toast]);
+  }, [data, loading, error, toast, setActive]);
 
   return (
     <Flex alignItems={"center"} minWidth="3rem">
@@ -83,7 +84,6 @@ export const SubmitButton = (props: SubmitButtonProps) => {
         colorScheme="blue"
         variant="solid"
         onClick={() => {
-          setActive(false);
           const input = handleSubmit();
           generate({ variables: { input } });
         }}
