@@ -55,10 +55,11 @@ const buildAppointments = (courses: CourseSection[]) => {
     const assignedCourses = splitCourseDays(course).map((meetingTime) => {
       return {
         id: course.id,
-        title: course.CourseID.code, //not in schema yet
+        title: course.CourseID.title,
         code: course.CourseID.code,
         subject: course.CourseID.subject,
         term: course.CourseID.term,
+        hoursPerWeek: course.hoursPerWeek,
         sectionNumber: course.sectionNumber,
         professors: professors,
         capacity: course.capacity,

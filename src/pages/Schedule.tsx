@@ -19,12 +19,15 @@ import {
   Appointment,
   CourseSection,
   MeetingTime,
-  Day,
+  CourseSectionInput,
+  UpdateScheduleInput,
+  Company,
 } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
 import { getUTCDate } from "../utils/formatDate";
+import { SubmitButton } from "../components/Schedule/SubmitButton";
 import Themes from "devextreme/ui/themes";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
@@ -38,6 +41,7 @@ const COURSES = gql`
       courses(term: SUMMER) {
         CourseID {
           subject
+          title
           code
           term
         }
@@ -59,6 +63,20 @@ const COURSES = gql`
   }
 `;
 
+const USERS = gql`
+  query getUsers {
+    allUsers {
+      username
+      displayName
+    }
+  }
+`;
+
+interface User {
+  displayName: string;
+  username: string;
+}
+
 export enum ViewTypes {
   table = "table",
   calendar = "calendar",
@@ -75,7 +93,11 @@ export const Schedule = () => {
     variables: { year },
     fetchPolicy: "cache-and-network",
   });
+  const { data, loading, error } = useQuery(USERS);
+
   const { colorMode } = useColorMode();
+  const [userData, setUserData] = useState<User[]>();
+  const [isEditing, setIsEditing] = useState(false);
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
   const [calendarView, setCalendarView] = useState<"workWeek" | "day">(
@@ -87,8 +109,16 @@ export const Schedule = () => {
 
   useEffect(() => {
     if (baseScheduleData?.schedule && !scheduleError && !scheduleLoading) {
-      const courses = baseScheduleData.schedule.courses;
-      const coursesId = courses.map((course: CourseSection) => {
+      const cleanPayload = JSON.parse(
+        JSON.stringify(baseScheduleData.schedule.courses, (name, val) => {
+          if (name === "__typename") {
+            delete val[name];
+          } else {
+            return val;
+          }
+        })
+      );
+      const coursesId = cleanPayload.map((course: CourseSection) => {
         return { ...course, id: Math.floor(Math.random() * 10000) };
       });
       setYear(baseScheduleData.schedule.year);
@@ -96,6 +126,17 @@ export const Schedule = () => {
       baseScheduleRef.current = coursesId;
     }
   }, [baseScheduleData, scheduleError, scheduleLoading]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!error && data) {
+        const userData = data.allUsers;
+        setUserData(userData);
+      } else {
+        console.log(error);
+      }
+    }
+  }, [data, error, loading]);
 
   useEffect(() => {
     colorMode === "light"
@@ -144,6 +185,7 @@ export const Schedule = () => {
 
     const { days, removedDays, ...appointment } = updatedCourse;
     updateSchedule(appointment, meetingTimes, oldCourse);
+    setIsEditing(true);
     refreshSchedule();
   };
 
@@ -177,7 +219,7 @@ export const Schedule = () => {
     updateSchedule(updatedCourse, meetingTimes, oldCourse);
   };
 
-  //convert calendar appointments into CourseSection object and update state
+  //convert calendar appointments into course sections and update state
   const updateSchedule = (
     updatedCourse: Appointment,
     meetingTimes: MeetingTime[],
@@ -196,7 +238,9 @@ export const Schedule = () => {
         code: updatedCourse.code,
         subject: updatedCourse.subject,
         term: updatedCourse.term,
+        title: updatedCourse.title,
       },
+      hoursPerWeek: updatedCourse.hoursPerWeek,
       sectionNumber: updatedCourse.sectionNumber,
       capacity: updatedCourse.capacity,
       professors: professors,
@@ -220,83 +264,100 @@ export const Schedule = () => {
     return baseScheduleRef.current;
   };
 
+  //used in SubmitButton component
+  const submitSchedule = () => {
+    const newSchedule = baseScheduleRef.current;
+    const courseSections = newSchedule?.map((course) => {
+      const users = course.professors.map(
+        (prof) =>
+          userData?.find((u) => u.displayName === prof.displayName)?.username
+      );
+
+      const { CourseID, ...restCourse } = course;
+
+      return {
+        ...restCourse,
+        id: CourseID,
+        professors: users,
+      } as CourseSectionInput;
+    });
+
+    const scheduleInput = {
+      id: baseScheduleData.schedule.id,
+      courses: courseSections,
+      skipValidation: false,
+      validation: Company.COMPANY3,
+    } as UpdateScheduleInput;
+
+    refreshSchedule();
+    return scheduleInput;
+  };
+
   return (
     <Flex
       w="100%"
       minH="calc(100vh - 5.5rem)"
-      pt={50}
+      pt={100}
       alignItems="center"
       flexDirection="column"
     >
-      <>
-        <Heading>View Schedule</Heading>
-        <FormLabel htmlFor="year">For Year:</FormLabel>
-        <Select
-          placeholder="Select Year"
-          disabled={scheduleLoading}
-          defaultValue={year}
-          onChange={(e) => changeYear(e.target.value)}
-          mb={5}
-          w="10rem"
-        >
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-        </Select>
+      <Heading>View Schedule</Heading>
+      <FormLabel htmlFor="year">For Year:</FormLabel>
+      <Select
+        placeholder="Select Year"
+        disabled={scheduleLoading}
+        defaultValue={year}
+        onChange={(e) => changeYear(e.target.value)}
+        mb={5}
+        w="10rem"
+      >
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </Select>
 
-        <Container mb={32} maxW="container.xl">
-          {!scheduleData || scheduleLoading || !baseScheduleData.schedule ? (
-            <Container
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              marginTop="4rem"
-            >
-              {baseScheduleData && !baseScheduleData.schedule ? (
-                <>
-                  <Text m={5} textAlign="center">
-                    No schedules generated for year: {year}
-                  </Text>
-                </>
-              ) : (
-                <Spinner size="xl" />
-              )}
-            </Container>
-          ) : (
-            <>
-              <Flex alignItems="center" justifyContent="space-between" mb={5}>
-                <Select
-                  id="select"
-                  w="12rem"
-                  value={viewState}
-                  title="Switch between Table and Calender views"
-                  onChange={(e) => {
-                    refreshSchedule();
-                    e.target.value === "table"
-                      ? setViewState(ViewTypes.table)
-                      : setViewState(ViewTypes.calendar);
-                  }}
-                >
-                  <option value="table">Table View</option>
-                  <option value="calendar">Calendar View</option>
-                </Select>
-                <SearchBar
-                  getTermData={getScheduleRef}
-                  setScheduleData={setScheduleData}
-                />
-
-                <Button
-                  w="200px"
-                  as={Link}
-                  to="/schedule"
-                  backgroundColor="blue.300"
-                  colorScheme="blue"
-                  variant="solid"
-                  title="Save your schedule edits"
-                >
-                  Submit Changes
-                </Button>
-              </Flex>
+      <Container mb={32} maxW="container.xl">
+        <Flex alignItems="center" justifyContent="space-between" mb={5}>
+          <Select
+            id="select"
+            w="12rem"
+            value={viewState}
+            onChange={(e) => {
+              refreshSchedule();
+              e.target.value === "table"
+                ? setViewState(ViewTypes.table)
+                : setViewState(ViewTypes.calendar);
+            }}
+          >
+            <option value="table">Table View</option>
+            <option value="calendar">Calendar View</option>
+          </Select>
+          <SearchBar
+            getTermData={getScheduleRef}
+            setScheduleData={setScheduleData}
+          />
+          <SubmitButton
+            handleSubmit={submitSchedule}
+            active={isEditing}
+            setActive={setIsEditing}
+          />
+        </Flex>
+        {scheduleLoading ? (
+          <Container
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            marginTop="4rem"
+          >
+            <Spinner size="xl" />
+          </Container>
+        ) : (
+          <>
+            {baseScheduleData && !baseScheduleData.schedule ? (
+              <Text m={5} textAlign="center">
+                No schedules generated for year: {year}
+              </Text>
+            ) : (
               <Flex
                 p={10}
                 paddingTop={"0.5rem"}
@@ -304,76 +365,72 @@ export const Schedule = () => {
                 flexDir="column"
                 style={{ boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.40)" }}
               >
-                <>
-                  {viewState === ViewTypes.calendar && (
+                {viewState === ViewTypes.calendar && (
+                  <Flex
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                    marginBottom="0.5rem"
+                  >
                     <Flex
-                      justifyContent={"space-between"}
-                      alignItems="center"
-                      marginBottom="0.5rem"
+                      alignItems={"center"}
+                      visibility={calendarView === "day" ? "visible" : "hidden"}
                     >
-                      <Flex
-                        alignItems={"center"}
-                        visibility={
-                          calendarView === "day" ? "visible" : "hidden"
-                        }
-                      >
-                        {dayViewCount > 1 && (
-                          <IconButton
-                            aria-label="Day backward"
-                            icon={<ChevronLeftIcon />}
-                            variant={"ghost"}
-                            size="lg"
-                            onClick={() => setDayViewCount(dayViewCount - 1)}
-                          />
-                        )}
-                        <Text>{weekdayToString(dayViewCount)}</Text>
-                        {dayViewCount < 5 && (
-                          <IconButton
-                            aria-label="Day forward"
-                            icon={<ChevronRightIcon />}
-                            variant={"ghost"}
-                            size="lg"
-                            onClick={() => setDayViewCount(dayViewCount + 1)}
-                          />
-                        )}
-                      </Flex>
-                      <Select
-                        id="select"
-                        w="6rem"
-                        value={calendarView}
-                        onChange={(e) => {
-                          refreshSchedule();
-                          e.target.value === "day"
-                            ? setCalendarView("day")
-                            : setCalendarView("workWeek");
-                        }}
-                      >
-                        <option value="day">DAY</option>
-                        <option value="workWeek">WEEK</option>
-                      </Select>
+                      {dayViewCount > 1 && (
+                        <IconButton
+                          aria-label="Day backward"
+                          icon={<ChevronLeftIcon />}
+                          variant={"ghost"}
+                          size="lg"
+                          onClick={() => setDayViewCount(dayViewCount - 1)}
+                        />
+                      )}
+                      <Text>{weekdayToString(dayViewCount)}</Text>
+                      {dayViewCount < 5 && (
+                        <IconButton
+                          aria-label="Day forward"
+                          icon={<ChevronRightIcon />}
+                          variant={"ghost"}
+                          size="lg"
+                          onClick={() => setDayViewCount(dayViewCount + 1)}
+                        />
+                      )}
                     </Flex>
-                  )}
-                  {viewState === ViewTypes.table && scheduleData && (
-                    <TableView
-                      data={scheduleData}
-                      onUpdateSubmit={handleUpdateSubmit}
-                    />
-                  )}
-                  {viewState === ViewTypes.calendar && scheduleData && (
-                    <CalendarView
-                      data={scheduleData}
-                      onUpdateSubmit={handleUpdateSubmit}
-                      onDragSubmit={handleDrag}
-                      viewState={calendarView}
-                      dayCount={dayViewCount}
-                    />
-                  )}
-                </>
+                    <Select
+                      id="select"
+                      w="6rem"
+                      value={calendarView}
+                      onChange={(e) => {
+                        refreshSchedule();
+                        e.target.value === "day"
+                          ? setCalendarView("day")
+                          : setCalendarView("workWeek");
+                      }}
+                    >
+                      <option value="day">DAY</option>
+                      <option value="workWeek">WEEK</option>
+                    </Select>
+                  </Flex>
+                )}
+                {viewState === ViewTypes.table && scheduleData && (
+                  <TableView
+                    data={scheduleData}
+                    onUpdateSubmit={handleUpdateSubmit}
+                  />
+                )}
+                {viewState === ViewTypes.calendar && scheduleData && (
+                  <CalendarView
+                    data={scheduleData}
+                    onUpdateSubmit={handleUpdateSubmit}
+                    onDragSubmit={handleDrag}
+                    viewState={calendarView}
+                    dayCount={dayViewCount}
+                  />
+                )}
               </Flex>
-            </>
-          )}
-        </Container>
-      </>
+            )}
+          </>
+        )}
+      </Container>
     </Flex>
   );
 };
