@@ -28,7 +28,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import DateBox from "devextreme-react/date-box";
-import { Appointment } from "../../stores/schedule";
+import { Appointment, CourseID } from "../../stores/schedule";
 import { ViewTypes } from "../../pages/Schedule";
 import { gql, useQuery } from "@apollo/client";
 import { OptionBase, Select } from "chakra-react-select";
@@ -41,9 +41,31 @@ const USERS = gql`
   }
 `;
 
-interface ProfessorOption extends OptionBase {
+const GET_COURSES = gql`
+  query GetCourses {
+    survey {
+      courses {
+        subject
+        code
+        term
+        title
+      }
+    }
+  }
+`;
+
+interface Options extends OptionBase {
   label: string;
   value: string;
+}
+
+interface CourseOptions extends OptionBase {
+  label: string;
+  value: {
+    code: string;
+    subject: string;
+    title: string;
+  };
 }
 
 export interface ModalItem extends Appointment {
@@ -61,16 +83,31 @@ interface AppointmentModalProps {
 export const AppointmentModal = (props: AppointmentModalProps) => {
   const { isOpen, onClose, onSubmit, courseData, viewState } = props;
 
+  const {
+    data: coursesData,
+    loading: coursesLoading,
+    error: coursesError,
+  } = useQuery(GET_COURSES);
   const { data, loading, error } = useQuery(USERS);
-  const [professorOptions, setProfessorOptions] = useState<ProfessorOption[]>();
+
+  const [professorOptions, setProfessorOptions] = useState<Options[]>();
+  const [coursesOptions, setCoursesOptions] = useState<CourseOptions[]>();
+
   const [courseUpdate, setCourseUpdate] = useState(courseData);
   const [timeError, setTimeError] = useState(false);
   const [dayError, setDayError] = useState(false);
-  const [professorError, setProfessorError] = useState(false);
 
   const defaultProfessors = {
     value: courseUpdate.professors[0],
     label: courseUpdate.professors[0],
+  };
+  const defaultCourse = {
+    value: {
+      code: courseUpdate.code,
+      subject: courseUpdate.subject,
+      title: courseUpdate.title,
+    },
+    label: courseUpdate.subject + " " + courseUpdate.code,
   };
 
   const initialRef = useRef(null);
@@ -85,13 +122,36 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
             value: prof.displayName,
           };
         });
-        console.log(profNames);
         setProfessorOptions(profNames);
       } else {
         console.log(error);
       }
     }
   }, [data, error, loading]);
+
+  useEffect(() => {
+    if (!coursesLoading) {
+      if (!coursesError && coursesData) {
+        const queryResult = coursesData.survey.courses;
+        const termData = queryResult.filter(
+          (course: CourseID) => course.term === courseData.term
+        );
+        const courses = termData.map((course: CourseID) => {
+          return {
+            label: course.subject + " " + course.code,
+            value: {
+              code: course.code,
+              subject: course.subject,
+              title: course.title,
+            },
+          };
+        });
+        setCoursesOptions(courses);
+      } else {
+        console.log(coursesError);
+      }
+    }
+  }, [coursesData, coursesError, coursesLoading, courseData.term]);
 
   const handleCheck = (weekDay: string, isChecked?: boolean) => {
     //handles the radio button case
@@ -113,6 +173,21 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
     setCourseUpdate({ ...courseUpdate, days: newDays });
   };
 
+  const handleCourseChange = (courseValue?: {
+    code: string;
+    subject: string;
+    title: string;
+  }) => {
+    console.log(courseValue);
+    if (!courseValue) return;
+    setCourseUpdate({
+      ...courseUpdate,
+      code: courseValue.code,
+      subject: courseValue.subject,
+      title: courseValue.title,
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
@@ -126,10 +201,6 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
 
     if (courseUpdate.days.length === 0) {
       setDayError(true);
-      return;
-    }
-    if (courseUpdate.professors.length === 0) {
-      setProfessorError(true);
       return;
     }
 
@@ -151,49 +222,18 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
             <ModalBody>
               <FormControl isRequired>
                 <Flex>
-                  <Flex flexDirection={"column"} marginRight={"1rem"}>
-                    <FormLabel htmlFor="subject">Course Subject</FormLabel>
-                    <Input
-                      id="subject"
-                      ref={initialRef}
-                      placeholder="Subject"
-                      value={courseUpdate?.subject}
-                      onChange={(e) =>
-                        setCourseUpdate({
-                          ...courseUpdate,
-                          subject: e.target.value,
-                        })
-                      }
-                    />
-                  </Flex>
-                  <Flex flexDirection={"column"}>
-                    <FormLabel htmlFor="code">Course Number</FormLabel>
-                    <Input
-                      id="code"
-                      placeholder="Number"
-                      value={courseUpdate.code}
-                      onChange={(e) =>
-                        setCourseUpdate({
-                          ...courseUpdate,
-                          code: e.target.value,
-                        })
-                      }
-                    />
-                  </Flex>
-                </Flex>
-                <Flex marginTop={"1.5rem"}>
-                  <Flex flexDirection={"column"} marginRight={"1.5rem"}>
-                    <FormLabel htmlFor="title">Course Title</FormLabel>
-                    <Input
-                      id="title"
-                      placeholder="Title"
-                      value={courseUpdate.title}
-                      onChange={(e) =>
-                        setCourseUpdate({
-                          ...courseUpdate,
-                          title: e.target.value,
-                        })
-                      }
+                  <Flex
+                    flexDirection={"column"}
+                    marginRight={"1.5rem"}
+                    width="15rem"
+                  >
+                    <FormLabel htmlFor="course">Course</FormLabel>
+                    <Select
+                      id="course"
+                      options={coursesOptions}
+                      placeholder="Course"
+                      onChange={(e) => handleCourseChange(e?.value)}
+                      value={defaultCourse}
                     />
                   </Flex>
                   <Flex flexDirection={"column"}>
@@ -213,26 +253,37 @@ export const AppointmentModal = (props: AppointmentModalProps) => {
                     />
                   </Flex>
                 </Flex>
-                <FormControl isRequired isInvalid={professorError}>
-                  <FormLabel htmlFor="professors" marginTop={"1.5rem"}>
-                    Professors
-                  </FormLabel>
-                  <Select
-                    id="professors"
-                    options={professorOptions}
-                    placeholder="Professors"
-                    onChange={(e) =>
-                      setCourseUpdate({
-                        ...courseUpdate,
-                        professors: e ? [e.value] : [],
-                      })
-                    }
-                    value={defaultProfessors}
-                  />
-                  <FormErrorMessage>
-                    Please assign at least one professor
-                  </FormErrorMessage>
-                </FormControl>
+                <FormLabel htmlFor="title" marginTop={"1.5rem"}>
+                  Course Title
+                </FormLabel>
+                <Input
+                  id="title"
+                  placeholder="Title"
+                  value={courseUpdate.title}
+                  readOnly
+                  disabled
+                  onChange={(e) =>
+                    setCourseUpdate({
+                      ...courseUpdate,
+                      title: e.target.value,
+                    })
+                  }
+                />
+                <FormLabel htmlFor="professors" marginTop={"1.5rem"}>
+                  Professors
+                </FormLabel>
+                <Select
+                  id="professors"
+                  options={professorOptions}
+                  placeholder="Professors"
+                  onChange={(e) =>
+                    setCourseUpdate({
+                      ...courseUpdate,
+                      professors: e ? [e.value] : [],
+                    })
+                  }
+                  value={defaultProfessors}
+                />
                 <FormLabel htmlFor="capacity" marginTop={"1.5rem"}>
                   Capacity
                 </FormLabel>
