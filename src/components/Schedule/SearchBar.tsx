@@ -90,55 +90,27 @@ export const SearchBar = (props: SearchBarProps) => {
 
   return (
     <>
-      <RadioGroup id="course_type" defaultValue={"all"}>
+      <RadioGroup id="course_type"  defaultValue={"all"}>
         <Stack direction="row">
-          <Radio
-            colorScheme="blue"
-            onChange={(e) => setFilter(e.target.value)}
-            value="all"
-          >
+          <Radio  colorScheme="blue" onChange={(e) => setFilter(e.target.value)} value="all">
             All
           </Radio>
-          <Radio
-            colorScheme="green"
-            onChange={(e) => setFilter(e.target.value)}
-            value="ece"
-          >
+          <Radio  colorScheme='green' onChange={(e) => setFilter(e.target.value)} value="ece">
             ECE
           </Radio>
-          <Radio
-            colorScheme="yellow"
-            onChange={(e) => setFilter(e.target.value)}
-            value="seng"
-          >
+          <Radio   colorScheme='yellow' onChange={(e) => setFilter(e.target.value)} value="seng">
             SENG
           </Radio>
-          <Radio
-            colorScheme="red"
-            onChange={(e) => setFilter(e.target.value)}
-            value="csc"
-          >
+          <Radio  colorScheme='red' onChange={(e) => setFilter(e.target.value)} value="csc">
             CSC
           </Radio>
-          <Radio
-            colorScheme="purple"
-            onChange={(e) => setFilter(e.target.value)}
-            value="summer"
-          >
+          <Radio  colorScheme='purple' onChange={(e) => setFilter(e.target.value)} value="summer">
             Summer
           </Radio>
-          <Radio
-            colorScheme="pink"
-            onChange={(e) => setFilter(e.target.value)}
-            value="fall"
-          >
+          <Radio  colorScheme='pink' onChange={(e) => setFilter(e.target.value)} value="fall">
             Fall
           </Radio>
-          <Radio
-            colorScheme="teal"
-            onChange={(e) => setFilter(e.target.value)}
-            value="spring"
-          >
+          <Radio  colorScheme='teal' onChange={(e) => setFilter(e.target.value)} value="spring">
             Spring
           </Radio>
         </Stack>

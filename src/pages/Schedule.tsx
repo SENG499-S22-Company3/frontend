@@ -30,8 +30,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 //TO-DO: query for a specific term (fall, spring, summer)
 const COURSES = gql`
-  query s {
-    schedule(year: 2022) {
+  query s($year: Int!) {
+    schedule(year: $year) {
       id
       year
       createdAt
@@ -65,11 +65,16 @@ export enum ViewTypes {
 }
 
 export const Schedule = () => {
+  const [year, setYear] = useState(2022);
+
   const {
     data: baseScheduleData,
     loading: scheduleLoading,
     error: scheduleError,
-  } = useQuery(COURSES, { fetchPolicy: "cache-and-network" });
+  } = useQuery(COURSES, {
+    variables: { year },
+    fetchPolicy: "cache-and-network",
+  });
   const { colorMode } = useColorMode();
   const [viewState, setViewState] = useState(ViewTypes.table);
   const [scheduleData, setScheduleData] = useState<CourseSection[]>();
@@ -77,8 +82,6 @@ export const Schedule = () => {
     "workWeek"
   );
   const [dayViewCount, setDayViewCount] = useState(1);
-
-  const [year, setYear] = useState("");
 
   const baseScheduleRef = useRef(scheduleData);
 
@@ -107,6 +110,12 @@ export const Schedule = () => {
     return onUnmount;
   }, []);
 
+  const changeYear = (newYear: string) => {
+    if (newYear != null && newYear != "") {
+      console.log(newYear);
+      setYear(parseInt(newYear));
+    }
+  };
   //called after submitting from edit modal
   const handleUpdateSubmit = (updatedCourse: ModalItem) => {
     if (!scheduleData) {
@@ -220,8 +229,22 @@ export const Schedule = () => {
       flexDirection="column"
     >
       <Heading>View Schedule</Heading>
+      <FormLabel htmlFor="year">
+        For Year:
+      </FormLabel>
+      <Select
+        placeholder="Select Year"
+        defaultValue={year}
+        onChange={(e) => changeYear(e.target.value)}
+        mb={5}
+        w="10rem"
+      >
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </Select>
       <Container mb={32} maxW="container.xl">
-        {!scheduleData || scheduleLoading ? (
+        {!scheduleData || scheduleLoading || !baseScheduleData.schedule ? (
           <Container
             display="flex"
             justifyContent="center"
@@ -229,21 +252,10 @@ export const Schedule = () => {
             marginTop="4rem"
           >
             <Spinner size="xl" />
+            
           </Container>
         ) : (
           <>
-            <FormLabel htmlFor="year">Schedule for Year:</FormLabel>
-            <Select
-              placeholder="Select Year"
-              defaultValue={year}
-              // onChange={(e) => setYear(e.target.value)}
-              mb={5}
-              w="10rem"
-            >
-              <option value="2022">2022</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-            </Select>
             <Flex alignItems="center" justifyContent="space-between" mb={5}>
               <Select
                 id="select"
