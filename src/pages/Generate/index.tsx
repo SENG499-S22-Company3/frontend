@@ -212,14 +212,6 @@ export const Generate = () => {
       }
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
-    } else {
-      toast({
-        title: "Unknown Action",
-        description: actionMeta.action,
-        status: "error",
-        duration: null,
-        isClosable: true,
-      });
     }
   };
 
@@ -440,7 +432,18 @@ export const Generate = () => {
                 </Heading>
                 <hr />
                 <br />
-                <Box overflowY="auto" maxH="100vh">
+                <Box
+                  overflowY="auto"
+                  __css={{
+                    "&::-webkit-scrollbar": { w: "2" },
+                    "&::-webkit-scrollbar-track": { w: "6" },
+                    "&::-webkit-scrollbar-thumb": {
+                      borderRadius: "10",
+                      bg: "blue.200",
+                    },
+                  }}
+                  maxH="100vh"
+                >
                   <Table variant="striped" size="sm">
                     <Thead>
                       <Tr>

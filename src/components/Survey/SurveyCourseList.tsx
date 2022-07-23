@@ -152,13 +152,6 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
     } else if (actionMeta.action === "clear") {
       setSelectedCourses([]);
       props.removeAllCourses();
-    } else {
-      toast({
-        title: "Unknown Action",
-        description: actionMeta.action,
-        status: "error",
-        isClosable: true,
-      });
     }
   };
 
