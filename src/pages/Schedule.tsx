@@ -107,7 +107,7 @@ export const Schedule = () => {
   const [dayViewCount, setDayViewCount] = useState(1);
   const [termFilter, setTermFilter] = useState<
     "ALL" | "FALL" | "SPRING" | "SUMMER"
-  >("FALL");
+  >("ALL");
 
   const termFilteredSchedule =
     termFilter === "ALL"
