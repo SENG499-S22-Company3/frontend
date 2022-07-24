@@ -120,27 +120,6 @@ export const SearchBar = (props: SearchBarProps) => {
           >
             CSC
           </Radio>
-          <Radio
-            colorScheme="purple"
-            onChange={(e) => setFilter(e.target.value)}
-            value="summer"
-          >
-            Summer
-          </Radio>
-          <Radio
-            colorScheme="pink"
-            onChange={(e) => setFilter(e.target.value)}
-            value="fall"
-          >
-            Fall
-          </Radio>
-          <Radio
-            colorScheme="teal"
-            onChange={(e) => setFilter(e.target.value)}
-            value="spring"
-          >
-            Spring
-          </Radio>
         </Stack>
       </RadioGroup>
       <Flex alignItems="center" justifyContent="space-between">

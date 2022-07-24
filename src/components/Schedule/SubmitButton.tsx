@@ -1,10 +1,16 @@
 import { gql, useMutation } from "@apollo/client";
+import { SmallCloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
+  Box,
   Button,
   Flex,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
   useToast,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
@@ -65,32 +71,48 @@ export const SubmitButton = (props: SubmitButtonProps) => {
   }, [data, loading, error, toast, setActive]);
 
   return (
-    <Flex alignItems={"center"} minWidth="3rem">
-      {active && (
-        <Alert
-          status="warning"
-          variant="subtle"
-          marginRight="1rem"
-          width="auto"
+    <Flex alignItems={"center"} minWidth="3rem" flexDirection={"column"}>
+      <Popover placement="top" closeOnBlur={false} isOpen={active}>
+        <PopoverTrigger>
+          <Button
+            w="200px"
+            colorScheme="blue"
+            variant="solid"
+            onClick={() => {
+              const input = handleSubmit();
+              generate({ variables: { input } });
+            }}
+            isLoading={loading}
+          >
+            Submit Changes
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          color="white"
+          bg="blue.800"
+          borderColor="blue.800"
+          marginBottom={"0.25rem"}
         >
-          <AlertIcon />
-          <AlertDescription maxWidth="sm">
-            You have unsaved changes
-          </AlertDescription>
-        </Alert>
-      )}
-      <Button
-        w="200px"
-        colorScheme="blue"
-        variant="solid"
-        onClick={() => {
-          const input = handleSubmit();
-          generate({ variables: { input } });
-        }}
-        isLoading={loading}
-      >
-        Submit Changes
-      </Button>
+          <PopoverArrow />
+          <PopoverBody
+            display="flex"
+            alignItems={"center"}
+            justifyContent="space-between"
+          >
+            <Box display={"flex"} alignItems="center">
+              <WarningIcon marginRight="0.5rem" />{" "}
+              <Text> You have unsaved changes</Text>
+            </Box>
+            <IconButton
+              aria-label="close popover"
+              onClick={() => setActive(false)}
+              variant="subtle"
+            >
+              <SmallCloseIcon />
+            </IconButton>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
     </Flex>
   );
 };
