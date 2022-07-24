@@ -71,6 +71,12 @@ export const TableView = (props: TableProps) => {
     onClose();
   };
 
+  data.sort((a, b) => {
+    if (a.CourseID.subject === b.CourseID.subject) {
+      return a.CourseID.code > b.CourseID.code ? 1 : -1;
+    }
+    return a.CourseID.subject > b.CourseID.subject ? 1 : -1;
+  });
   return (
     <>
       <TableContainer overflowY="auto">
