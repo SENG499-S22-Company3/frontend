@@ -1,6 +1,6 @@
 import React from "react";
 import { formatDate } from "devextreme/localization";
-import { Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 import { Appointment } from "../../stores/schedule";
 import { CloseIcon, EditIcon } from "@chakra-ui/icons";
 import Scheduler from "devextreme-react/scheduler";
@@ -26,6 +26,7 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
   const courseData = model.appointmentData;
   const schedule = scheduleRef?.current?.instance;
 
+  const term = courseData.term.toLocaleLowerCase();
   return (
     <>
       <Flex
@@ -75,11 +76,14 @@ export const AppointmentTooltip = (props: AppointmentTooltipProps) => {
           {courseData.professors.map((prof) => (
             <Text pr={"0.5rem"}>{prof}</Text>
           ))}
-          <Text>
-            {formatDate(courseData.startTime, "shortTime")}
-            {" - "}
-            {formatDate(courseData.endTime, "shortTime")}
-          </Text>
+          <Box display="flex">
+            <Text marginRight="0.5rem">
+              {formatDate(courseData.startTime, "shortTime")}
+              {" - "}
+              {formatDate(courseData.endTime, "shortTime")}
+            </Text>
+            <Text textTransform="capitalize">{term}</Text>
+          </Box>
         </Flex>
       </Flex>
       <AppointmentModal

@@ -46,7 +46,7 @@ const formatTableItem = (course: CourseSection) => {
     course: course.CourseID.subject + " " + course.CourseID.code,
     schedule_time: startTime + " / " + endTime,
     days: d,
-    term: course.CourseID.term,
+    term: course.CourseID.term.toLocaleLowerCase(),
     prof: professors,
     sectionNumber: course.sectionNumber,
     start_end: formatDate(startDate) + " / " + formatDate(endDate),
@@ -105,7 +105,7 @@ export const TableView = (props: TableProps) => {
                   <Td>{item.course}</Td>
                   <Td>{item.schedule_time}</Td>
                   <Td>{item.days}</Td>
-                  <Td>{item.term}</Td>
+                  <Td textTransform={"capitalize"}>{item.term}</Td>
                   <Td>{item.prof}</Td>
                   <Td>{item.sectionNumber}</Td>
                   <Td>{item.start_end}</Td>
