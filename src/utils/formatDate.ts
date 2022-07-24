@@ -3,10 +3,19 @@ export const formatTime = (date: Date) => {
 };
 
 export const formatDate = (date: Date) => {
-  return `${date.getDate()} ${date.toLocaleString("default", {
-    month: "long",
-  })} ${date.getFullYear()}`;
+  return `${getNumberWithOrdinal(date.getDate())} ${date.toLocaleString(
+    "default",
+    {
+      month: "long",
+    }
+  )}`;
 };
+
+function getNumberWithOrdinal(n: number) {
+  const s = ["th", "st", "nd", "rd"],
+    v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
 
 export const formatTimeString = (date: Date) => {
   let hours = date.getUTCHours().toString();
