@@ -78,9 +78,9 @@ export const TableView = (props: TableProps) => {
               <Th>Course</Th>
               <Th>Schedule Time</Th>
               <Th>Days</Th>
-              <Th>Term</Th>
               <Th>Prof/Instructor</Th>
               <Th>Section</Th>
+              <Th>Term</Th>
               <Th>Start/End Date</Th>
               <Th>Capacity</Th>
               <Th>Edit</Th>
@@ -105,9 +105,9 @@ export const TableView = (props: TableProps) => {
                   <Td>{item.course}</Td>
                   <Td>{item.schedule_time}</Td>
                   <Td>{item.days}</Td>
-                  <Td>{item.term}</Td>
                   <Td>{item.prof}</Td>
                   <Td>{item.sectionNumber}</Td>
+                  <Td>{item.term}</Td>
                   <Td>{item.start_end}</Td>
                   <Td>{item.capacity}</Td>
                   <Td>
