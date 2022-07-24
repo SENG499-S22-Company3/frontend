@@ -13,7 +13,6 @@ import {
   Radio,
   Stack,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
