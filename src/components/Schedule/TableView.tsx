@@ -14,6 +14,7 @@ import {
   formatAMPM,
   formatDate,
   getScheduleTime,
+  sortWeekDays,
 } from "../../utils/formatDate";
 import { EditIcon } from "@chakra-ui/icons";
 import { AppointmentModal, ModalItem } from "./AppointmentModal";
@@ -26,11 +27,12 @@ interface TableProps {
 }
 
 const formatTableItem = (course: CourseSection) => {
-  var d = "";
+  let d: string[] = [];
   var len = course.meetingTimes.length;
   for (var y = 0; y < len; y++) {
-    d = d + course.meetingTimes[y].day.slice(0, 3) + " ";
+    d.push(course.meetingTimes[y].day.slice(0, 3));
   }
+  d = sortWeekDays(d);
 
   const startTime = formatAMPM(new Date(course.meetingTimes[0].startTime));
   const endTime = formatAMPM(new Date(course.meetingTimes[0].endTime));
@@ -45,7 +47,7 @@ const formatTableItem = (course: CourseSection) => {
   return {
     course: course.CourseID.subject + " " + course.CourseID.code,
     schedule_time: startTime + " / " + endTime,
-    days: d,
+    days: d.join(" "),
     term: course.CourseID.term,
     prof: professors,
     sectionNumber: course.sectionNumber,
@@ -69,6 +71,12 @@ export const TableView = (props: TableProps) => {
     onClose();
   };
 
+  data.sort((a, b) => {
+    if (a.CourseID.subject === b.CourseID.subject) {
+      return a.CourseID.code > b.CourseID.code ? 1 : -1;
+    }
+    return a.CourseID.subject > b.CourseID.subject ? 1 : -1;
+  });
   return (
     <>
       <TableContainer overflowY="auto">
