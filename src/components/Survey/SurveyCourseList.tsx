@@ -59,7 +59,8 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
         (selectedCourse: CourseOption) => {
           if (
             course.code === selectedCourse.value.code &&
-            course.subject === selectedCourse.value.subject
+            course.subject === selectedCourse.value.subject &&
+            course.term === selectedCourse.value.term
           ) {
             props.handlePreferenceChange(
               {
@@ -86,7 +87,8 @@ export const SurveyCourseList: React.FC<ChildProps> = (props) => {
         (selectedCourse: CourseOption) => {
           if (
             course.code === selectedCourse.value.code &&
-            course.subject === selectedCourse.value.subject
+            course.subject === selectedCourse.value.subject &&
+            course.term === selectedCourse.value.term
           ) {
             props.handlePreferenceChange(
               {
