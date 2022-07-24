@@ -236,12 +236,16 @@ export const Generate = () => {
         const courseKeys = new Set<string>();
         const options = (courseData.survey.courses as CourseSection[])
           .filter((course) => {
-            const key = course.subject + course.code;
-            if (courseKeys.has(key)) {
-              return false;
+            if (term === "WHOLE_YEAR" || course.term === term) {
+              const key = course.subject + course.code;
+              if (courseKeys.has(key)) {
+                return false;
+              } else {
+                courseKeys.add(key);
+                return true;
+              }
             }
-            courseKeys.add(key);
-            return term === "WHOLE_YEAR" || course.term === term;
+            return false;
           })
           .map((course) => {
             return {
