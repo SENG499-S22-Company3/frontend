@@ -57,3 +57,13 @@ export const formatAMPM = (date: Date) => {
   var strTime = hours + ":" + newMinutes + " " + ampm;
   return strTime;
 };
+
+export const sortWeekDays = (days: string[]) => {
+  const daysOrder = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const sorted = days.sort((a, b) => {
+    const idx1 = daysOrder.indexOf(a);
+    const idx2 = daysOrder.indexOf(b);
+    return idx1 > idx2 ? 1 : -1;
+  });
+  return sorted;
+};
