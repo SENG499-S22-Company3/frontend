@@ -16,14 +16,7 @@ import {
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
 import { CalendarView } from "../components/Schedule/CalendarView";
-import {
-  Appointment,
-  CourseSection,
-  MeetingTime,
-  CourseSectionInput,
-  UpdateScheduleInput,
-  Company,
-} from "../stores/schedule";
+import { Appointment, CourseSection, MeetingTime } from "../stores/schedule";
 import { SearchBar } from "../components/Schedule/SearchBar";
 import { ModalItem } from "../components/Schedule/AppointmentModal";
 import { weekdayToString } from "../utils/weekdayConversion";
@@ -73,7 +66,7 @@ const USERS = gql`
   }
 `;
 
-interface User {
+export interface User {
   displayName: string;
   username: string;
 }
@@ -272,35 +265,6 @@ export const Schedule = () => {
     return baseScheduleRef.current;
   };
 
-  //used in SubmitButton component
-  const submitSchedule = () => {
-    const newSchedule = baseScheduleRef.current;
-    const courseSections = newSchedule?.map((course) => {
-      const users = course.professors.map(
-        (prof) =>
-          userData?.find((u) => u.displayName === prof.displayName)?.username
-      );
-
-      const { CourseID, ...restCourse } = course;
-
-      return {
-        ...restCourse,
-        id: CourseID,
-        professors: users,
-      } as CourseSectionInput;
-    });
-
-    const scheduleInput = {
-      id: baseScheduleData.schedule.id,
-      courses: courseSections,
-      skipValidation: false,
-      validation: Company.COMPANY3,
-    } as UpdateScheduleInput;
-
-    refreshSchedule();
-    return scheduleInput;
-  };
-
   return (
     <Flex
       w="100%"
@@ -377,9 +341,12 @@ export const Schedule = () => {
             setScheduleData={setScheduleData}
           />
           <SubmitButton
-            handleSubmit={submitSchedule}
+            schedule={baseScheduleRef?.current || []}
+            scheduleId={baseScheduleData?.schedule?.id}
+            userData={userData || []}
             active={isEditing}
             setActive={setIsEditing}
+            refreshSchedule={refreshSchedule}
           />
         </Flex>
         {scheduleLoading ? (

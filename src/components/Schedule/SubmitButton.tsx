@@ -3,8 +3,16 @@ import { SmallCloseIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Checkbox,
   Flex,
   IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -13,8 +21,14 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { UpdateScheduleInput } from "../../stores/schedule";
+import { useEffect, useState } from "react";
+import { User } from "../../pages/Schedule";
+import {
+  Company,
+  CourseSection,
+  CourseSectionInput,
+  UpdateScheduleInput,
+} from "../../stores/schedule";
 
 const UPDATE = gql`
   mutation update($input: UpdateScheduleInput!) {
@@ -26,15 +40,22 @@ const UPDATE = gql`
 `;
 
 interface SubmitButtonProps {
-  handleSubmit: () => UpdateScheduleInput;
+  schedule: CourseSection[];
+  scheduleId: number;
+  userData: User[];
   active: boolean;
   setActive: (active: boolean) => void;
+  refreshSchedule: () => void;
 }
 
 export const SubmitButton = (props: SubmitButtonProps) => {
-  const { handleSubmit, active, setActive } = props;
+  const { schedule, scheduleId, userData, active, setActive, refreshSchedule } =
+    props;
 
   const [generate, { data, loading, error }] = useMutation(UPDATE);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [skipValidation, setSkipValidation] = useState(false);
 
   const toast = useToast();
 
@@ -70,6 +91,35 @@ export const SubmitButton = (props: SubmitButtonProps) => {
     }
   }, [data, loading, error, toast, setActive]);
 
+  //used in SubmitButton component
+  const submitSchedule = () => {
+    console.log(schedule);
+    const courseSections = schedule?.map((course) => {
+      const users = course.professors.map(
+        (prof) =>
+          userData?.find((u) => u.displayName === prof.displayName)?.username
+      );
+
+      const { CourseID, ...restCourse } = course;
+
+      return {
+        ...restCourse,
+        id: CourseID,
+        professors: users,
+      } as CourseSectionInput;
+    });
+
+    const scheduleInput = {
+      id: scheduleId,
+      courses: courseSections,
+      skipValidation: skipValidation,
+      validation: Company.COMPANY3,
+    } as UpdateScheduleInput;
+
+    refreshSchedule();
+    return scheduleInput;
+  };
+
   return (
     <Flex alignItems={"center"} minWidth="3rem" flexDirection={"column"}>
       <Popover placement="top" closeOnBlur={false} isOpen={active}>
@@ -79,8 +129,7 @@ export const SubmitButton = (props: SubmitButtonProps) => {
             colorScheme="blue"
             variant="solid"
             onClick={() => {
-              const input = handleSubmit();
-              generate({ variables: { input } });
+              setModalOpen(true);
             }}
             isLoading={loading}
           >
@@ -113,6 +162,53 @@ export const SubmitButton = (props: SubmitButtonProps) => {
           </PopoverBody>
         </PopoverContent>
       </Popover>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => {
+          setSkipValidation(false);
+          setModalOpen(false);
+        }}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Submitting Schedule Changes</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Would you like to skip validating these changes? Validation
+              includes enforcing specific section times, professor conflicts,
+              and program requirement conflicts.{" "}
+            </Text>
+            <Text marginTop="1rem">
+              If validation is not chosen, there are no guarantees any changes
+              made have resulted in a legitimate schedule.
+            </Text>
+            <Checkbox
+              marginTop="1rem"
+              isChecked={skipValidation}
+              onChange={(e) => setSkipValidation(e.target.checked)}
+            >
+              Yes, I would like to skip the validation
+            </Checkbox>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                setModalOpen(false);
+                const input = submitSchedule();
+                generate({ variables: { input } });
+              }}
+            >
+              Confirm Submission
+            </Button>
+            <Button variant="ghost" onClick={() => setModalOpen(false)}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };
