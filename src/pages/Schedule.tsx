@@ -262,7 +262,7 @@ export const Schedule = () => {
   };
 
   const getScheduleRef = () => {
-    return baseScheduleRef.current;
+    return baseScheduleRef.current || [];
   };
 
   return (
@@ -341,7 +341,7 @@ export const Schedule = () => {
             setScheduleData={setScheduleData}
           />
           <SubmitButton
-            schedule={baseScheduleRef?.current || []}
+            getScheduleData={getScheduleRef}
             scheduleId={baseScheduleData?.schedule?.id}
             userData={userData || []}
             active={isEditing}

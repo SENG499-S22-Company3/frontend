@@ -40,17 +40,23 @@ const UPDATE = gql`
 `;
 
 interface SubmitButtonProps {
-  schedule: CourseSection[];
   scheduleId: number;
   userData: User[];
   active: boolean;
   setActive: (active: boolean) => void;
   refreshSchedule: () => void;
+  getScheduleData: () => CourseSection[];
 }
 
 export const SubmitButton = (props: SubmitButtonProps) => {
-  const { schedule, scheduleId, userData, active, setActive, refreshSchedule } =
-    props;
+  const {
+    scheduleId,
+    userData,
+    active,
+    setActive,
+    refreshSchedule,
+    getScheduleData,
+  } = props;
 
   const [generate, { data, loading, error }] = useMutation(UPDATE);
 
@@ -93,8 +99,8 @@ export const SubmitButton = (props: SubmitButtonProps) => {
 
   //used in SubmitButton component
   const submitSchedule = () => {
-    console.log(schedule);
-    const courseSections = schedule?.map((course) => {
+    const newSchedule = getScheduleData();
+    const courseSections = newSchedule?.map((course) => {
       const users = course.professors.map(
         (prof) =>
           userData?.find((u) => u.displayName === prof.displayName)?.username
