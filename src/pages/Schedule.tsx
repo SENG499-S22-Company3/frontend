@@ -9,6 +9,9 @@ import {
   IconButton,
   Text,
   FormLabel,
+  RadioGroup,
+  Radio,
+  Stack,
 } from "@chakra-ui/react";
 import { gql, useQuery } from "@apollo/client";
 import { TableView } from "../components/Schedule/TableView";
@@ -102,6 +105,14 @@ export const Schedule = () => {
     "workWeek"
   );
   const [dayViewCount, setDayViewCount] = useState(1);
+  const [termFilter, setTermFilter] = useState<
+    "ALL" | "FALL" | "SPRING" | "SUMMER"
+  >("ALL");
+
+  const termFilteredSchedule =
+    termFilter === "ALL"
+      ? scheduleData
+      : scheduleData?.filter((course) => course.CourseID.term === termFilter);
 
   const baseScheduleRef = useRef(scheduleData);
 
@@ -151,7 +162,6 @@ export const Schedule = () => {
 
   const changeYear = (newYear: string) => {
     if (newYear !== null && newYear !== "") {
-      console.log(newYear);
       setYear(parseInt(newYear));
     }
   };
@@ -318,7 +328,7 @@ export const Schedule = () => {
         <Flex alignItems="center" justifyContent="space-between" mb={5}>
           <Select
             id="select"
-            w="12rem"
+            w="8rem"
             value={viewState}
             onChange={(e) => {
               refreshSchedule();
@@ -327,9 +337,41 @@ export const Schedule = () => {
                 : setViewState(ViewTypes.calendar);
             }}
           >
-            <option value="table">Table View</option>
-            <option value="calendar">Calendar View</option>
+            <option value="table">Table</option>
+            <option value="calendar">Calendar</option>
           </Select>
+          <RadioGroup defaultValue={termFilter}>
+            <Stack direction="row">
+              <Radio
+                colorScheme="teal"
+                onChange={() => setTermFilter("ALL")}
+                value="ALL"
+              >
+                All
+              </Radio>
+              <Radio
+                colorScheme="orange"
+                onChange={() => setTermFilter("FALL")}
+                value="FALL"
+              >
+                Fall
+              </Radio>
+              <Radio
+                colorScheme="green"
+                onChange={() => setTermFilter("SPRING")}
+                value="SPRING"
+              >
+                Spring
+              </Radio>
+              <Radio
+                colorScheme="red"
+                onChange={() => setTermFilter("SUMMER")}
+                value="SUMMER"
+              >
+                Summer
+              </Radio>
+            </Stack>
+          </RadioGroup>
           <SearchBar
             getTermData={getScheduleRef}
             setScheduleData={setScheduleData}
@@ -411,13 +453,13 @@ export const Schedule = () => {
                 )}
                 {viewState === ViewTypes.table && scheduleData && (
                   <TableView
-                    data={scheduleData}
+                    data={termFilteredSchedule || []}
                     onUpdateSubmit={handleUpdateSubmit}
                   />
                 )}
                 {viewState === ViewTypes.calendar && scheduleData && (
                   <CalendarView
-                    data={scheduleData}
+                    data={termFilteredSchedule || []}
                     onUpdateSubmit={handleUpdateSubmit}
                     onDragSubmit={handleDrag}
                     viewState={calendarView}
