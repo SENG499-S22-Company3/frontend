@@ -29,7 +29,7 @@
   "ECE241": ["FALL"],
   "ECE242": ["SUMMER"],
   "ECE250": ["FALL", "SUMMER"],
-  "ECE255": ["FALL", "FALL", "SPRING"],
+  "ECE255": ["FALL", "SUMMER", "SPRING"],
   "ECE260": ["FALL", "SUMMER"],
   "ECE299": ["SUMMER"],
   "ECE300": ["SPRING"],
