@@ -36,7 +36,9 @@ const USERS = gql`
 `;
 
 export const Professors = () => {
-  const { data, loading, error } = useQuery(USERS);
+  const { data, loading, error } = useQuery(USERS, {
+    fetchPolicy: "no-cache",
+  });
   const [allUsers, setAllUsers] = useState<Array<UserInfo>>([]);
   const [filteredUsers, setFilteredUsers] = useState<Array<UserInfo>>([]);
 
