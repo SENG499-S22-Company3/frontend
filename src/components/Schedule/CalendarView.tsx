@@ -99,7 +99,7 @@ export const CalendarView = (props: CalendarProps) => {
     }
 
     .dx-scheduler-cell-sizes-vertical {
-      height: 60px;
+      height: 30px;
     }
   `;
 
@@ -138,7 +138,7 @@ export const CalendarView = (props: CalendarProps) => {
         showAllDayPanel={false}
         startDayHour={8}
         endDayHour={20}
-        cellDuration={60}
+        cellDuration={30}
         textExpr="courseTitle"
         onAppointmentDblClick={(e) => (e.cancel = true)}
         startDateExpr={"startTime"}
