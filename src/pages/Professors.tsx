@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { CreateUser } from "../components/ProfileManagement/CreateUser";
 import { PreferenceDetails } from "../components/ProfileManagement/PreferenceDetails";
 import { SearchBar } from "../components/ProfileManagement/SearchBar";
-import { UserInfo } from "../stores/profileManagement";
+import { Preference, UserInfo } from "../stores/profileManagement";
 
 const USERS = gql`
   query getUsers {
@@ -49,7 +49,14 @@ export const Professors = () => {
       if (data && !error) {
         if (data.allUsers) {
           const sortedData = data.allUsers
-            .slice()
+            .map((user: UserInfo) => ({
+              ...user,
+              preferences: user.preferences.sort(
+                (a: Preference, b: Preference) => {
+                  return b.preference - a.preference;
+                }
+              ),
+            }))
             .sort((a: UserInfo, b: UserInfo) => {
               if (a.displayName && b.displayName) {
                 return a.displayName.localeCompare(b.displayName);
