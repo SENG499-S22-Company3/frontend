@@ -6,6 +6,7 @@ import {
   Table,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -109,6 +110,14 @@ export const Professors = () => {
             setProfessors={setFilteredUsers}
             allProfessors={allUsers}
           />
+          <Text mt={3}>
+            "No Preferences Set" means that a professor has not filled out the
+            preference survey.
+          </Text>
+          <Text mb={3}>
+            On schedule generation they will be given a default preference of 3
+            (With Effort & Willing) on all courses
+          </Text>
           <Table variant="striped" size="md">
             <Thead>
               <Tr>

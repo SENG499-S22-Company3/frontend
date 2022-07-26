@@ -146,7 +146,7 @@ export const OtherPreferences: React.FC<ChildProps> = (props) => {
         isDisabled={!hasRelief}
         id="large_text"
         value={reliefExplaination}
-        placeholder="Relief Explaination"
+        placeholder="Relief Explanation"
         onChange={(e) => setReliefExplaination(e.target.value)}
         size="sm"
       />

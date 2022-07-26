@@ -64,7 +64,6 @@ export const App = () => {
               <Route path="/professors" element={<Professors />} />
               <Route path="/schedule" element={<Schedule />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
             </>
           )}
           {user && user["roles"] && user["roles"].includes("user") && (
@@ -72,9 +71,9 @@ export const App = () => {
               <Route path="/" element={<Redirect to="/survey" />} />
               <Route path="/survey" element={<Survey />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
             </>
           )}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Box>
