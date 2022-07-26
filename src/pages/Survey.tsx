@@ -46,8 +46,8 @@ export const Survey = () => {
 
   const toast = useToast();
 
-  const [user, setUser, persistUser] = useLoginStore(
-    (state) => [state.user, state.setUser, state.persistUser],
+  const [user, persistUser] = useLoginStore(
+    (state) => [state.user, state.persistUser],
     shallow
   );
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
@@ -151,7 +151,6 @@ export const Survey = () => {
             );
 
             const newUser = { ...user, preferences };
-            setUser(newUser);
             persistUser(newUser);
           }
 
