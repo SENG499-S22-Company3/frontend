@@ -46,9 +46,12 @@ export const Survey = () => {
 
   const toast = useToast();
 
-  const [user] = useLoginStore((state) => [state.user], shallow);
-
+  const [user, persistUser] = useLoginStore(
+    (state) => [state.user, state.persistUser],
+    shallow
+  );
   const [submit, { loading, data, error }] = useMutation(SUBMIT);
+
   const {
     loading: coursesLoading,
     error: coursesError,
@@ -128,6 +131,29 @@ export const Survey = () => {
     if (!loading) {
       if (data && !error) {
         if (data.createTeachingPreference.success) {
+          if (user !== undefined) {
+            // store the preferences into the user object right away so
+            // the state updates immediately
+            const preferences = coursesData.survey.courses!.map(
+              (course: CourseID) => {
+                const key = `${course.subject}${course.code}${course.term}`;
+                const r = courseRatings[key];
+                return {
+                  id: {
+                    code: r ? r.code : course.code,
+                    subject: r ? r.subject : course.subject,
+                    title: r ? r.title : course.title,
+                    term: r ? r.term : course.term,
+                  },
+                  preference: r ? r.preference : 0,
+                };
+              }
+            );
+
+            const newUser = { ...user, preferences };
+            persistUser(newUser);
+          }
+
           toast({
             title: "Submitted preferences successfully",
             status: "success",
@@ -189,7 +215,7 @@ export const Survey = () => {
     );
   }
 
-  if (user != null && user.preferences.length > 0) {
+  if (user !== undefined && user.preferences.length > 0) {
     return (
       <Flex
         w="100%"
@@ -199,9 +225,7 @@ export const Survey = () => {
         justifyContent="center"
         flexDirection="column"
       >
-        <Heading>
-          You have completed the preference survey already! Thank you.
-        </Heading>
+        <Heading>You have completed the preference survey! Thank you.</Heading>
       </Flex>
     );
   }
